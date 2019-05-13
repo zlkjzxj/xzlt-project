@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <title>首页--layui后台管理模板 2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/css/public.css" media="all"/>
+    <link rel="stylesheet" href="/static/jointjs/css/joint.css" media="all"/>
+</head>
+<body class="childrenBody">
+<!--<blockquote class="layui-elem-quote layui-bg-green">-->
+<!--<div id="nowTime">-->
+<!--<shiro:principal property="userName"/>-->
+<!--</div>-->
+<!--</blockquote>-->
+<input type="hidden" id="projectId">
+<input type="hidden" id="projectId1" value="1">
+<div id="paper" class="paper"></div>
+
+<div class="modal fade searchpanel" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+</div>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<!--<script type="text/javascript" src="/static/js/main.js"></script>-->
+<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/static/jointjs/lodash.js"></script>
+<script type="text/javascript" src="/static/jointjs/backbone.js"></script>
+<script type="text/javascript" src="/static/jointjs/joint.js"></script>
+<!-- code -->
+<script type="text/javascript">
+    layui.use(['form', 'layer'], function () {
+        var layer = layui.layer;
+        var graph = new joint.dia.Graph();
+        var completeColor = "#019688";
+        var uncompleteColor = "#FF5823";
+
+        var ElementView = joint.dia.ElementView.extend({
+            pointerdown: function () {
+                this._click = true;
+                joint.dia.ElementView.prototype.pointerdown.apply(this, arguments);
+            },
+            pointermove: function (evt, x, y) {
+                this._click = false;
+                joint.dia.ElementView.prototype.pointermove.apply(this, arguments);
+            },
+            pointerup: function (evt, x, y) {
+                if (this._click) {
+                    // triggers an event on the paper and the element itself
+                    this.notify('cell:click', evt, x, y);
+                } else {
+                    joint.dia.ElementView.prototype.pointerup.apply(this, arguments);
+                }
+            }
+        });
+        var LinkView = joint.dia.LinkView.extend({
+            addVertex: function (evt, x, y) {
+            },
+            removeVertex: function (endType) {
+            },
+            pointerdown: function (evt, x, y) {
+            }
+        });
+
+        //定义画布
+        var paper = new joint.dia.Paper({
+            el: $('#paper'),
+            width: 1800,
+            height: 800,
+            gridSize: 1,
+            model: graph,
+            elementView: ElementView,
+            linkView: LinkView
+        });
+        //paper.$el.css('pointer-events', 'none')//去除默认样式，使所有事件不可用
+
+
+        //定义形状
+        var state = function (x, y, shape, background, text) {
+            var cell;
+            if (shape === "rect") {
+                cell = new joint.shapes.basic.Rect({
+                    position: {x: x, y: y},//坐标
+                    size: {width: 180, height: 40},//宽高
+                    attrs: {
+                        rect: {
+                            fill: {
+                                type: 'linearGradient',
+                                stops: [
+                                    {offset: '0%', color: background},//渐变开始
+                                    // {offset: '100%', color: '#fe8550'}//渐变结束
+                                    {offset: '100%', color: background}//渐变结束
+                                ],
+                                attrs: {x1: '0%', y1: '0%', x2: '0%', y2: '100%'}
+                            },
+                            stroke: background,//边框颜色
+                            'stroke-width': 1//边框大小
+                        },
+                        text: {text: text} //显示文字
+                    }
+                });
+            } else if (shape === "ellipse") {
+                cell = new joint.shapes.basic.Ellipse({
+                    position: {x: x, y: y},//坐标
+                    size: {width: 140, height: 40},//宽高
+                    attrs: {
+                        ellipse: {
+                            fill: {
+                                type: 'linearGradient',
+                                stops: [
+                                    {offset: '0%', color: background},//渐变开始
+                                    {offset: '100%', color: '#FFFFFF'}//渐变结束
+                                ],
+                                attrs: {x1: '0%', y1: '0%', x2: '0%', y2: '100%'}
+                            },
+                            stroke: background,//边框颜色
+                            'stroke-width': 1//边框大小
+                        },
+                        text: {text: text} //显示文字
+                    }
+                });
+            }
+            graph.addCell(cell);
+            return cell;
+        };
+
+        //定义连线
+        function link(source, target, label) {
+            var cell = new joint.dia.Link({
+                source: {id: source.id},
+                target: {id: target.id},
+                labels: [{position: 0.5, attrs: {text: {text: label || '', 'font-weight': 'bold'}}}],
+                router: {name: 'manhattan'},//设置连线弯曲样式 manhattan直角
+                attrs: {
+                    '.connection': {
+                        stroke: '#333333',//连线颜色
+                        'stroke-width': 2//连线粗细
+                    },
+                    '.marker-target': {
+                        fill: '#333333',//箭头颜色
+                        d: 'M 10 0 L 0 5 L 10 10 z'//箭头样式
+                    }
+                }
+            });
+            graph.addCell(cell);
+            return cell;
+        }
+
+        var projectId = window.parent.document.getElementById("projectId").value;
+        console.log(projectId)
+        $.ajax({
+            url: '/project/getObject',
+            method: 'POST',
+            dataType: 'json',
+            data: {
+                id: projectId
+            },
+            success: function (data) {
+                if (data.data) {
+                    createElement(data.data);
+                } else {
+                    layer.msg("查无数据");
+                }
+            }
+        })
+
+        function createElement(data) {
+            //创建元素
+            var start = state(100, 300, "ellipse", "#00FFFF", data.name);
+            var state1 = state(300, 100, "ellipse", "#00FFFF", "项目基本资料");
+            var state11 = state(500, 50, "rect", "#f7a07b", "项目编号：" + data.number);
+            var state12 = state(500, 100, "rect", "#f7a07b", "立项时间：" + data.lxsj);
+            var state13 = state(500, 150, "rect", "#f7a07b", "部门：" + data.bmmc);
+            // var state13 = state(500, 150, "rect", "#f7a07b", joint.util.breakText("部门：系统集成部", {width: 80}));
+            var state14 = state(500, 200, "rect", "#f7a07b", "项目经理：" + data.userName);
+
+            var state2 = state(300, 400, "ellipse", "#00FFFF", "前期准备情况");
+
+            var state21 = state(500, 300, "rect", data.fawcxk === 1 ? completeColor : uncompleteColor, "方案完成情况：" + (data.fawcxk == 1 ? '完成' : '未完成'));
+            var state22 = state(500, 350, "rect", data.cpxxwcqk === 1 ? completeColor : uncompleteColor, "产品选型完成情况：" + (data.cpxxwcqk == 1 ? '完成' : '未完成'));
+            var state23 = state(500, 400, "rect", data.zbzzwcqk === 1 ? completeColor : uncompleteColor, "招标组织完成情况：" + (data.zbzzwcqk == 1 ? '完成' : '未完成'));
+            var state24 = state(500, 450, "rect", data.yzjhbqd === 1 ? completeColor : uncompleteColor, "用资计划表确定：" + (data.yzjhbqd == 1 ? '完成' : '未完成'));
+            var state25 = state(500, 500, "rect", data.htqd === 1 ? completeColor : uncompleteColor, "合同签订：" + (data.htqd == 1 ? '完成' : '未完成'));
+
+            var state3 = state(300, 600, "ellipse", "#00FFFF", "软件开发进度");
+            var rjkfjd = data.rjkfjd;
+            var kfjd = "";
+            if (rjkfjd === 0) {
+                kfjd = "工作中";
+            } else if (rjkfjd === 1) {
+                kfjd = "暂停中";
+            } else if (rjkfjd === 2) {
+                kfjd = "测试中";
+            } else if (rjkfjd === 3) {
+                kfjd = "完工";
+            } else {
+                kfjd = "无";
+            }
+            console.log(kfjd)
+            var state31 = state(500, 600, "rect", "#f7a07b", "软件工作进度：" + kfjd);
+
+            var state4 = state(750, 300, "ellipse", "#00FFFF", "集成部署");
+            var yjcg = data.yjcg;
+            var yj = "";
+            if (yjcg === 0) {
+                yj = "开始";
+            } else if (yjcg === 1) {
+                yj = "进行中";
+            } else if (yjcg === 2) {
+                yj = "完成";
+            } else {
+                yj = "无";
+            }
+            var state41 = state(900, 200, "rect", "#f7a07b", "硬件采购：" + yj);
+            var jcjd = data.jcjd;
+            var jc = "";
+            if (jcjd === 0) {
+                jc = "到场";
+            } else if (jcjd === 1) {
+                jc = "实施";
+            } else if (jcjd === 2) {
+                jc = "完工";
+            } else if (jcjd === 3) {
+                jc = "验收";
+            } else {
+                jc = "无";
+            }
+            var state42 = state(900, 300, "rect", "#f7a07b", "集成工作进度:" + jc);
+            var state43 = state(900, 400, "rect", data.sgqr === 1 ? completeColor : uncompleteColor, "施工队确认：" + (data.sgqr == 1 ? '完成' : '未完成'));
+
+            var state5 = state(1100, 300, "ellipse", "#00FFFF", "回款状况");
+            var state51 = state(1300, 100, "rect", "#f7a07b", "合同金额：" + (data.htje == null ? "" : formatNumber(data.htje)), {width: 80});
+            var state52 = state(1300, 150, "rect", "#f7a07b", "回款金额：" + (data.hkqk == null ? "" : formatNumber(data.hkqk)), {width: 80});
+            var state53 = state(1300, 200, "rect", "#f7a07b", "未回金额：" + (data.whje == null ? "" : formatNumber(data.whje)), {width: 80});
+            var state54 = state(1300, 250, "rect", "#f7a07b", "未回时限：" + (data.whsx == null ? "" : data.whsx), {width: 80});
+            var state55 = state(1300, 300, "rect", data.hktz === 1 ? completeColor : uncompleteColor, "回款通知：" + (data.hktz == 1 ? '已回款' : '未回款'), {width: 80});
+            var state56 = state(1300, 350, "rect", "#f7a07b", "毛利：" + (data.ml == null ? "" : formatNumber(data.ml)), {width: 80});
+            var state57 = state(1300, 400, "rect", "#f7a07b", "质保金：" + (data.zbj == null ? "" : formatNumber(data.zbj)), {width: 80});
+            var state58 = state(1300, 450, "rect", data.zbjthqk === 1 ? completeColor : uncompleteColor, "质保金退换情况：" + (data.zbjthqk == 1 ? '已退还' : '未退还'), {width: 80});
+            var state59 = state(1300, 500, "rect", "#f7a07b", "质保金退还时限：" + (data.zbjthsx == null ? "" : data.zbjthsx), {width: 80});
+
+            var state6 = state(1500, 300, "ellipse", data.xmjx == 1 ? completeColor : uncompleteColor, "项目结项:" + data.xmjx === 1 ? "结项" : "未结项");
+
+
+            //创建连线
+
+            link(start, state1, "");
+            link(start, state2, "");
+            link(start, state3, "");
+
+            link(state1, state11, "");
+            link(state1, state12, "");
+            link(state1, state13, "");
+            link(state1, state14, "");
+            //
+            // link(state11, state2, "");
+            // link(state12, state2, "");
+            // link(state13, state2, "");
+            // link(state14, state2, "");
+
+            //        link(start, state2, "");
+            link(state2, state21, "");
+            link(state2, state22, "");
+            link(state2, state23, "");
+            link(state2, state24, "");
+            link(state2, state25, "");
+
+            link(state3, state31, "");
+
+
+            link(state11, state4, "");
+            link(state12, state4, "");
+            link(state13, state4, "");
+            link(state14, state4, "");
+            link(state21, state4, "");
+            link(state22, state4, "");
+            link(state23, state4, "");
+            link(state24, state4, "");
+            link(state25, state4, "");
+            link(state31, state4, "");
+
+            link(state4, state41, "");
+            link(state4, state42, "");
+            link(state4, state43, "");
+
+            link(state41, state5, "");
+            link(state42, state5, "");
+            link(state43, state5, "");
+
+            link(state5, state51, "");
+            link(state5, state52, "");
+            link(state5, state53, "");
+            link(state5, state54, "");
+            link(state5, state55, "");
+            link(state5, state56, "");
+            link(state5, state57, "");
+            link(state5, state58, "");
+            link(state5, state59, "");
+
+            link(state51, state6, "");
+            link(state52, state6, "");
+            link(state53, state6, "");
+            link(state54, state6, "");
+            link(state55, state6, "");
+            link(state56, state6, "");
+            link(state57, state6, "");
+            link(state58, state6, "");
+            link(state59, state6, "");
+        }
+
+        function formatNumber(value) {
+            if (/^[0-9]+(\.[0-9]{2})?$/.test(value) && value.indexOf(",") < 0) {
+                value = parseFloat(value).toFixed(2);
+                value = value.replace(/\d{1,3}(?=(\d{3})+(\.\d*)?$)/g, '$&,');
+            }
+            return value;
+        }
+
+        //给所有元素添加点击事件
+        // paper.on('cell:click', function (e) {
+        //     $("#detailModal .modal-body").html("");
+        //     var arr = $("#" + e.id + " tspan");
+        //     if (arr.length === 1) {
+        //         $("#detailModal .modal-body").append($(arr).html());
+        //         $("#detailModal").modal();
+        //     } else {
+        //         var tmp = "";
+        //         $.each(arr, function (k, v) {
+        //             tmp += $(v).html();
+        //         });
+        //         $("#detailModal .modal-body").append(tmp);
+        //         $("#detailModal").modal();
+        //     }
+        //
+        // });
+    });
+</script>
+</body>
+</html>

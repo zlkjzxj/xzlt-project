@@ -1,0 +1,31 @@
+server:
+  port: 8889
+#  servlet:
+#    context-path: /zl_manager
+spring:
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    url: jdbc:mysql://127.0.0.1:3306/zl_manager?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
+    username: zlkj
+    password: qwerasdf
+    type: com.alibaba.druid.pool.DruidDataSource
+  thymeleaf:
+    prefix: classpath:/templates/
+    suffix: .html
+    cache: false
+    mode: HTML
+  mvc:
+    static-path-pattern: /static/**
+
+mybatis-plus:
+  type-aliases-package: com.zlkj.admin.entity
+  mapper-locations: classpath:/mapper/*Mapper.xml
+  global-config:
+    id-type: 2
+    field-strategy: 2
+    db-column-underline: true
+    refresh-mapper: true
+    meta-object-handler: com.zlkj.admin.config.AutoMetaObjectHandler
+  configuration:
+    map-underscore-to-camel-case: true
+    cache-enabled: false
