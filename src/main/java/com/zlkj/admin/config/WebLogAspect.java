@@ -32,13 +32,13 @@ public class WebLogAspect {
     @Resource
     private ILogService ilogService;
 
-	@Pointcut("execution(public * com.zlkj.admin.web..*.*(..))")
-	public void webLog() {
-	}
+    @Pointcut("(execution(public * com.zlkj.admin.controller..*.*(..))) || (execution(public * com.zlkj.business.controller..*.*(..)))")
+    public void webLog() {
+    }
 
     @Before("webLog()")
     public void doBefore(JoinPoint joinPoint) {
-		startTime.set(System.currentTimeMillis());
+        startTime.set(System.currentTimeMillis());
         // 接收到请求，记录请求内容
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
         HttpServletRequest request = attributes.getRequest();
@@ -46,10 +46,10 @@ public class WebLogAspect {
         // 请求参数
         Object[] args = joinPoint.getArgs();
         String requestParam = "";
-        if (args != null && args.length > 0){
+        if (args != null && args.length > 0) {
             try {
                 requestParam = JSONObject.toJSONString(args[0]);
-            }catch (Exception e){
+            } catch (Exception e) {
 
             }
         }
@@ -62,16 +62,16 @@ public class WebLogAspect {
         logger.info("ARGS : " + requestParam);
 
         // 添加系统操作日志
-        MethodSignature methodSignature = (MethodSignature)joinPoint.getSignature();
+        MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
         Method targetMethod = methodSignature.getMethod();
         SysLog sysLog = targetMethod.getAnnotation(SysLog.class);
-        if (sysLog!=null){
-            UserInfo userInfo = (UserInfo)SecurityUtils.getSubject().getPrincipal();
+        if (sysLog != null) {
+            UserInfo userInfo = (UserInfo) SecurityUtils.getSubject().getPrincipal();
             Log log = new Log();
             log.setUserId(userInfo.getId());
             log.setUserName(userInfo.getUserName());
             log.setOperMethod(joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-            log.setRequestParam(requestParam);
+//            log.setRequestParam(requestParam);
             log.setOperDesc(sysLog.value());
             ilogService.insert(log);
         }

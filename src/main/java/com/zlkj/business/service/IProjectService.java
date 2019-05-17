@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2018-07-16
  */
 public interface IProjectService extends IService<Project> {
-    ProjectInfo findProjectbyId(Integer id);
+    ProjectInfo findProjectbyId(String number);
 
     List<ProjectInfo> findProjectByFuzzySearchVal(ProjectInfo project);
 
@@ -25,7 +25,5 @@ public interface IProjectService extends IService<Project> {
     Integer getProjectCount(ProjectInfo project);
 
     List<ProjectCountInfo> getProjectCountByDepartment();
-
-//    Project findProject(String name);
 
 }

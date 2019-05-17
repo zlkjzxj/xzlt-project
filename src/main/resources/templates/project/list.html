@@ -2,7 +2,7 @@
 <html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro" xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <meta charset="utf-8">
-    <title>用户列表--layui后台管理模板 2.0</title>
+    <title>项目列表--layui后台管理模板 2.0</title>
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
@@ -12,12 +12,10 @@
     <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
     <link rel="stylesheet" href="/static/css/public.css" media="all"/>
     <style>
-        /*button level0 switch root_close::before {*/
-        /*content: "\e623";*/
-        /*}*/
-        /*button level0 switch root_close::before {*/
-        /*content: "\e623";*/
-        /*}*/
+        .layui-table-cell {
+            height: 102px;
+            line-height: 102px;
+        }
     </style>
 
 </head>
@@ -33,118 +31,10 @@
                        placeholder="搜索条件：项目名称|编号|部门|项目经理"/>
             </div>
             <div class="layui-input-inline">
-                <!--<select class="state" id="departmentSelect">-->
-                <!--</select>-->
-                <!--<input type="text" id="departmentSelect" lay-filter="tree" class="layui-input" >-->
-                <input id="departmentSelect"/>
-            </div>
-            <div class="layui-input-inline">
                 <select class="state" id="xmjxSelect">
                     <option value="">是否结项</option>
                     <option value="1">是</option>
                     <option value="0">否</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="sflxSelect" lay-search="" lay-filter="sflx">
-                    <option value="">是否立项</option>
-                    <option value="0">否</option>
-                    <option value="1">是</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="rjkfjdSelect">
-                    <option value="">软件开发进度</option>
-                    <option value="0">未开始</option>
-                    <option value="1">工作中</option>
-                    <option value="2">暂停中</option>
-                    <option value="3">测试中</option>
-                    <option value="4">完工</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="fawcqkSelect">
-                    <option value="">方案完成情况</option>
-                    <option value="0">未完成</option>
-                    <option value="1">完成</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="cpxxwcqkSelect">
-                    <option value="">产品选型完成情况</option>
-                    <option value="0">未完成</option>
-                    <option value="1">完成</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="zbzzwcqkSelect">
-                    <option value="">招标组织完成情况</option>
-                    <option value="0">未完成</option>
-                    <option value="1">完成</option>
-                    <option value="3">不招标</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="yzjhbqdSelect">
-                    <option value="">用资计划表确定</option>
-                    <option value="0">未通过</option>
-                    <option value="1">通过</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="htqdSelect">
-                    <option value="">合同签订</option>
-                    <option value="0">未完成</option>
-                    <option value="1">完成</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="yjcgSelect">
-                    <option value="">硬件采购</option>
-                    <option value="0">未开始</option>
-                    <option value="1">销售合同签订中</option>
-                    <option value="2">进行中</option>
-                    <option value="3">完成</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="sgqrSelect">
-                    <option value="">施工队确认</option>
-                    <option value="0">未完成</option>
-                    <option value="1">完成</option>
-                    <option value="2">无</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="jcjdSelect">
-                    <option value="">集成工作进度</option>
-                    <option value="0">未开始</option>
-                    <option value="1">到场</option>
-                    <option value="2">实施</option>
-                    <option value="3">完工</option>
-                    <option value="4">验收</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <input type="text" name="htjeSearch" id="htjeSearch" class="layui-input htjesearchVal" style="width: 300px;"
-                       placeholder="合同金额：100000|100000-200000"/>
-            </div>
-            <div class="layui-input-inline">
-                <input type="text" name="yhjeSearch" id="yhjeSearch" class="layui-input hkjesearchVal" style="width: 300px;"
-                       placeholder="已回金额：100000|100000-200000"/>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="hktzSelect">
-                    <option value="">回款通知</option>
-                    <option value="0">未下达</option>
-                    <option value="1">已下达</option>
-                </select>
-            </div>
-            <div class="layui-input-inline">
-                <select class="state" id="zbjthqkSelect">
-                    <option value="">质保金退换情况</option>
-                    <option value="0">未退还</option>
-                    <option value="1">已退还</option>
                 </select>
             </div>
             <div class="layui-inline">
@@ -177,8 +67,7 @@
             </shiro:hasPermission>
         </form>
     </blockquote>
-    <table id="projectList" lay-filter="projectList"></table>
-    <table id="ieexporttable" hidden></table>
+    <table id="projectList" lay-filter="projectList" lay-size="lg"></table>
     <!--审核状态-->
     <script type="text/html" id="newsStatus">
         {{#  if(d.newsStatus == "1"){ }}
@@ -200,7 +89,23 @@
 <script type="text/javascript" src="/static/layui/layui.js"></script>
 <script type="text/javascript" src="/static/js/project/list.js"></script>
 <script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
-<!--<script type="text/javascript" src="/static/xlsx/xlsx.full.min.js"></script>-->
-<!--<script type="text/javascript" src="/static/xlsx/export.js"></script>-->
+<script type="text/javascript" src="/static/md5/md5.js"></script>
+<script>
+    //下面三个参数是 appID ,app密码和token
+    var APPID = "xz05cd18000b01e645",
+        APPSECRET = "79a81f438a4ab8fabca67360867daa1a",
+        APP_TOKEN = "xzlt",
+        date = new Date();
+    //时间戳
+    var timestamp = date.getTime();
+    console.log(timestamp);
+    //通过MD5加密，防止接口被恶意调用
+    var md5Str = hex_md5(APPID + APPSECRET + APP_TOKEN + timestamp);
+    var signature = md5Str.toLocaleUpperCase();
+    console.log(signature);
+    var projectId = "二维码传过来的值";
+    var url = "http://localhost:8888/app/getProjectInfo?signature=" + signature
+        + "&timestamp=" + timestamp + "&projectID=" + projectId;
+</script>
 </body>
 </html>

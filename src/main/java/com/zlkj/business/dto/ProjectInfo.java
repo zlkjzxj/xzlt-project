@@ -1,11 +1,11 @@
 package com.zlkj.business.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
-import java.util.List;
 
 /**
  * @Description TODO
@@ -18,63 +18,44 @@ public class ProjectInfo {
     private Integer id;
     private String name;
     private String number;
-    private Integer sflx;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date lxsj;
-    private Integer department;
     private Integer manager;
-    private Integer rjkfjd;
-    private Integer fawcqk;
-    private Integer cpxxwcqk;
-    private Integer zbzzwcqk;
-    private Integer yzjhbqd;
-    private Integer htqd;
-    private Integer yjcg;
-    private Integer sgqr;
-    private Integer jcjd;
-    private String htje;
-    private String hkqk;
-    private String whje;
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date whsx;
-    private Integer hktz;
-    private String ml;
-    private String zbj;
-    private Integer zbjthqk;
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date zbjthsx;
-    private Integer xmjx;
-    private Integer sfzj;
+    private String members;
+    private Integer company;
+    private String grade;
+    private String contacts;
+    private String phone;
+    private String progress;
+    private String qrcode;
     private Integer lrr;
-    private Integer xgr;
+
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTime;
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateTime;
 
-    //添加显示字段
-    private String bmmc;
-    private String userName;
-    //分页用的参数
+    /**
+     * 翻译字段
+     */
+    private String managerName;
+    private String membersName;
+    /**
+     * 分页用的参数
+     */
+    @JsonIgnore
     private Integer limit1;
+    @JsonIgnore
     private Integer limit2;
-    //分页的总数
+    @JsonIgnore
     private Integer count;
 
-    //排序的条件和顺序
+    /**
+     * 排序的条件和顺序
+     */
+    @JsonIgnore
     private String field;
+    @JsonIgnore
     private String order;
-
-    //所有子部门的id
-    private List<Integer> ids;
-    //搜索条件
-    private String fuzzySearchVal;
-    //是否查询所有
-    private boolean viewall;
-
-    private Double htje1;
-    private Double htje2;
-    private Double yhje1;
-    private Double yhje2;
 
 }

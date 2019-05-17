@@ -3,9 +3,9 @@ server:
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://127.0.0.1:3306/other_fream?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
-    username: root
-    password: root
+    url: jdbc:mysql://127.0.0.1:3306/xzlt_manager?allowMultiQueries=true&useUnicode=true&characterEncoding=utf8
+    username: zlkj
+    password: qwerasdf
     type: com.alibaba.druid.pool.DruidDataSource
   thymeleaf:
     prefix: classpath:/templates/
@@ -16,8 +16,10 @@ spring:
     static-path-pattern: /static/**
 
 mybatis-plus:
-  type-aliases-package: com.zlkj.admin.entity
-  mapper-locations: classpath:/mapper/*Mapper.xml
+  #指定多个实体包
+  type-aliases-package: com.zlkj.admin.entity,com.zlkj.business.entity
+  #指定多个mapper配置文件包
+  mapper-locations: classpath:/mapper/*/*Mapper.xml
   global-config:
     id-type: 2
     field-strategy: 2

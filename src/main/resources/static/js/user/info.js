@@ -1,49 +1,27 @@
 layui.config({
     base: '/static/layui/'
-}).extend({
-    treeSelect: 'treeSelect'
-}).use(['form', 'layer', 'treeSelect'], function () {
+}).use(['form', 'layer'], function () {
     var form = layui.form
     layer = parent.layer === undefined ? layui.layer : top.layer,
-        $ = layui.jquery,
-        treeSelect = layui.treeSelect;
+        $ = layui.jquery;
 
-    treeSelect.render({
-        // 选择器
-        elem: '#glbmTree',
-        // 数据
-        data: '/dept/listDataTreeWithoutCode?pid=1',
-        // 异步加载方式：get/post，默认get
-        type: 'get',
-        // 占位符
-        placeholder: '请选择部门',
-        // 是否开启搜索功能：true/false，默认false
-        search: false,
-        // 点击回调
-        click: function (d) {
-            console.log("添加用户点击部门树了：" + d.current.id);
-            $("#glbm").val(d.current.id);
-            $("#glbmTree").val(d.current.id);
-        },
-        // 加载完成后的回调函数
-        success: function (d) {
-            var glbm = window.parent.document.getElementById("sonGlbm").value;
-            //部门树被点击之后才能初始化部门下拉列表
-            if (glbm != '' && glbm != 1) {
-                //虽然这里选中了，但是不点击的话没给glbm赋值，
-                $("#glbmTree").val(glbm);
-                $("#glbm").val(glbm);
-                treeSelect.checkNode('glbmTree', glbm);
-            }
+    //初始化用户级别和所属公司
+    var initParam = sessionStorage.getItem("initParam");
+    initParam = JSON.parse(initParam);
+    var userLevel = initParam.codeMap.userlevel;
+    var company = initParam.codeMap.usercompany;
 
-            // var treeObj = treeSelect.zTree('tree');
-            // console.log(treeObj);
+    userLevel.forEach(function (e) {
+        $("#levelSelect").append("<option value='" + e.codeValue + "'>" + e.codeName + "</option>");
+        $("#levelSelect").val($("#userLevel").val());//默认选中
+    });
+    company.forEach(function (e) {
+        $("#companySelect").append("<option value='" + e.codeValue + "'>" + e.codeName + "</option>");
+        $("#companySelect").val($("#company").val());//默认选中
+    });
+    form.render('select');//刷新select选择框渲染
 
-//                刷新树结构
-//                treeSelect.refresh();
-        }
-    })
-
+    //初始化角色下拉框
     $.post("/role/selectListData", {
         available: 1
     }, function (data) {
@@ -55,7 +33,7 @@ layui.config({
         form.render('select');//刷新select选择框渲染
     });
 
-//添加验证规则
+    //添加验证规则
     form.verify({
         newPwd: function (value, item) {
             if (value.length < 6) {

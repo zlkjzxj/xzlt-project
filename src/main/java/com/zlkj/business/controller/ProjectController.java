@@ -1,6 +1,7 @@
 package com.zlkj.business.controller;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.UserInfo;
@@ -8,7 +9,7 @@ import com.zlkj.admin.entity.Department;
 import com.zlkj.admin.entity.Permission;
 import com.zlkj.admin.service.IDepartmentService;
 import com.zlkj.admin.util.Constant;
-import com.zlkj.admin.web.BaseController;
+import com.zlkj.admin.controller.BaseController;
 import com.zlkj.business.dto.ProjectCountInfo;
 import com.zlkj.business.dto.ProjectInfo;
 import com.zlkj.business.entity.Project;
@@ -32,19 +33,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
- * 系统用户表 前端控制器
- * </p>
- *
- * @author Auto Generator
+ * @author sunny
  * @since 2018-07-10
  */
 @Controller
 @RequestMapping("/project")
 public class ProjectController extends BaseController {
 
-    private final static String VIEW_ALL_PROJECT = "project:viewall";
-    private final static String TOP_DEPARTMENT_ID = "1";
     @Resource
     private IProjectService iProjectService;
     @Resource
@@ -63,107 +58,28 @@ public class ProjectController extends BaseController {
 //    @RequiresPermissions("project:view")
     public @ResponseBody
     ResultInfo<List<ProjectInfo>> listData(ProjectInfo project, Integer page, Integer limit) {
-        //先转义合同金额和回款金额
-        String splitChar = "-";
-        String htje = project.getHtje();
-        if (!StringUtils.isEmpty(htje)) {
-            if (project.getHtje().indexOf(splitChar) > 0) {
-                project.setHtje1(Double.parseDouble(htje.split("-")[0]));
-                project.setHtje2(Double.parseDouble(htje.split("-")[1]));
-            } else {
-                project.setHtje1(Double.parseDouble(htje));
-            }
-        }
-        String htqk = project.getHkqk();
-        if (!StringUtils.isEmpty(htqk)) {
-            if (project.getHkqk().indexOf(splitChar) > 0) {
-                project.setYhje1(Double.parseDouble(htqk.split("-")[0]));
-                project.setYhje2(Double.parseDouble(htqk.split("-")[1]));
-            } else {
-                project.setYhje1(Double.parseDouble(htqk));
-            }
-        }
-
-        UserInfo userInfo = this.getUserInfo();
-        //根据要用户权限查询是包含查询所有项目
-        List<Permission> permissionList = userInfo.getRoleInfo().getPermissions();
-        boolean viewAllFlag = false;
-        for (Permission p : permissionList) {
-            if (VIEW_ALL_PROJECT.equals(p.getPermissionCode())) {
-                viewAllFlag = true;
-                break;
-            }
-        }
-        //定义返回列表，和返回列表总数
-        List<ProjectInfo> list;
-        Integer count;
-
-        if (TOP_DEPARTMENT_ID.equals(project.getDepartment()) || "".equals(project.getDepartment())) {
-            project.setDepartment(null);
-        }
-        project.setViewall(viewAllFlag);
-        if (!viewAllFlag) {
-            EntityWrapper<Department> wrapper2 = new EntityWrapper<>(new Department());
-            wrapper2.eq("manager", userInfo.getId());
-            //老板看所有,部门经理看部门，项目经理看自己
-            //根据用户去判断他是否部门主管，如果是则查小于等于他部门的所有
-            Department department = iDepartmentService.selectOne(wrapper2);
-            List<Integer> ids;
-            if (department != null) {
-                ids = iDepartmentService.getAllChildrenDepartment(userInfo.getGlbm());
-                //说明有子部门
-                if (!ids.isEmpty()) {
-                    ids.add(userInfo.getGlbm());
-                    project.setIds(ids);
-                    //项目经理看自己的项目
-                } else {
-                    project.setDepartment(userInfo.getGlbm());
-                }
-            } else {
-                //录入人加上，不然我添加的比人的项目我自己就看不见了
-                project.setLrr(userInfo.getId());
-                project.setManager(userInfo.getId());
-            }
-        }
         if (page != null && limit != null) {
             project.setLimit1(limit * (page - 1));
             project.setLimit2(limit);
         }
-        count = iProjectService.getProjectCount(project);
-        list = iProjectService.findProjectByFuzzySearchVal(project);
-
-        return new ResultInfo<>(list, count);
+        List<ProjectInfo> projectInfoList = iProjectService.findProjectByFuzzySearchVal(project);
+        int count;
+        count = iProjectService.selectCount(null);
+        return new ResultInfo<>(projectInfoList, count);
     }
 
-    @RequestMapping("/getObject")
-//    @RequiresPermissions("project:view")
-    public @ResponseBody
-    ResultInfo<ProjectInfo> getObject(Integer id) {
-        if (id != null) {
-            ProjectInfo project = iProjectService.findProjectbyId(id);
-            return new ResultInfo<>(project);
-        }
-        return new ResultInfo<>("-1", "查无数据");
+//    @RequestMapping("/getObject")
+////    @RequiresPermissions("project:view")
+//    public @ResponseBody
+//    ResultInfo<ProjectInfo> getObject(Integer id) {
+//        if (id != null) {
+//            ProjectInfo project = iProjectService.findProjectbyId(id);
+//            return new ResultInfo<>(project);
+//        }
+//        return new ResultInfo<>("-1", "查无数据");
+//
+//    }
 
-    }
-
-    @SysLog("添加项目")
-    @RequestMapping("/getAddSequence")
-    @RequiresPermissions("project:add")
-    public @ResponseBody
-    ResultInfo<String> getAddSequence(String year) {
-        String sequence = iProjectService.getAddSequence(year);
-        Integer s;
-        if (sequence == null) {
-            //初始值
-            s = 002;
-        } else {
-            s = Integer.parseInt(sequence) + 1;
-        }
-
-        String s1 = String.format("%03d", s);
-        return new ResultInfo<>("1", "查询序列成功", s1);
-    }
 
     @SysLog("添加项目")
     @RequestMapping("/add")
@@ -201,48 +117,10 @@ public class ProjectController extends BaseController {
             //获取当前登录用户id
             UserInfo user = this.getUserInfo();
             Integer userId = user.getId();
-            //判断是否追加，如果追加则新生成一个项目
-            if (Constant.ZJBJ.equals(project.getSfzj())) {
-                EntityWrapper<Project> wrapper = new EntityWrapper<>();
-                wrapper.eq("number", project.getNumber() + "-1");
-                Project oldZjProject = iProjectService.selectOne(wrapper);
-                if (oldZjProject == null) {
-                    Project zjProject = new Project();
-                    zjProject.setName(project.getName());
-                    zjProject.setNumber(project.getNumber() + "-1");
-                    zjProject.setSfzj(project.getSfzj());
-                    zjProject.setSflx(project.getSflx());
-                    zjProject.setLxsj(project.getLxsj());
-                    zjProject.setDepartment(project.getDepartment());
-                    zjProject.setManager(project.getManager());
-                    zjProject.setRjkfjd(project.getRjkfjd());
-                    zjProject.setFawcqk(project.getFawcqk());
-                    zjProject.setCpxxwcqk(project.getCpxxwcqk());
-                    zjProject.setZbzzwcqk(project.getZbzzwcqk());
-                    zjProject.setYzjhbqd(project.getYzjhbqd());
-                    zjProject.setHtqd(project.getHtqd());
-                    zjProject.setYjcg(project.getYjcg());
-                    zjProject.setSgqr(project.getSgqr());
-                    zjProject.setJcjd(project.getJcjd());
-                    zjProject.setLrr(user.getId());
-                    iProjectService.updateById(project);
-                    boolean b = iProjectService.insert(zjProject);
-                    return new ResultInfo<>("0", "追加成功", b);
-                }
-            }
-
-            //判断录入人是否一致
-            if (userId.equals(oldProject.getLrr())) {
-                boolean b = iProjectService.updateById(project);
-                return new ResultInfo<>("0", "修改成功", b);
-
-            } else {
-                project.setXgr(userId);
-                boolean b = iProjectService.updateById(project);
-                return new ResultInfo<>("0", "修改成功", b);
-            }
-
+            boolean b = iProjectService.insert(project);
+            return new ResultInfo<>("0", "追加成功", b);
         }
+
         return new ResultInfo<>("-1", "修改错误！");
     }
 
@@ -269,6 +147,24 @@ public class ProjectController extends BaseController {
         map.put("departments", departmentList);
         map.put("projects", projectCountInfoList);
         return new ResultInfo<>(map);
+    }
+
+    @SysLog("获取项目编号")
+    @RequestMapping("/getAddSequence")
+    @RequiresPermissions("project:add")
+    public @ResponseBody
+    ResultInfo<String> getAddSequence(String year) {
+        String sequence = iProjectService.getAddSequence(year);
+        Integer s;
+        if (sequence == null) {
+            //初始值
+            s = 001;
+        } else {
+            s = Integer.parseInt(sequence) + 1;
+        }
+
+        String s1 = Constant.PROJECT_NUMBER_PREFIX + year + String.format("%03d", s);
+        return new ResultInfo<>("1", "查询序列成功", s1);
     }
 
     @InitBinder

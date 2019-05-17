@@ -10,8 +10,8 @@ import org.springframework.context.annotation.Configuration;
  * @author sunny
  */
 @Configuration
-//@MapperScan({"com.zlkj.admin.mapper*", "com.zlkj.business.mapper*"})
-@MapperScan("com.zlkj.admin.mapper*")
+@MapperScan({"com.zlkj.admin.dao*", "com.zlkj.business.dao*"})
+//@MapperScan("com.zlkj.admin.mapper*")
 public class MybatisPlusConfig {
     /**
      * mybatis-plus SQL执行效率插件【生产环境可以关闭】

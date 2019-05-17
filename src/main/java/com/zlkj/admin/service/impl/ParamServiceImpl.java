@@ -2,7 +2,7 @@ package com.zlkj.admin.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Param;
-import com.zlkj.admin.mapper.ParamMapper;
+import com.zlkj.admin.dao.ParamMapper;
 import com.zlkj.admin.service.IParamService;
 import org.springframework.stereotype.Service;
 

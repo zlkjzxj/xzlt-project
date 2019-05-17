@@ -48,25 +48,25 @@ layui.use(['form', 'element', 'layer', 'jquery', 'layim'], function () {
     $(".panel a").click(function () {
         parent.addTab($(this));
     })
-    //记载翻译code，param
+    //加载翻译code，param
     $.get("/param/getInitParam", function (res) {
         sessionStorage.setItem("initParam", JSON.stringify(res.data));
     })
-    //部门数量
-    $.get("/dept/count", function (res) {
-        $("#totalDep").text(res.data);
-    })
-    //员工数量
-    $.get("/user/count", function (res) {
-        $(".userAll #totalUser").text(res.data);
-    })
-    var zanCount = 100;
-    $("#zan").text('西安研发部(获赞个数：)' + zanCount);
-    $(".zan").on('click', function (e) {
-        zanCount += 1;
-        $("#zan").text('西安研发部(获赞个数：)' + zanCount);
-        layer.msg("你很赞！");
-    })
+    // //部门数量
+    // $.get("/dept/count", function (res) {
+    //     $("#totalDep").text(res.data);
+    // })
+    // //员工数量
+    // $.get("/user/count", function (res) {
+    //     $(".userAll #totalUser").text(res.data);
+    // })
+    // var zanCount = 100;
+    // $("#zan").text('西安研发部(获赞个数：)' + zanCount);
+    // $(".zan").on('click', function (e) {
+    //     zanCount += 1;
+    //     $("#zan").text('西安研发部(获赞个数：)' + zanCount);
+    //     layer.msg("你很赞！");
+    // })
 
     //外部图标
     // $.get(iconUrl, function (data) {

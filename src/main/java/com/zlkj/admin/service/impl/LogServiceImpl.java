@@ -2,7 +2,7 @@ package com.zlkj.admin.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Log;
-import com.zlkj.admin.mapper.LogMapper;
+import com.zlkj.admin.dao.LogMapper;
 import com.zlkj.admin.service.ILogService;
 import org.springframework.stereotype.Service;
 

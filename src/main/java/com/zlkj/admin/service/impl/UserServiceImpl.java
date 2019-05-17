@@ -3,7 +3,7 @@ package com.zlkj.admin.service.impl;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.User;
-import com.zlkj.admin.mapper.UserMapper;
+import com.zlkj.admin.dao.UserMapper;
 import com.zlkj.admin.service.IUserService;
 import org.springframework.stereotype.Service;
 

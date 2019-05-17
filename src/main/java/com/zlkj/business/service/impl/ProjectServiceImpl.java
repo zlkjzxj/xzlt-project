@@ -4,7 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.zlkj.business.dto.ProjectCountInfo;
 import com.zlkj.business.dto.ProjectInfo;
 import com.zlkj.business.entity.Project;
-import com.zlkj.business.mapper.ProjectMapper;
+import com.zlkj.business.dao.ProjectMapper;
 import com.zlkj.business.service.IProjectService;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +25,8 @@ public class ProjectServiceImpl extends ServiceImpl<ProjectMapper, Project> impl
     private ProjectMapper projectMapper;
 
     @Override
-    public ProjectInfo findProjectbyId(Integer id) {
-        return projectMapper.findProjectbyId(id);
+    public ProjectInfo findProjectbyId(String number) {
+        return projectMapper.findProjectById(number);
     }
 
     @Override

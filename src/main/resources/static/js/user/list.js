@@ -5,44 +5,6 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
         laypage = layui.laypage,
         table = layui.table;
 
-    layui.tree({
-        elem: '#depTree',
-        skin: 'shihuang',
-        nodes: createTree(),
-        click: function (node) {
-            console.log(node);
-            //这里设置值得目的是为了把值传递给添加或修改用户的时候给下拉部门树赋值让其选中
-            $("#sonGlbm").val(node.id);
-            $("#parentGlbm").val(node.id);
-            table.reload("userListTable", {
-                page: {
-                    curr: 1 //重新从第 1 页开始
-                },
-                where: {
-                    glbm: node.id,
-                }
-            });
-        }
-    });
-
-    function createTree() {
-        var nodes = "";
-        $.ajax({
-            url: '/dept/listDataTree',
-            method: 'GET',
-            dataType: 'json',
-            async: false,
-            success: function (data) {
-                console.log(data.data)
-                nodes = data.data;
-            },
-            error: function (e) {
-                // top.layer.close(index);
-                top.layer.msg("创建部门树失败！");
-            }
-        })
-        return nodes;
-    }
 
     var roleList;
     $.post("/role/selectListData", {
@@ -130,21 +92,12 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
 
     //添加用户
     function addUser(edit) {
-        var h = "440px";
+        var h = "500px";
         var title = "添加用户";
         if (edit) {
-            h = "400px";
+            h = "500px";
             title = "编辑用户";
             //必须提前设置，不然就没用了
-            $("#sonGlbm").val(edit.glbm);
-        } else {
-            var parentGlbm = $("#parentGlbm").val();
-            if (parentGlbm != "") {
-                $("#sonGlbm").val(parentGlbm);
-            } else {
-                $("#sonGlbm").val("");
-            }
-
         }
         layui.layer.open({
             title: title,
@@ -160,6 +113,8 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
                     body.find("#name").val(edit.name);
                     body.find("#userName").val(edit.userName);
                     body.find("#roleId").val(edit.roleId);
+                    body.find("#userLevel").val(edit.userLevel);
+                    body.find("#company").val(edit.company);
                     body.find("#stateSelect").val(edit.state);
                     form.render();
                 }

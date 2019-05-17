@@ -1,7 +1,7 @@
 package com.zlkj.admin.config;
 
-import com.zlkj.admin.mapper.CodeMapper;
-import com.zlkj.admin.mapper.ParamMapper;
+import com.zlkj.admin.dao.CodeMapper;
+import com.zlkj.admin.dao.ParamMapper;
 import org.springframework.boot.CommandLineRunner;
 
 import javax.annotation.Resource;

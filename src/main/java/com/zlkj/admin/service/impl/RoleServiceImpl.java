@@ -2,7 +2,7 @@ package com.zlkj.admin.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Role;
-import com.zlkj.admin.mapper.RoleMapper;
+import com.zlkj.admin.dao.RoleMapper;
 import com.zlkj.admin.service.IRoleService;
 import org.springframework.stereotype.Service;
 

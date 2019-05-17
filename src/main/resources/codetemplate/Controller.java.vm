@@ -2,7 +2,7 @@ package ${package}.web;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.xieke.admin.dto.ResultInfo;
+import com.zlkj.admin.dto.ResultInfo;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;

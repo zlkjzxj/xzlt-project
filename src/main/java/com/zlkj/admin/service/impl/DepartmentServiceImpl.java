@@ -3,7 +3,7 @@ package com.zlkj.admin.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Department;
-import com.zlkj.admin.mapper.DepartmentMapper;
+import com.zlkj.admin.dao.DepartmentMapper;
 import com.zlkj.admin.service.IDepartmentService;
 import org.springframework.stereotype.Service;
 

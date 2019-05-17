@@ -1,15 +1,13 @@
 package com.zlkj.admin.service;
 
 
+import com.baomidou.mybatisplus.service.IService;
+import com.zlkj.admin.entity.Code;
+
 /**
- * <p>
- * 数据表表 服务类
- * </p>
- *
- * @author 邪 客
+ * @author sunny
  * @since 2018-12-25
  */
-public interface ICodeService {
-
+public interface ICodeService extends IService<Code> {
 
 }

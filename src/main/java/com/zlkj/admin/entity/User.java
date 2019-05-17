@@ -50,14 +50,19 @@ public class User extends Model<User> {
     /**
      * 密码
      */
-    @TableField("pass_word")
+    @TableField("password")
     @JsonIgnore
-    private String passWord;
+    private String password;
     /**
-     * 管理部门
+     * 用户级别
      */
-    @TableField("glbm")
-    private Integer glbm;
+    @TableField("user_level")
+    private Integer userLevel;
+    /**
+     * 所属公司
+     */
+    @TableField("company")
+    private Integer company;
     /**
      * 盐值
      */
@@ -105,10 +110,13 @@ public class User extends Model<User> {
                 ", roleId=" + roleId +
                 ", name='" + name + '\'' +
                 ", userName='" + userName + '\'' +
-                ", passWord='" + passWord + '\'' +
-                ", glbm=" + glbm +
+                ", password='" + password + '\'' +
+                ", userLevel=" + userLevel +
+                ", company=" + company +
                 ", salt='" + salt + '\'' +
                 ", state=" + state +
+                ", avatar='" + avatar + '\'' +
+                ", sign='" + sign + '\'' +
                 ", updateTime=" + updateTime +
                 ", createTime=" + createTime +
                 '}';

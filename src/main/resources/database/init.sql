@@ -417,3 +417,29 @@ CREATE TABLE biz_project (
   AUTO_INCREMENT = 3
   DEFAULT CHARSET = utf8
   COMMENT ='项目表';
+-- 企业表 --
+DROP TABLE IF EXISTS biz_enterprise;
+CREATE TABLE biz_enterprise (
+  `id`        INT(10) NOT NULL AUTO_INCREMENT
+  COMMENT '主键ID',
+  `name`      VARCHAR(40)     DEFAULT NULL
+  COMMENT '企业名称',
+  `number`    VARCHAR(20)       DEFAULT NULL
+  COMMENT '企业编号',
+  `manager`   VARCHAR(10)      DEFAULT NULL
+  COMMENT '企业负责人',
+  `phone`     VARCHAR(11)      DEFAULT NULL
+  COMMENT '联系电话',
+  `desc`      TINYTEXT      DEFAULT NULL
+  COMMENT '企业简介',
+  create_time DATETIME
+  COMMENT '创建时间',
+  update_time DATETIME
+  COMMENT '修改时间',
+
+  PRIMARY KEY (id)
+)
+  ENGINE = INNODB
+  AUTO_INCREMENT = 3
+  DEFAULT CHARSET = utf8
+  COMMENT ='企业信息表';

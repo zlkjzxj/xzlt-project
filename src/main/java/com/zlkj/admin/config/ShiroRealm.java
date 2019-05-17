@@ -90,7 +90,7 @@ public class ShiroRealm extends AuthorizingRealm {
 
         SimpleAuthenticationInfo authenticationInfo = new SimpleAuthenticationInfo(
                 userInfo,
-                userInfo.getPassWord(),
+                userInfo.getPassword(),
                 //salt=username+salt
                 ByteSource.Util.bytes(userInfo.getCredentialsSalt()),
                 //realm name
@@ -106,9 +106,8 @@ public class ShiroRealm extends AuthorizingRealm {
         loginLog.setUserName(userInfo.getUserName());
         Session session = SecurityUtils.getSubject().getSession();
         Object o = session.getAttribute(Constant.LOGIN_IP_ADDRESS);
-        String xx = o.toString();
 //        loginLog.setIpAddress(SecurityUtils.getSubject().getSession().getAttribute(Constant.LOGIN_IP_ADDRESS).toString());
-        loginLog.setIpAddress(xx);
+        loginLog.setIpAddress(o.toString());
         loginLog.setGeographyLocation(AddressUtils.getAddressByIp(loginLog.getIpAddress()));
         iloginLogService.insert(loginLog);
     }

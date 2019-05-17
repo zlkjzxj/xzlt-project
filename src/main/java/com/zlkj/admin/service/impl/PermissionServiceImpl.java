@@ -7,7 +7,7 @@ import com.zlkj.admin.dto.MenuInfo;
 import com.zlkj.admin.dto.PermissionInfo;
 import com.zlkj.admin.entity.Permission;
 import com.zlkj.admin.ex.BusinessException;
-import com.zlkj.admin.mapper.PermissionMapper;
+import com.zlkj.admin.dao.PermissionMapper;
 import com.zlkj.admin.service.IPermissionService;
 import com.zlkj.admin.util.Constant;
 import org.springframework.cache.annotation.CacheEvict;

@@ -10,7 +10,7 @@ public class Constant {
     /**
      * APP调用需要的ID,SECRET,TOKEN
      */
-    public static String APPID = "wx05cd18000b01e645";
+    public static String APPID = "xz05cd18000b01e645";
     public static String APPSECRET = "79a81f438a4ab8fabca67360867daa1a";
     public static String APP_TOKEN = "xzlt";
 
@@ -45,16 +45,18 @@ public class Constant {
     public static String CODE_JS_NAME = "transcode.js";
 
     /**
-     * 追加标记
-     */
-
-    public static Integer ZJBJ = 1;
-
-    /**
      * base64图片开头
      */
     public static String BASE64_PIC_HEADER = "data:image/jpg;base64,";
 
+    /**
+     * 项目编号前缀
+     */
+    public static String PROJECT_NUMBER_PREFIX = "XZLT";
+    /**
+     * 二维码过期时间
+     */
+    public static final Long QRCODE_EXPIRE_TIME = 2L;
     /**
      * 默认密码
      */

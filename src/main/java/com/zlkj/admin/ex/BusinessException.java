@@ -3,7 +3,7 @@ package com.zlkj.admin.ex;
 /**
  * 自定义异常
  * 
- * @author jun hu
+ * @author sunny
  * 
  */
 public class BusinessException extends RuntimeException {

@@ -36,21 +36,11 @@ public class Project {
     @TableField("number")
     private String number;
     /**
-     * 是否立项
-     */
-    @TableField("sflx")
-    private Integer sflx;
-    /**
      * 立项时间
      */
     @TableField(value = "lxsj", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date lxsj;
-    /**
-     * 部门Id
-     */
-    @TableField("department")
-    private Integer department;
     /**
      * 项目经理Id
      */
@@ -59,119 +49,43 @@ public class Project {
     /**
      * 软件开发进度
      */
-    @TableField("rjkfjd")
-    private Integer rjkfjd;
+    @TableField("members")
+    private String members;
     /**
-     * 方案完成情况
+     * 所属公司
      */
-    @TableField("fawcqk")
-    private Integer fawcqk;
+    @TableField("company")
+    private Integer company;
     /**
-     * 产品选型完成情况
+     * 评分
      */
-    @TableField("cpxxwcqk")
-    private Integer cpxxwcqk;
+    @TableField("grade")
+    private String grade;
     /**
-     * 招标组织完成情况
+     * 联系人
      */
-    @TableField("zbzzwcqk")
-    private Integer zbzzwcqk;
+    @TableField("contacts")
+    private String contacts;
     /**
-     * 用资计划表确定
+     * 联系电话
      */
-    @TableField("yzjhbqd")
-    private Integer yzjhbqd;
+    @TableField("phone")
+    private String phone;
     /**
-     * 合同签订
+     * 项目进度
      */
-    @TableField("htqd")
-    private Integer htqd;
+    @TableField("progress")
+    private String progress;
     /**
-     * 硬件采购工作
+     * 项目二维码
      */
-    @TableField("yjcg")
-    private Integer yjcg;
-    /**
-     * 施工队确认
-     */
-    @TableField("sgqr")
-    private Integer sgqr;
-    /**
-     * 集成工作进度
-     */
-    @TableField("jcjd")
-    private Integer jcjd;
-
-    /**
-     * 合同金额
-     */
-    @TableField("htje")
-    private Float htje;
-    /**
-     * 回款金额
-     */
-    @TableField("hkqk")
-    private Float hkqk;
-    /**
-     * 未回金额
-     */
-    @TableField("whje")
-    private Float whje;
-    /**
-     * 回款时限
-     */
-    @TableField(value = "whsx", fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date whsx;
-    /**
-     * 回款通知
-     */
-    @TableField("hktz")
-    private Integer hktz;
-
-    /**
-     * 毛利
-     */
-    @TableField("ml")
-    private Float ml;
-
-    /**
-     * 质保金
-     */
-    @TableField("zbj")
-    private Float zbj;
-    /**
-     * 质保金退还情况
-     */
-    @TableField("zbjthqk")
-    private Integer zbjthqk;
-    /**
-     * 质保金退还情况
-     */
-    @TableField(value = "zbjthsx", fill = FieldFill.INSERT_UPDATE)
-    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
-    private Date zbjthsx;
-
-    /**
-     * 项目结项
-     */
-    @TableField("xmjx")
-    private Integer xmjx;
-    /**
-     * 是否追加
-     */
-    @TableField("sfzj")
-    private Integer sfzj;
+    @TableField("qrcode")
+    private String qrcode;
     /**
      * 录入人
      */
     @TableField("lrr")
     private Integer lrr;
-    /**
-     * 修改人
-     */
-    @TableField("xgr")
-    private Integer xgr;
 
     /**
      * 创建时间
@@ -186,10 +100,5 @@ public class Project {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateTime;
 
-    /**
-     * 模糊搜索条件
-     */
-
-//    private String fuzzySearchVal;
 
 }

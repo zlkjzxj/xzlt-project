@@ -16,7 +16,8 @@
 <form class="layui-form linksAdd">
     <input type="hidden" value="" id="id" name="id">
     <input type="hidden" value="" id="roleId">
-    <input type="hidden" id="glbm" name="glbm">
+    <input type="hidden" value="" id="userLevel">
+    <input type="hidden" value="" id="company">
     <div class="layui-form-item">
         <label class="layui-form-label">用户姓名</label>
         <div class="layui-input-block">
@@ -24,18 +25,26 @@
         </div>
     </div>
     <div class="layui-form-item" id="une">
-        <label class="layui-form-label">登录名称</label>
+        <label class="layui-form-label">用户代号</label>
         <div class="layui-input-block">
             <input type="text" class="layui-input" id="userName" name="userName" lay-verify="required"
                    placeholder="请输入登录名称">
         </div>
     </div>
     <div class="layui-form-item">
-        <label class="layui-form-label">所属部门</label>
+        <label class="layui-form-label">所属公司</label>
         <div class="layui-input-block">
-            <input type="text" id="glbmTree" lay-filter="glbmTree" class="layui-input" lay-verify="required">
-            <!--<select id="glbm" name="glbm">-->
-            <!--</select>-->
+            <select name="company" id="companySelect" lay-verify="required">
+                <option value="">请选择用户级别</option>
+            </select>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">用户级别</label>
+        <div class="layui-input-block">
+            <select name="userLevel" id="levelSelect" lay-verify="required">
+                <option value="">请选择用户级别</option>
+            </select>
         </div>
     </div>
     <div class="layui-form-item">
@@ -49,16 +58,10 @@
     <div class="layui-form-item" id="pwd1">
         <label class="layui-form-label">登录密码</label>
         <div class="layui-input-block">
-            <input type="password" placeholder="请输入登录密码" name="passWord" value="111111" lay-verify="required|newPwd"
-                   id="newPwd" class="layui-input">
+            <input type="password" placeholder="请输入登录密码" name="password" value="111111" lay-verify="required|newPwd"
+                   id="newPwd" class="layui-input" readonly>
         </div>
     </div>
-    <!--<div class="layui-form-item" id="pwd2">
-        <label class="layui-form-label">确认密码</label>
-        <div class="layui-input-block">
-            <input type="password" placeholder="请确认登录密码" lay-verify="required|confirmPwd" class="layui-input">
-        </div>
-    </div>-->
     <div class="layui-form-item">
         <label class="layui-form-label">用户状态</label>
         <div class="layui-input-block">
