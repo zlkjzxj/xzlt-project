@@ -57,7 +57,7 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
             {field: 'updateTime', title: '修改时间', align: 'center', minWidth: 100},
             {field: 'createTime', title: '创建时间', align: 'center', minWidth: 100},
             {
-                title: '重置密码', align: 'center', minWidth: 100, templet: function () {
+                title: '重置密码', align: 'center',  templet: function () {
                     return '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="editPass">重置密码</a>';
                 }
             },
@@ -92,17 +92,17 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
 
     //添加用户
     function addUser(edit) {
-        var h = "500px";
+        var h = "650px";
         var title = "添加用户";
         if (edit) {
-            h = "500px";
+            h = "650px";
             title = "编辑用户";
             //必须提前设置，不然就没用了
         }
         layui.layer.open({
             title: title,
             type: 2,
-            area: ["420px", h],
+            area: ["1000px", h],
             content: "info.html",
             success: function (layero, index) {
                 var body = layui.layer.getChildFrame('body', index);
@@ -116,6 +116,7 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
                     body.find("#userLevel").val(edit.userLevel);
                     body.find("#company").val(edit.company);
                     body.find("#stateSelect").val(edit.state);
+                    body.find("#sign").val(edit.sign);
                     form.render();
                 }
             }

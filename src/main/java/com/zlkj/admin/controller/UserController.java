@@ -98,15 +98,25 @@ public class UserController extends BaseController {
     @RequestMapping("/add")
     @RequiresPermissions("user:add")
     public @ResponseBody
-    ResultInfo<Boolean> add(User user) {
+    ResultInfo<Boolean> add(@RequestParam("avatarFile") MultipartFile avatarFile, User user) {
         User oldUser = iUserService.findUserInfo(user.getUserName());
         if (oldUser != null) {
             return new ResultInfo<>("此登录名称已经存在！");
         }
+        String avatarStr;
+        if (avatarFile != null) {
+            try {
+                avatarStr = Base64Utils.encodeToString(avatarFile.getBytes());
+                user.setAvatar(Constant.BASE64_PIC_HEADER + avatarStr);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            user.setAvatar(Constant.DEFAULT_AVATAR);
+        }
         Map<String, String> map = PasswordEncoder.enCodePassWord(user.getUserName(), user.getPassword());
         user.setSalt(map.get(PasswordEncoder.SALT));
         user.setPassword(map.get(PasswordEncoder.PASSWORD));
-        user.setAvatar(Constant.DEFAULT_AVATAR);
         boolean b = iUserService.insert(user);
         return new ResultInfo<>(b);
     }
@@ -131,7 +141,6 @@ public class UserController extends BaseController {
         us.setRoleId(user.getRoleId());
         us.setState(user.getState());
         us.setCompany(user.getCompany());
-        us.setUserLevel(user.getUserLevel());
         boolean b = iUserService.updateById(us);
         return new ResultInfo<>(b);
     }

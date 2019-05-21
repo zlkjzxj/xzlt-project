@@ -54,11 +54,6 @@ public class User extends Model<User> {
     @JsonIgnore
     private String password;
     /**
-     * 用户级别
-     */
-    @TableField("user_level")
-    private Integer userLevel;
-    /**
      * 所属公司
      */
     @TableField("company")
@@ -111,7 +106,6 @@ public class User extends Model<User> {
                 ", name='" + name + '\'' +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
-                ", userLevel=" + userLevel +
                 ", company=" + company +
                 ", salt='" + salt + '\'' +
                 ", state=" + state +

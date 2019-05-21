@@ -50,18 +50,27 @@ layui.config({
     form.on("submit(addUser)", function (data) {
         //弹出loading
         var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
+        var form = document.querySelector(".layui-form");
+        var formdata = new FormData(form);
+        console.log(formdata);
+        console.log(formdata.get("name"));
         if ($("#id").val() === "") {
             console.log(data.field);
-            $.post("/user/add", data.field, function (res) {
-                if (res.data) {
-                    layer.close(index);
-                    layer.msg("添加成功！");
-                    // layer.closeAll("iframe");
-                    //刷新父页面
-                    parent.location.reload();
-                } else {
-                    console.log(res);
-                    layer.msg(res.msg);
+            $.ajax({
+                url: "/user/add",
+                data: formdata,
+                type: 'POST',
+                processData: false,  //必须false才会避开jQuery对 formdata 的默认处理
+                contentType: false,  //必须false才会自动加上正确的Content-Type
+                success: function (res) {
+                    if (res.data) {
+                        layer.close(index);
+                        layer.msg("添加成功！");
+                        //刷新父页面
+                        parent.location.reload();
+                    } else {
+                        layer.msg(data.msg);
+                    }
                 }
             })
         } else {
@@ -79,5 +88,27 @@ layui.config({
         }
         return false;
     })
+    $("#userFaceBtn").on('click', function () {
+        $("#avatarFile").trigger('click');
+    })
 
+    $("#avatarFile").change(function (event) {
+        var files = event.target.files, file;
+        if (files && files.length > 0) {
+            // 获取目前上传的文件
+            file = files[0];// 文件大小校验的动作
+            if (file.size > 1024 * 1024 * 2) {
+                alert('图片大小不能超过 2MB!');
+                return false;
+            }
+            // 获取 window 的 URL 工具
+            var URL = window.URL || window.webkitURL;
+            // 通过 file 生成目标 url
+            var imgURL = URL.createObjectURL(file);
+            //用attr将img的src属性改成获得的url
+            $("#userFace").attr("src", imgURL);
+            // 使用下面这句可以在内存中释放对此 url 的伺服，跑了之后那个 URL 就无效了
+            // URL.revokeObjectURL(imgURL);
+        }
+    })
 })
