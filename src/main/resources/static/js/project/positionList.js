@@ -7,7 +7,11 @@ layui.config({
         table = layui.table
     ;
     // 对外提供访问方法
-    var tools = {
+    var _tools = {
+        a: '111',
+        b: function () {
+            console.log("bbb")
+        },
         initTable: function () {
             var tableIns = table.render({
                 elem: '#projectList',
@@ -193,5 +197,5 @@ layui.config({
             layer.alert("此功能需要前台展示，实际开发中传入对应的必要参数进行文章内容页面访问")
         }
     })
-    window.tools = tools;
+    window.atools = _tools;
 })

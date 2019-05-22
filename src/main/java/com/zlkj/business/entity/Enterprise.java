@@ -55,6 +55,96 @@ public class Enterprise {
      */
     @TableField("grade")
     private String grade;
+    /**
+     * 企业人数
+     */
+    @TableField("qyrs")
+    private Integer qyrs;
+    /**
+     * 成立时间
+     */
+    @TableField("clsj")
+    private Integer clsj;
+    /**
+     * 企业性质
+     */
+    @TableField("qyxz")
+    private Integer qyxz;
+    /**
+     * 主营业态
+     */
+    @TableField("zyyt")
+    private Integer zyyt;
+    /**
+     * 经营状态
+     */
+    @TableField("jyzt")
+    private Integer jyzt;
+    /**
+     * 猎头定金额度
+     */
+    @TableField("ltdjed")
+    private Integer ltdjed;
+    /**
+     * 工作区域
+     */
+    @TableField("gzqy")
+    private Integer gzqy;
+    /**
+     * 管理体系健全程度
+     */
+    @TableField("gltxjqcd")
+    private Integer gltxjqcd;
+    /**
+     * 年人员流失率
+     */
+    @TableField("nrylsl")
+    private Integer nrylsl;
+    /**
+     * 奖项荣誉
+     */
+    @TableField("jxry")
+    private Integer jxry;
+    /**
+     * 要求保质期
+     */
+    @TableField("yqbzq")
+    private Integer yqbzq;
+    /**
+     * 找猎头数量
+     */
+    @TableField("zltsl")
+    private Integer zltsl;
+    /**
+     * 劳动纠纷
+     */
+    @TableField("ldjf")
+    private Integer ldjf;
+    /**
+     * 商务纠纷
+     */
+    @TableField("swjf")
+    private Integer swjf;
+    /**
+     * 选用套餐
+     */
+    @TableField("xytc")
+    private Integer xytc;
+    /**
+     * 其他加分项（隐藏后台）
+     */
+    @TableField("qtjfx")
+    private Integer qtjfx;
+    /**
+     * 企业评价总分
+     */
+    @TableField("pjzf")
+    private Integer pjzf;
+    /**
+     * 企业二维码
+     */
+    @TableField("qrcode")
+    private String qrcode;
 
     /**
      * 创建时间

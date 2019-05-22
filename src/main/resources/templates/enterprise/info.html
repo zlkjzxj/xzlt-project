@@ -12,64 +12,243 @@
     <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
     <link rel="stylesheet" href="/static/css/public.css" media="all"/>
 </head>
+<style>
+    .layui-form-label {
+        width: 120px;
+    }
 
+    /*.layui-input-block {*/
+    /*margin-left: 150px;*/
+    /*min-height: 36px*/
+    /*}*/
+</style>
 <body class="childrenBody">
 <form class="layui-form layui-row">
     <input type="hidden" id="id" name="id">
-    <div class="layui-form-item">
-        <label class="layui-form-label">企业名称</label>
-        <div class="layui-input-block">
-            <input name="name" id="name" class="layui-input" lay-verify="name|required"
-                   placeholder="请输入企业名称" autocomplete="off">
+    <input type="hidden" id="pjzf" name="pjzf">
+    <div class="layui-col-md4 layui-col-xs12">
+        <blockquote class="layui-elem-quote title" style="margin-bottom: 10px;"><i class="seraph icon-caidan"></i>
+            企业基本信息
+        </blockquote>
+        <div class="layui-form-item">
+            <label class="layui-form-label">企业名称</label>
+            <div class="layui-input-inline">
+                <input name="name" id="name" class="layui-input" lay-verify="name|required"
+                       placeholder="请输入企业名称" autocomplete="off">
+            </div>
+        </div>
+        <!--<div class="layui-form-item">
+            <label class="layui-form-label">企业编号</label>
+            <div class="layui-input-inline">
+                <input name="number" id="number" class="layui-input" lay-verify="name|required"
+                       placeholder="请输入企业编号" autocomplete="off">
+            </div>
+        </div>-->
+        <div class="layui-form-item">
+            <label class="layui-form-label">企业负责人</label>
+            <div class="layui-input-inline">
+                <input name="manager" id="manager" class="layui-input" lay-verify="required"
+                       placeholder="请输入企业负责人" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-inline">
+                <input name="phone" id="phone" class="layui-input" lay-verify="phone"
+                       placeholder="请输入负责人联系电话" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">企业简介</label>
+            <div class="layui-input-inline">
+                <textarea name="desc" id="desc" placeholder="请输入企业简介" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item ">
+            <label class="layui-form-label">企业评分</label>
+            <div class="layui-input-block">
+                <div name="gradeDiv" id="gradeDiv"></div>
+                <input name="grade" id="grade" type="hidden" value="0">
+            </div>
+        </div>
+        <div class="layui-form-item ">
+            <label class="layui-form-label">企业二维码</label>
+            <div class="layui-input-inline">
+                <image src="/static/images/logo.png" id="imgBtn"
+                       style="width: 100px;height: 100px; text-align: center;display: none;"></image>
+                <div id="QRCode"></div>
+            </div>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">企业编号</label>
-        <div class="layui-input-block">
-            <input name="number" id="number" class="layui-input" lay-verify="name|required"
-                   placeholder="请输入企业编号" autocomplete="off">
+    <div class="layui-col-md8 layui-col-xs12">
+        <blockquote class="layui-elem-quote title" style="margin-bottom: 10px;"><i class="seraph icon-caidan"></i>
+            企业评分指标
+        </blockquote>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">企业人数</label>
+                <div class="layui-input-inline">
+                    <select name="qyrs" id="qyrs" lay-filter="qyrs" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">成立时间</label>
+                <div class="layui-input-inline">
+                    <select name="clsj" id="clsj" lay-filter="clsj" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">企业性质</label>
+                <div class="layui-input-inline">
+                    <select name="qyxz" id="qyxz" lay-filter="qyxz" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">主营业态</label>
+                <div class="layui-input-inline">
+                    <select name="zyyt" id="zyyt" lay-filter="zyyt" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">经营状态</label>
+                <div class="layui-input-inline">
+                    <select name="jyzt" id="jyzt" lay-filter="jyzt" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">猎头定金额度</label>
+                <div class="layui-input-inline">
+                    <select name="ltdjed" id="ltdjed" lay-filter="ltdjed" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">工作区域</label>
+                <div class="layui-input-inline">
+                    <select name="gzqy" id="gzqy" lay-filter="gzqy" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">管理体系健全程度</label>
+                <div class="layui-input-inline">
+                    <select name="gltxjqcd" id="gltxjqcd" lay-filter="gltxjqcd" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">年人员流失率</label>
+                <div class="layui-input-inline">
+                    <select name="nrylsl" id="nrylsl" lay-filter="nrylsl" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">奖项荣誉</label>
+                <div class="layui-input-inline">
+                    <select name="jxry" id="jxry" lay-filter="jxry" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">要求保质期</label>
+                <div class="layui-input-inline">
+                    <select name="yqbzq" id="yqbzq" lay-filter="xqbzq" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">找猎头数量</label>
+                <div class="layui-input-inline">
+                    <select name="zltsl" id="zltsl" lay-filter="zltsl" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">劳动纠纷</label>
+                <div class="layui-input-inline">
+                    <select name="ldjf" id="ldjf" lay-filter="ldjf" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">商务纠纷</label>
+                <div class="layui-input-inline">
+                    <select name="swjf" id="swjf" lay-filter="swjf" lay-verify="required"></select>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-inline">
+                <label class="layui-form-label">选用套餐</label>
+                <div class="layui-input-inline">
+                    <select name="xytc" id="xytc" lay-filter="xytc" lay-verify="required"></select>
+                </div>
+            </div>
+            <div class="layui-inline">
+                <label class="layui-form-label">其他加分项</label>
+                <div class="layui-input-inline">
+                    <select name="qtjfx" id="qtjfx" lay-filter="qtjfx" lay-verify="required">
+                    </select>
+                </div>
+            </div>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">企业负责人</label>
-        <div class="layui-input-block">
-            <input name="manager" id="manager" class="layui-input" lay-verify="name|required"
-                   placeholder="请输入企业负责人" autocomplete="off">
+
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>
+    <div class="layui-center">
+        <div class="layui-input-inline">
+            <button class="layui-btn" lay-filter="rating" id="rating">点击评分</button>
         </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">联系电话</label>
-        <div class="layui-input-block">
-            <input name="phone" id="phone" class="layui-input" lay-verify="name|required"
-                   placeholder="请输入负责人联系电话" autocomplete="off">
+        <div class="layui-input-inline">
+            <button type="button" class="layui-btn" id="coding" onclick="createCode()">生成企业二维码</button>
         </div>
-    </div>
-    <div class="layui-form-item layui-form-text">
-        <label class="layui-form-label">企业简介</label>
-        <div class="layui-input-block">
-            <textarea name="desc" id="desc" placeholder="请输入企业简介" class="layui-textarea"></textarea>
-        </div>
-    </div>
-    <div class="layui-form-item layui-form-text">
-        <label class="layui-form-label">企业评分</label>
-        <div class="layui-input-block">
-            <div name="gradeDiv" id="gradeDiv"></div>
-            <input name="grade" id="grade" type="hidden" value="0">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-input-block">
+        <div class="layui-input-inline">
             <button class="layui-btn" lay-submit lay-filter="addProject" id="addProject">立即提交</button>
         </div>
     </div>
-    <!--<hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>-->
-    <!--<div class="layui-center">-->
-    <!--<a class="layui-btn layui-btn-lg" lay-filter="addProject" id="addProject" lay-submit><i-->
-    <!--class="layui-icon">&#xe609;</i>保存</a>-->
-    <!--&lt;!&ndash;<a class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="look" lay-submit>预览</a>&ndash;&gt;-->
-    <!--</div>-->
 </form>
 <script type="text/javascript" src="/static/layui/layui.js"></script>
 <script type="text/javascript" src="/static/js/enterprise/info.js"></script>
+<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/static/qrcode/jquery-qrcode.js"></script>
+<script>
+    //生成二维码
+    function createCode() {
+        var element = document.getElementById("QRCode");
+        if (element.childNodes.length > 0) {
+            return;
+        }
+        var date = new Date();
+        var obj = {projectId: $("#number").val(), createTime: date.getTime()}
+        var QrUrl = JSON.stringify(obj);
+        $("#QRCode").qrcode({
+            render: "canvas", //也可以替换为table
+            minVersion: 1,       // version range somewhere in 1 .. 40
+            maxVersion: 40,
+            ecLevel: 'H',        //识别度  'L', 'M', 'Q' or 'H'
+            left: 0,
+            top: 0,
+            size: 100,           //尺寸
+            fill: '#000',        //二维码颜色
+            background: null,    //背景色
+            text: QrUrl,     //二维码内容
+            radius: 0.1,         // 0.0 .. 0.5
+            quiet: 2,            //边距
+            mode: 4,
+            mSize: 0.2,          //图片大小
+            mPosX: 0.5,
+            mPosY: 0.5,
+            label: 'jQuery.qrcode',
+            fontname: 'sans',
+            fontcolor: '#000',
+            image: $('#imgBtn')[0]
+        });
+    }
+</script>
 </body>
 </html>

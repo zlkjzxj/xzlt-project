@@ -34,7 +34,8 @@ layui.config({
                 {field: 'number', title: '企业编号', width: 250, sort: true},
                 {field: 'manager', title: '企业负责人', align: 'center', width: 150},
                 {field: 'phone', title: '负责人电话', align: 'center', width: 200},
-                {field: 'grade', title: '企业评分', align: 'center', width: 150},
+                {field: 'pjzf', title: '企业评分', align: 'center', width: 150},
+                {field: 'grade', title: '企业星级', align: 'center', width: 150},
                 {field: 'desc', title: '企业描述', align: 'center'}
             ]],
 
@@ -112,7 +113,7 @@ layui.config({
             var index = layui.layer.open({
                     title: title,
                     type: 2,
-                    area: ["600px", "550px"],
+                    area: ["1200px", "650px"],
                     // area: 'auto',
                     content: "info.html",
                     success: function (layero, index) {

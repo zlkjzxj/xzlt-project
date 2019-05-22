@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -36,6 +37,11 @@ public class Code extends Model<Code> {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     /**
+     * 代码统称
+     */
+    @TableField("name")
+    private String name;
+    /**
      * 代码名称
      */
     @TableField("code_name")
@@ -54,16 +60,26 @@ public class Code extends Model<Code> {
      * 是否可用
      */
     private Integer available;
+    /**
+     * 代码描述
+     */
+    private String codeDesc;
+    /**
+     * 分值(给评分标准添加的)
+     */
+    private Integer codeMark;
 
     /**
      * 修改时间
      */
+    @JsonIgnore
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date updateTime;
     /**
      * 创建时间
      */
+    @JsonIgnore
     @TableField(value = "create_time", fill = FieldFill.INSERT)
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
     private Date createTime;
