@@ -8,10 +8,6 @@ layui.config({
     ;
     // 对外提供访问方法
     var _tools = {
-        a: '111',
-        b: function () {
-            console.log("bbb")
-        },
         initTable: function () {
             var tableIns = table.render({
                 elem: '#projectList',

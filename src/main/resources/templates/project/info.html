@@ -13,11 +13,11 @@
     <link rel="stylesheet" href="/static/css/public.css" media="all"/>
     <style>
         .layui-form-label {
-            width: 120px;
+            width: 130px;
         }
 
         .layui-input-block {
-            margin-left: 150px;
+            margin-left: 160px;
         }
     </style>
 </head>
@@ -31,6 +31,39 @@
     <input type="hidden" id="companyId" name="companyId">
     <input type="hidden" id="membersId" name="membersId">
     <input type="hidden" id="gradeId" name="gradeId">
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">所属公司</label>
+            <div class="layui-input-inline">
+                <select name="company" id="company" lay-filter="company" lay-verify="required">
+                    <option value="">请选择所属公司</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md6">
+            <label class="layui-form-label">企业评分</label>
+            <div class="layui-input-inline">
+                <div id="gradeDiv" style="margin: 0; height: 36px;line-height: 18px;"></div>
+            </div>
+            <div class="layui-input-inline " style="width: 50px; height: 36px; line-height: 36px;">
+                <div id="gradeSpan">0星</div>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">联系人</label>
+            <div class="layui-input-inline">
+                <input name="contacts" id="contacts" class="layui-input" readonly autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-inline">
+                <input name="phone" id="phone" class="layui-input" readonly autocomplete="off" lay-verify="phone">
+            </div>
+        </div>
+    </div>
     <div class="layui-form-item">
         <label class="layui-form-label">项目名称</label>
         <div class="layui-input-block">
@@ -66,66 +99,20 @@
         <div class="layui-inline layui-col-md5">
             <label class="layui-form-label">项目成员</label>
             <div class="layui-input-inline">
-                <div id="memberDiv" style="width: 400px;">
-                </div>
-                <input type="hidden" id="members" name="members">
+                <!--<div id="memberDiv" style="width: 400px;">-->
+                <!--</div>-->
+                <input type="text" id="fuck" name class="layui-input" autocomplete="off">
+                <!--<input type="hidden" id="members" name="members">-->
             </div>
         </div>
     </div>
-    <div class="layui-form-item">
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">所属公司</label>
-            <div class="layui-input-inline">
-                <select name="company" id="company" lay-filter="company" lay-verify="required">
-                    <option value="">请选择所属公司</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-inline layui-col-md6">
-            <label class="layui-form-label">企业评分</label>
-            <div class="layui-input-inline">
-                <div id="gradeDiv" style="margin: 0; height: 36px;line-height: 18px;"></div>
-            </div>
-            <div class="layui-input-inline " style="width: 50px; height: 36px; line-height: 36px;">
-                <div id="gradeSpan">0星</div>
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">联系人</label>
-            <div class="layui-input-inline">
-                <input name="contacts" id="contacts" class="layui-input" readonly autocomplete="off">
-            </div>
-        </div>
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">联系电话</label>
-            <div class="layui-input-inline">
-                <input name="phone" id="phone" class="layui-input" readonly autocomplete="off" lay-verify="phone">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item ">
-        <label class="layui-form-label">招聘进度</label>
-        <div class="layui-input-block">
-            <div id="slide" class="demo-slider" style="padding: 15px 80px 0 20px;"></div>
-        </div>
-    </div>
-    <div class="layui-row" style="margin-top:30px;">
-        <div class="layui-inline layui-col-md6 layui-center">
-            <image src="/static/images/logo.png" id="imgBtn"
-                   style="width: 100px;height: 100px; text-align: center;display: none;"></image>
-            <image src="/static/images/clickme.jpg"
-                   style="width: 100px;height: 100px; text-align: center;"
-                   onclick="createCode()"></image>
-            <!--<div id="imgBtn"
-                 style="width: 100px;height: 100px;text-align: center;background-color: red;margin: 0 auto;border-radius: 5px;line-height: 100px;"
-                 onclick="createCode()">点我生成二维码
-            </div>-->
-        </div>
-        <div class="layui-inline layui-col-md5 layui-center">
-            <div id="QRCode"></div>
-        </div>
+    <div id="sliders">
+        <!--<div class="layui-form-item ">-->
+        <!--<label class="layui-form-label">招聘进度1</label>-->
+        <!--<div class="layui-input-block" style='padding: 15px 80px 0 20px;'>-->
+        <!--<div id="slide" class="demo-slider"></div>-->
+        <!--</div>-->
+        <!--</div>-->
     </div>
     <hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>
     <div class="layui-center">

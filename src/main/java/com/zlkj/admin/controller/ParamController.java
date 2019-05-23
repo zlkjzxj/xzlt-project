@@ -78,6 +78,7 @@ public class ParamController {
             for (int i = 0; i < arrays.length; i++) {
                 EntityWrapper<Code> wrapper = new EntityWrapper<>(new Code());
                 wrapper.eq("code", arrays[i]);
+                wrapper.eq("available", 1);
                 List<Code> codeList = codeMapper.selectList(wrapper);
                 codeMap.put(arrays[i], codeList);
             }

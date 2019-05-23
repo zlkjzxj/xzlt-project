@@ -6,9 +6,9 @@ layui.config({
 
     $(".enterpriseTag").on('click', function () {
         var index = layui.layer.open({
-                title: '岗位列表',
+                // title: '岗位列表',
                 type: 2,
-                area: ["1000px", "1000px"],
+                area: ["1000px", "800px"],
                 // area: 'auto',
                 content: "positionList.html",
                 success: function (layero, index) {

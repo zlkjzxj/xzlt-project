@@ -136,9 +136,9 @@ layui.config({
             layer.msg("请点击按钮给企业评分");
             return false;
         }
-        var element = document.getElementById("QRCode");
-        if (element.childNodes.length == 0) {
-            layer.msg("请点击按钮生成企业二维码");
+        var canvas = document.getElementsByTagName("canvas")[0];
+        if (canvas === undefined) {
+            layer.msg("请点击生成企业二维码");
             return false;
         }
         var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
@@ -148,6 +148,7 @@ layui.config({
                 'qrcode': bs64,
             })
         ;
+        console.log(field)
         if ($("#id").val() === "") {
             $.ajax({
                 url: '/enterprise/add',
@@ -155,6 +156,7 @@ layui.config({
                 data: field,
                 dataType: 'json',
                 success: function (res) {
+                    layer.close(index);
                     if (res.data) {
                         layer.msg("企业信息保存成功");
                         parent.location.reload();

@@ -25,47 +25,7 @@
     <input type="hidden" id="projectId"/>
     <input id="departVal" type="hidden">
     <blockquote class="layui-elem-quote quoteBox">
-        <form class="layui-form">
-            <div class="layui-input-inline">
-                <input type="text" class="layui-input searchVal" style="width: 300px;"
-                       placeholder="搜索条件：项目名称|编号|部门|项目经理"/>
-            </div>
-            <!--<div class="layui-input-inline">
-                <select class="state" id="xmjxSelect">
-                    <option value="">是否结项</option>
-                    <option value="1">是</option>
-                    <option value="0">否</option>
-                </select>
-            </div>-->
-            <div class="layui-inline">
-                <a class="layui-btn search_btn" data-type="reload">搜索</a>
-            </div>
-            <shiro:hasPermission name="project:add">
-                <div class="layui-inline">
-                    <a class="layui-btn layui-btn-normal add_btn">添加</a>
-                </div>
-            </shiro:hasPermission>
-            <shiro:hasPermission name="project:edit">
-                <div class="layui-inline">
-                    <a class="layui-btn layui-btn-normal edit_btn">编辑</a>
-                </div>
-            </shiro:hasPermission>
-            <shiro:hasPermission name="project:del">
-                <div class="layui-inline">
-                    <a class="layui-btn layui-btn-danger delAll_btn">删除</a>
-                </div>
-            </shiro:hasPermission>
-            <shiro:hasPermission name="project:export">
-                <div class="layui-inline">
-                    <a class="layui-btn layui-btn-danger export_btn">导出当前页</a>
-                </div>
-            </shiro:hasPermission>
-            <shiro:hasPermission name="project:exportall">
-                <div class="layui-inline">
-                    <a class="layui-btn layui-btn-danger exportall_btn">导出全部</a>
-                </div>
-            </shiro:hasPermission>
-        </form>
+        企业列表
     </blockquote>
     <!--<table id="projectList" lay-filter="projectList" lay-size="lg"></table>-->
     <div class="layui-row layui-col-space10">
