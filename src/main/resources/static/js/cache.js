@@ -7,7 +7,7 @@ layui.use(['form', 'jquery', "layer"], function () {
 
 
     if (window.sessionStorage.getItem("lockcms") != "true" && window.sessionStorage.getItem("showNotice") != "true") {
-        showNotice();
+        // showNotice();
     }
 
     //公告层

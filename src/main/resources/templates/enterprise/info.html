@@ -25,7 +25,28 @@
 <body class="childrenBody">
 <form class="layui-form layui-row">
     <input type="hidden" id="id" name="id">
+    <input type="hidden" id="number" name="number">
+    <input type="hidden" id="addoredit">
+    <input type="hidden" id="logoChange" value="false">
     <input type="hidden" id="pjzf" name="pjzf">
+
+    <input type="hidden" id="qyrs1" name="qyrs1">
+    <input type="hidden" id="clsj1" name="clsj1">
+    <input type="hidden" id="qyxz1" name="qyxz1">
+    <input type="hidden" id="zyyt1" name="zyyt1">
+    <input type="hidden" id="jyzt1" name="jyzt1">
+    <input type="hidden" id="ltdjed1" name="ltdjed1">
+    <input type="hidden" id="gzqy1" name="gzqy1">
+    <input type="hidden" id="gltxjqcd1" name="gltxjqcd1">
+    <input type="hidden" id="nrylsl1" name="nrylsl1">
+    <input type="hidden" id="jxry1" name="jxry1">
+    <input type="hidden" id="yqbzq1" name="yqbzq1">
+    <input type="hidden" id="zltsl1" name="zltsl1">
+    <input type="hidden" id="ldjf1" name="ldjf1">
+    <input type="hidden" id="swjf1" name="swjf1">
+    <input type="hidden" id="xytc1" name="xytc1">
+    <input type="hidden" id="qtjfx1" name="qtjfx1">
+
     <div class="layui-col-md4 layui-col-xs12">
         <blockquote class="layui-elem-quote title" style="margin-bottom: 10px;"><i class="seraph icon-caidan"></i>
             企业基本信息
@@ -33,7 +54,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">企业名称</label>
             <div class="layui-input-inline">
-                <input name="name" id="name" class="layui-input" lay-verify="name|required"
+                <input name="name" id="name" class="layui-input" lay-verify="required"
                        placeholder="请输入企业名称" autocomplete="off">
             </div>
         </div>
@@ -72,10 +93,15 @@
             </div>
         </div>
         <div class="layui-form-item ">
-            <label class="layui-form-label">企业二维码</label>
-            <div class="layui-input-inline">
-                <image src="/static/images/logo.png" id="imgBtn"
-                       style="width: 100px;height: 100px; text-align: center;display: none;"></image>
+            <label class="layui-form-label">logo&二维码</label>
+            <div class="layui-input-inline" style="width: 100px;height: 100px;">
+                <!--<image src="/static/images/logo.png" id="imgBtn"-->
+                <!--style="width: 100px;height: 100px;"></image>-->
+                <img class="layui-upload-img layui-circle userFaceBtn userAvatar" src="/static/images/clicklogo.png"
+                     id="logo" style="width: 100px;height: 100px;">
+                <input type="file" hidden id="logoFile" name="logoFile"/>
+            </div>
+            <div class="layui-input-inline" style="width: 100px;height: 100px;">
                 <div id="QRCode"></div>
             </div>
         </div>
@@ -220,11 +246,22 @@
     //生成二维码
     function createCode() {
         var element = document.getElementById("QRCode");
+        var logoChange = $("#logoChange").val();
+        if (logoChange == "true") {
+            element.innerHTML = "";
+        }
         if (element.childNodes.length > 0) {
             return;
         }
         var date = new Date();
-        var obj = {projectId: $("#number").val(), createTime: date.getTime()}
+        //生成企业编号
+        var number = $("#number").val();
+        console.log(number);
+        if (number == "") {
+            $("#number").val("zxlt" + date.getTime());
+        }
+        var obj = {enterpriseId: $("#number").val(), createTime: date.getTime()}
+        console.log(obj);
         var QrUrl = JSON.stringify(obj);
         $("#QRCode").qrcode({
             render: "canvas", //也可以替换为table
@@ -246,7 +283,7 @@
             label: 'jQuery.qrcode',
             fontname: 'sans',
             fontcolor: '#000',
-            image: $('#imgBtn')[0]
+            image: $('#logo')[0]
         });
     }
 </script>

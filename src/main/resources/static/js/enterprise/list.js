@@ -6,7 +6,6 @@ layui.config({
             $ = layui.jquery,
             table = layui.table
         ;
-
         //项目列表
         var tableIns = table.render({
             elem: '#projectList',
@@ -24,10 +23,10 @@ layui.config({
             autoSort: true,
             sortType: 'server',
             // title: '宜元中林项目表',//导出Excel的时候会用到
-            initSort: {//默认排序
-                field: 'number' //排序字段，对应 cols 设定的各字段名
-                , type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
-            },
+            // initSort: {//默认排序
+            //     field: 'number' //排序字段，对应 cols 设定的各字段名
+            //     , type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+            // },
             cols: [[
                 {type: "radio", fixed: "left"},
                 {field: 'name', title: '企业名称', align: "left", width: 250},
@@ -35,37 +34,16 @@ layui.config({
                 {field: 'phone', title: '负责人电话', align: 'center', width: 200},
                 {field: 'pjzf', title: '企业评分', align: 'center', width: 150},
                 {field: 'grade', title: '企业星级', align: 'center', width: 150},
-                {field: 'desc', title: '企业描述', align: 'center'},
+                {field: 'desc', title: '企业描述', align: 'center',},
                 {
                     field: 'qrcode', title: '二维码', align: 'center', templet: function (d) {
                         if (d.qrcode != null) {
-                            return '<image src="' + d.qrcode + '" style="width: 100px;height: 100px; text-align: center;" />';
+                            return '<image src="' + d.qrcode + '" style="width: 100%;height: 100%; text-align: center;" />';
                         }
                     }
                 }
             ]],
 
-            done: function (res, curr, count) {
-                //监听行双击事件  layui 新版添加，上面是旧版没有这个方法
-                table.on('rowDouble(projectList)', function (obj) {
-                    $("#projectId").val(obj.data.id);
-                    // $(window).one("resize", function () {
-                    var index = layui.layer.open({
-                        title: "项目详情流程图",
-                        type: 2,
-                        area: ["1200px", "750px"],
-                        content: "chart.html",
-                        success: function (layero, index) {
-                            setTimeout(function () {
-                                layui.layer.tips('点击此处返回项目列表', '.layui-layer-setwin .layui-layer-close', {
-                                    tips: 3
-                                });
-                            }, 500)
-                        }
-                    })
-                    layui.layer.full(index);
-                });
-            }
         });
         //监听排序事件
         /*table.on('sort(projectList)', function (obj) { //注：tool是工具条事件名，test是table原始容器的属性 lay-filter="对应的值"
@@ -144,6 +122,7 @@ layui.config({
                         var body = layui.layer.getChildFrame('body', index);
                         body.find("#addoredit").val(type);
                         if (type === 'edit') {
+
                             body.find("#id").val(data.id);
                             body.find("#name").val(data.name);
                             body.find("#number").val(data.number);
@@ -151,6 +130,25 @@ layui.config({
                             body.find("#phone").val(data.phone);
                             body.find("#desc").val(data.desc);
                             body.find("#grade").val(data.grade);
+                            body.find("#logo").attr("src", data.logo);
+                            //星级评分
+                            body.find("#qyrs1").val(data.qyrs);
+                            body.find("#clsj1").val(data.clsj);
+                            body.find("#qyxz1").val(data.qyxz);
+                            body.find("#zyyt1").val(data.zyyt);
+                            body.find("#jyzt1").val(data.jyzt);
+                            body.find("#ltdjed1").val(data.ltdjed);
+                            body.find("#gzqy1").val(data.gzqy);
+                            body.find("#gltxjqcd1").val(data.gltxjqcd);
+                            body.find("#nrylsl1").val(data.nrylsl);
+                            body.find("#jxry1").val(data.jxry);
+                            body.find("#yqbzq1").val(data.yqbzq);
+                            body.find("#zltsl1").val(data.zltsl);
+                            body.find("#ldjf1").val(data.ldjf);
+                            body.find("#swjf1").val(data.swjf);
+                            body.find("#xytc1").val(data.xytc);
+                            body.find("#qtjfx1").val(data.qtjfx);
+                            form.render();
                         } else {
                         }
                         setTimeout(function () {

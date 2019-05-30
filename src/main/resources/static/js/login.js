@@ -37,7 +37,8 @@ layui.use(['form', 'layer', 'jquery', 'common'], function () {
             url: "/login",
             type: "post",
             data: data.field,
-            success: function () {
+            success: function (data) {
+                console.log(data.data);
                 location.href = "/";
             },
             error: function (xmlHttpRequest) {

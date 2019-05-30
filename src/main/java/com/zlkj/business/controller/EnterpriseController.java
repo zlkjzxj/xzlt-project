@@ -6,15 +6,20 @@ import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.controller.BaseController;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.UserInfo;
+import com.zlkj.admin.util.Constant;
 import com.zlkj.business.entity.Enterprise;
 import com.zlkj.business.service.IEnterpriseService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
+import java.io.IOException;
 import java.util.List;
 
 /**
@@ -80,7 +85,18 @@ public class EnterpriseController extends BaseController {
     @RequestMapping("/add")
     @RequiresPermissions("enterprise:edit")
     public @ResponseBody
-    ResultInfo<Boolean> add(Enterprise enterprise) {
+    ResultInfo<Boolean> add(@RequestParam("logoFile") MultipartFile logoFile, Enterprise enterprise) {
+        String logoStr = "";
+        if (logoFile != null) {
+            try {
+                logoStr = Base64Utils.encodeToString(logoFile.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (logoStr != "") {
+            enterprise.setLogo(Constant.BASE64_PIC_HEADER + logoStr);
+        }
         boolean b = iEnterpriseService.insert(enterprise);
         return new ResultInfo<>(b);
     }
@@ -89,7 +105,18 @@ public class EnterpriseController extends BaseController {
     @RequestMapping("/edit")
     @RequiresPermissions("enterprise:edit")
     public @ResponseBody
-    ResultInfo<Boolean> update(Enterprise enterprise) {
+    ResultInfo<Boolean> update(@RequestParam("logoFile") MultipartFile logoFile, Enterprise enterprise) {
+        String logoStr = "";
+        if (logoFile != null) {
+            try {
+                logoStr = Base64Utils.encodeToString(logoFile.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (logoStr != "") {
+            enterprise.setLogo(Constant.BASE64_PIC_HEADER + logoStr);
+        }
         boolean b = iEnterpriseService.updateById(enterprise);
         return new ResultInfo<>(b);
     }

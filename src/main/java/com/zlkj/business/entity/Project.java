@@ -6,10 +6,14 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.zlkj.admin.entity.Code;
+import com.zlkj.admin.entity.User;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * @Description TODO
@@ -90,15 +94,15 @@ public class Project {
     /**
      * 创建时间
      */
+    @JsonIgnore
     @TableField(value = "create_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date createTime;
     /**
      * 修改时间
      */
+    @JsonIgnore
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date updateTime;
-
-
 }

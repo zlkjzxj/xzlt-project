@@ -38,12 +38,12 @@ public class RoleController extends BaseController {
 
     @RequestMapping("/*")
     public void toHtml() {
-
+        System.out.println("roleController /*");
     }
 
     @RequestMapping("/selectListData")
     @ResponseBody
-    public ResultInfo<List<Role>> selectListData(Role role){
+    public ResultInfo<List<Role>> selectListData(Role role) {
         List<Role> list = iRoleService.selectList(new EntityWrapper<>(role));
         return new ResultInfo<>(list);
     }
@@ -81,7 +81,7 @@ public class RoleController extends BaseController {
         EntityWrapper<User> wrapper = new EntityWrapper<>();
         wrapper.in("role_id", idArr);
         List<User> userList = iUserService.selectList(wrapper);
-        if(userList!=null && userList.size()>0){
+        if (userList != null && userList.size() > 0) {
             return new ResultInfo<>("用户拥有角色不能删除！");
         }
         return new ResultInfo<>(iRoleService.deleteBatchIds(Arrays.asList(idArr)));

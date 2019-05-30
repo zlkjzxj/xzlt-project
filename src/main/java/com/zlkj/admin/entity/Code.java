@@ -59,6 +59,7 @@ public class Code extends Model<Code> {
     /**
      * 是否可用
      */
+    @JsonIgnore
     private Integer available;
     /**
      * 代码描述
@@ -68,6 +69,14 @@ public class Code extends Model<Code> {
      * 分值(给评分标准添加的)
      */
     private Integer codeMark;
+    /**
+     * 分值(给评分标准添加的)
+     */
+    private String codeIcon;
+    /**
+     * 套餐
+     */
+    private Integer cpTc;
 
     /**
      * 修改时间

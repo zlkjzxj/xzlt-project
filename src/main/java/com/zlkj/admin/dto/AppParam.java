@@ -14,9 +14,9 @@ public class AppParam {
      */
     private String signature;
     /**
-     * 项目编号
+     * 企业ID
      */
-    private String projectId;
+    private String enterpriseId;
     /**
      * 调用接口时间戳
      */

@@ -8,10 +8,10 @@ layui.config({
     ;
     // 对外提供访问方法
     var _tools = {
-        initTable: function () {
+        initTable: function (id) {
             var tableIns = table.render({
                 elem: '#projectList',
-                url: '/project/listData',
+                url: '/project/listData?company=' + id,
                 cellMinWidth: 95,
                 page: true,
                 height: "full-175",//高度最大化减去125
@@ -25,22 +25,19 @@ layui.config({
                 autoSort: true,
                 sortType: 'server',
                 title: '宜元中林项目表',//导出Excel的时候会用到
-                initSort: {//默认排序
-                    field: 'number' //排序字段，对应 cols 设定的各字段名
-                    , type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
-                },
+                // initSort: {//默认排序
+                //     field: 'number' //排序字段，对应 cols 设定的各字段名
+                //     , type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+                // },
                 cols: [[
                     {type: "radio", fixed: "left"},
                     {field: 'name', title: '项目名称', align: "left", width: 200},
-                    {field: 'number', title: '项目编号', width: 120, sort: true},
                     {field: 'lxsj', title: '立项时间', align: 'center', width: 120, sort: true},
                     {field: 'managerName', title: '项目经理', align: 'center', width: 100},
                     {field: 'membersName', title: '项目成员', align: 'center', width: 350},
-                    {field: 'company', title: '所属公司', align: 'center', width: 100},
                     {field: 'grade', title: '评分', align: 'center', width: 100},
                     {field: 'contacts', title: '联系人', align: 'center', width: 100},
-                    {field: 'phone', title: '联系电话', align: 'center', width: 120},
-                    {field: 'progress', title: '项目进度', align: 'center', width: 120}
+                    {field: 'phone', title: '联系电话', align: 'center'},
                     // {
                     //     field: 'qrcode',
                     //     title: '二维码',
@@ -143,25 +140,40 @@ layui.config({
                 // area: 'auto',
                 content: "info.html",
                 success: function (layero, index) {
-                    console.log(layero)
-                    console.log(index)
                     var body = layui.layer.getChildFrame('body', index);
                     body.find("#addoredit").val(type);
+
                     if (type === 'edit') {
-                        console.log(data);
                         body.find("#id").val(data.id);
                         body.find("#name").val(data.name);
                         body.find("#number").val(data.number);
                         body.find("#lxsj").val(data.lxsj);
                         body.find("#managerId").val(data.manager);
-                        body.find("#membersId").val(data.members);
+                        // body.find("#membersId").val(data.members);
                         body.find("#companyId").val(data.company);
                         body.find("#gradeId").val(data.grade);
                         body.find("#contacts").val(data.contacts);
                         body.find("#phone").val(data.phone);
                         form.render('select');
                         form.render();
+                        setTimeout(function () {
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            var progress = iframeWin.atools.progress_value;
+                            var user_level = iframeWin.atools.user_level;
+                            for (var i = 0; i < data.progress.length; i++) {
+                                var key = data.progress[i].progressValue;
+                                progress[key] = data.progress[i].progress;
+                            }
+                            console.log(data.members);
+                            var members = JSON.parse(data.members);
+                            user_level = Object.assign(user_level, members);
+                            // for (var i = 0; i < members.length; i++) {
+                            //     user_level = Object.assign(user_level, members);
+                            // }
+                            var initProgress1 = iframeWin.atools.initProgress1;
+                            initProgress1();
 
+                        }, 500)
                     }
                     setTimeout(function () {
                         layui.layer.tips('点击此处返回项目列表', '.layui-layer-setwin .layui-layer-close', {

@@ -4,15 +4,21 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.ResultInfo;
+import com.zlkj.admin.dto.UserDto;
 import com.zlkj.admin.dto.UserInfo;
+import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.entity.Department;
 import com.zlkj.admin.entity.Permission;
+import com.zlkj.admin.entity.User;
 import com.zlkj.admin.service.IDepartmentService;
+import com.zlkj.admin.service.IUserService;
 import com.zlkj.admin.util.Constant;
 import com.zlkj.admin.controller.BaseController;
 import com.zlkj.business.dto.ProjectCountInfo;
 import com.zlkj.business.dto.ProjectInfo;
 import com.zlkj.business.entity.Project;
+import com.zlkj.business.entity.ProjectProgress;
+import com.zlkj.business.service.IProjectProgressService;
 import com.zlkj.business.service.IProjectService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
@@ -27,10 +33,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.time.LocalDate;
+import java.util.*;
 
 /**
  * @author sunny
@@ -44,6 +48,10 @@ public class ProjectController extends BaseController {
     private IProjectService iProjectService;
     @Resource
     private IDepartmentService iDepartmentService;
+    @Resource
+    private IProjectProgressService iProjectProgressService;
+    @Resource
+    private IUserService iUserService;
 
     @RequestMapping("/*")
     public void toHtml() {
@@ -58,14 +66,51 @@ public class ProjectController extends BaseController {
 //    @RequiresPermissions("project:view")
     public @ResponseBody
     ResultInfo<List<ProjectInfo>> listData(ProjectInfo project, Integer page, Integer limit) {
-        if (page != null && limit != null) {
-            project.setLimit1(limit * (page - 1));
-            project.setLimit2(limit);
+//        if (page != null && limit != null) {
+//            project.setLimit1(limit * (page - 1));
+//            project.setLimit2(limit);
+//        }
+//        List<ProjectInfo> projectInfoList = iProjectService.findProjectByFuzzySearchVal(project);
+//        int count;
+//        count = iProjectService.selectCount(null);
+//        return new ResultInfo<>(projectInfoList, count);
+        EntityWrapper<Project> projectEntityWrapper = new EntityWrapper<>();
+        projectEntityWrapper.eq("company", project.getCompany());
+        List<Project> list = iProjectService.selectList(projectEntityWrapper);
+        List<ProjectInfo> infoList = new ArrayList<>();
+        for (Project pro : list) {
+            User xmjl = iUserService.selectById(pro.getManager());
+            ProjectInfo info = new ProjectInfo();
+            info.setId(pro.getId());
+            info.setName(pro.getName());
+            info.setManagerName(xmjl.getName());
+            info.setCompany(pro.getCompany());
+            info.setManager(pro.getManager());
+            info.setLxsj(pro.getLxsj());
+            info.setGrade(pro.getGrade());
+            info.setContacts(pro.getContacts());
+            info.setPhone(pro.getPhone());
+            info.setMembers(pro.getMembers());
+            String memberStr = pro.getMembers().replace("\"", "").replace("}", "").replace("{", "");
+            String[] members = memberStr.split(",");
+            String memstr = "";
+            for (int i = 0; i < members.length; i++) {
+                String memberstr = members[i];
+                User cy = iUserService.selectById(memberstr.split(":")[0]);
+                if (cy != null) {
+                    memstr += cy.getName() + ",";
+                }
+            }
+            if (!"".equals(memstr)) {
+                info.setMembersName(memstr.substring(0, memstr.length() - 1));
+            }
+            EntityWrapper<ProjectProgress> projectDtoWrapper = new EntityWrapper<>();
+            projectDtoWrapper.eq("project_id", pro.getId());
+            List<ProjectProgress> progressList = iProjectProgressService.selectList(projectDtoWrapper);
+            info.setProgress(progressList);
+            infoList.add(info);
         }
-        List<ProjectInfo> projectInfoList = iProjectService.findProjectByFuzzySearchVal(project);
-        int count;
-        count = iProjectService.selectCount(null);
-        return new ResultInfo<>(projectInfoList, count);
+        return new ResultInfo<>(infoList);
     }
 
 //    @RequestMapping("/getObject")
@@ -84,6 +129,7 @@ public class ProjectController extends BaseController {
     @SysLog("添加项目")
     @RequestMapping("/add")
     @RequiresPermissions("project:add")
+    @Transactional
     public @ResponseBody
     ResultInfo<Boolean> add(Project project) {
         Project newProject = new Project();
@@ -94,10 +140,24 @@ public class ProjectController extends BaseController {
         }
         //判断此项目编号是否存在
         Project oldProject = iProjectService.selectOne(wrapper);
+        LocalDate today = LocalDate.now();
         if (oldProject == null) {
             UserInfo user = this.getUserInfo();
             project.setLrr(user.getId());
+            String progress = project.getProgress().replace("{", "").replace("}", "").replace("\"", "");
             boolean b = iProjectService.insert(project);
+            String[] progress_s = progress.split(",");
+            for (int i = 0; i < progress_s.length; i++) {
+                ProjectProgress projectProgress = new ProjectProgress();
+                projectProgress.setProjectId(project.getId());
+                String jd = progress_s[i];
+                projectProgress.setProgressValue(jd.split(":")[0]);
+                projectProgress.setProgress(jd.split(":")[1]);
+                if (!"0".equals(jd.split(":")[1])) {
+                    projectProgress.setTime(today.toString());
+                }
+                iProjectProgressService.insert(projectProgress);
+            }
             return new ResultInfo<>("0", "添加成功", b);
         }
         return new ResultInfo<>("-1", "重复添加");
@@ -115,9 +175,31 @@ public class ProjectController extends BaseController {
         //判断修改人是否一致
         if (oldProject != null) {
             //获取当前登录用户id
-            UserInfo user = this.getUserInfo();
-            Integer userId = user.getId();
-            boolean b = iProjectService.insert(project);
+            LocalDate today = LocalDate.now();
+            String progress = project.getProgress().replace("{", "").replace("}", "").replace("\"", "");
+            boolean b = iProjectService.updateById(project);
+            String[] progress_s = progress.split(",");
+            for (int i = 0; i < progress_s.length; i++) {
+                String jd = progress_s[i];
+                if (!"0".equals(jd.split(":")[1])) {
+                    EntityWrapper<ProjectProgress> wrapper = new EntityWrapper<>();
+                    wrapper.eq("project_id", project.getId());
+                    wrapper.eq("progress_value", jd.split(":")[0]);
+                    ProjectProgress progress1 = iProjectProgressService.selectOne(wrapper);
+                    if (progress1 != null) {
+                        if (!progress1.getProgress().equals(jd.split(":")[1])) {
+                            progress1.setProgress(jd.split(":")[1]);
+                        }
+                        String time = progress1.getTime();
+                        if (time == null) {
+                            progress1.setTime(today.toString());
+                        }
+                        iProjectProgressService.updateById(progress1);
+                    }
+
+                }
+
+            }
             return new ResultInfo<>("0", "追加成功", b);
         }
 

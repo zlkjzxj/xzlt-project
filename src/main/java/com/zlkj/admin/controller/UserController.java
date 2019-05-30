@@ -46,7 +46,7 @@ public class UserController extends BaseController {
 
     @RequestMapping("/*")
     public void toHtml() {
-
+        System.out.println("userController /*");
     }
 
     @RequestMapping("/unlock")
@@ -90,6 +90,7 @@ public class UserController extends BaseController {
             wrapper.eq("company", user.getCompany());
             user.setCompany(null);
         }
+        wrapper.eq("is_show", 1);
         List<User> userList = iUserService.selectList(wrapper);
         return new ResultInfo<>(userList);
     }
@@ -103,18 +104,21 @@ public class UserController extends BaseController {
         if (oldUser != null) {
             return new ResultInfo<>("此登录名称已经存在！");
         }
-        String avatarStr;
+        String avatarStr = "";
         if (avatarFile != null) {
             try {
                 avatarStr = Base64Utils.encodeToString(avatarFile.getBytes());
-                user.setAvatar(Constant.BASE64_PIC_HEADER + avatarStr);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         } else {
             user.setAvatar(Constant.DEFAULT_AVATAR);
         }
+        if (avatarStr != "") {
+            user.setAvatar(Constant.BASE64_PIC_HEADER + avatarStr);
+        }
         Map<String, String> map = PasswordEncoder.enCodePassWord(user.getUserName(), user.getPassword());
+        user.setIsShow(1);
         user.setSalt(map.get(PasswordEncoder.SALT));
         user.setPassword(map.get(PasswordEncoder.PASSWORD));
         boolean b = iUserService.insert(user);
@@ -134,13 +138,25 @@ public class UserController extends BaseController {
     @RequestMapping("/edit")
     @RequiresPermissions("user:edit")
     public @ResponseBody
-    ResultInfo<Boolean> edit(User user) {
+    ResultInfo<Boolean> edit(@RequestParam("avatarFile") MultipartFile avatarFile, User user) {
         User us = iUserService.selectById(user.getId());
         us.setName(user.getName());
         us.setUserName(user.getUserName());
         us.setRoleId(user.getRoleId());
         us.setState(user.getState());
         us.setCompany(user.getCompany());
+        us.setSign(user.getSign());
+        String avatarStr = "";
+        if (avatarFile != null) {
+            try {
+                avatarStr = Base64Utils.encodeToString(avatarFile.getBytes());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (avatarStr != "") {
+            us.setAvatar(Constant.BASE64_PIC_HEADER + avatarStr);
+        }
         boolean b = iUserService.updateById(us);
         return new ResultInfo<>(b);
     }
@@ -155,7 +171,6 @@ public class UserController extends BaseController {
         if (avatarFile != null) {
             try {
                 avatarStr = Base64Utils.encodeToString(avatarFile.getBytes());
-                us.setAvatar(Constant.BASE64_PIC_HEADER + avatarStr);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -167,6 +182,9 @@ public class UserController extends BaseController {
             Map<String, String> map = PasswordEncoder.enCodePassWord(us.getUserName(), user.getPassword());
             us.setSalt(map.get(PasswordEncoder.SALT));
             us.setPassword(map.get(PasswordEncoder.PASSWORD));
+        }
+        if (avatarStr != "") {
+            us.setAvatar(Constant.BASE64_PIC_HEADER + avatarStr);
         }
         boolean b = iUserService.updateById(us);
         Session session = SecurityUtils.getSubject().getSession();

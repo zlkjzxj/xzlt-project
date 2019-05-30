@@ -70,6 +70,11 @@ public class User extends Model<User> {
     @TableField("state")
     private Integer state;
     /**
+     * 是否显示(0：否，1：是)
+     */
+    @TableField("is_show")
+    private Integer isShow;
+    /**
      * 用户头像
      */
     @TableField("avatar")

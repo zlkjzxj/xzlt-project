@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.FieldFill;
 import com.baomidou.mybatisplus.enums.IdType;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -59,104 +60,116 @@ public class Enterprise {
      * 企业人数
      */
     @TableField("qyrs")
-    private Integer qyrs;
+    private String qyrs;
     /**
      * 成立时间
      */
     @TableField("clsj")
-    private Integer clsj;
+    private String clsj;
     /**
      * 企业性质
      */
     @TableField("qyxz")
-    private Integer qyxz;
+    private String qyxz;
     /**
      * 主营业态
      */
     @TableField("zyyt")
-    private Integer zyyt;
+    private String zyyt;
     /**
      * 经营状态
      */
     @TableField("jyzt")
-    private Integer jyzt;
+    private String jyzt;
     /**
      * 猎头定金额度
      */
     @TableField("ltdjed")
-    private Integer ltdjed;
+    private String ltdjed;
     /**
      * 工作区域
      */
     @TableField("gzqy")
-    private Integer gzqy;
+    private String gzqy;
     /**
      * 管理体系健全程度
      */
     @TableField("gltxjqcd")
-    private Integer gltxjqcd;
+    private String gltxjqcd;
     /**
      * 年人员流失率
      */
     @TableField("nrylsl")
-    private Integer nrylsl;
+    private String nrylsl;
     /**
      * 奖项荣誉
      */
     @TableField("jxry")
-    private Integer jxry;
+    private String jxry;
     /**
      * 要求保质期
      */
     @TableField("yqbzq")
-    private Integer yqbzq;
+    private String yqbzq;
     /**
      * 找猎头数量
      */
     @TableField("zltsl")
-    private Integer zltsl;
+    private String zltsl;
     /**
      * 劳动纠纷
      */
     @TableField("ldjf")
-    private Integer ldjf;
+    private String ldjf;
     /**
      * 商务纠纷
      */
     @TableField("swjf")
-    private Integer swjf;
+    private String swjf;
     /**
      * 选用套餐
      */
     @TableField("xytc")
-    private Integer xytc;
+    private String xytc;
     /**
      * 其他加分项（隐藏后台）
      */
     @TableField("qtjfx")
-    private Integer qtjfx;
+    private String qtjfx;
     /**
      * 企业评价总分
      */
     @TableField("pjzf")
     private Integer pjzf;
     /**
+     * 企业logo
+     */
+    @TableField("logo")
+    private String logo;
+    /**
      * 企业二维码
      */
     @TableField("qrcode")
     private String qrcode;
+    /**
+     * 企业二维码
+     */
+    @TableField("appcp")
+    private Integer appcp;
 
     /**
      * 创建时间
      */
     @TableField(value = "create_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @Ignore
     private Date createTime;
     /**
      * 修改时间
      */
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @Ignore
     private Date updateTime;
 
 }

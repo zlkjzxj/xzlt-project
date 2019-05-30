@@ -107,9 +107,10 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
             success: function (layero, index) {
                 var body = layui.layer.getChildFrame('body', index);
                 if (edit) {
-                    console.log(edit)
+                    console.log(edit);
                     body.find("#pwd1").remove();
                     body.find("#id").val(edit.id);
+                    body.find("#userFace").attr("src",edit.avatar);
                     body.find("#name").val(edit.name);
                     body.find("#userName").val(edit.userName);
                     body.find("#roleId").val(edit.roleId);

@@ -1,5 +1,6 @@
 package com.zlkj.admin.controller;
 
+import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.RoleInfo;
 import com.zlkj.admin.dto.TopDirectoryInfo;
 import com.zlkj.admin.dto.UserInfo;
@@ -38,7 +39,7 @@ public class HomeController extends BaseController {
 
     @RequestMapping("/*")
     public void toHtml() {
-
+        System.out.println("homeController /*");
     }
 
     @RequestMapping("/manual")
@@ -46,9 +47,19 @@ public class HomeController extends BaseController {
         return "manual";
     }
 
+    /**
+     * 手机端添加企业信息页面
+     *
+     * @return
+     */
+    @RequestMapping("/enterprise")
+    public String appEnterprise() {
+        return "app/enterprise";
+    }
+
     @RequestMapping({"/", "/index"})
     public String index(Model model) {
-
+        System.out.println("mabi de 为啥来着了");
         List<TopDirectoryInfo> topDirectoryList = new ArrayList<>();
         //获取当前用户角色信息
         UserInfo userInfo = this.getUserInfo();
@@ -67,15 +78,15 @@ public class HomeController extends BaseController {
     }
 
     @RequestMapping("/login")
-    public String login(HttpServletRequest request) throws BusinessException {
+    public ResultInfo<String> login(HttpServletRequest request) throws BusinessException {
 
         logger.info("HomeController.login()");
 
         // 判断是否已登录，如果已登录直接跳转到首页
         UserInfo userInfo = this.getUserInfo();
-        if (userInfo != null) {
-            return "redirect:/";
-        }
+        /*if (userInfo != null) {
+            return "redirect:/index";
+        }*/
 
         // 登录失败从request中获取shiro处理的异常信息.
         // shiroLoginFailure:就是shiro异常类的全类名.
@@ -119,7 +130,7 @@ public class HomeController extends BaseController {
 
         // 此方法不处理登录成功,由shiro进行处理
 
-        return "login1";
+        return new ResultInfo<>("0", "", "phone");
     }
 
 }
