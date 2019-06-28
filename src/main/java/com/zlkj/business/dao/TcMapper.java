@@ -1,7 +1,6 @@
 package com.zlkj.business.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.zlkj.business.entity.Enterprise;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zlkj.business.entity.Tc;
 import org.apache.ibatis.annotations.Mapper;
 

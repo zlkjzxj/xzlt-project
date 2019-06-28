@@ -1,6 +1,6 @@
 package com.zlkj.admin.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zlkj.admin.entity.Department;
 
 import java.util.List;

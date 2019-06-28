@@ -17,12 +17,11 @@
 <form class="layui-form">
     <input type="hidden" id="userId" th:value="${session.loginUserId}"/>
     <input type="hidden" id="projectId"/>
-    <input id="departVal" type="hidden">
     <blockquote class="layui-elem-quote quoteBox">
         <form class="layui-form">
             <div class="layui-input-inline">
                 <input type="text" class="layui-input searchVal" style="width: 300px;"
-                       placeholder="搜索条件：项目名称|编号|部门|项目经理"/>
+                       placeholder="搜索条件：项目名称"/>
             </div>
             <!--<div class="layui-input-inline">
                 <select class="state" id="xmjxSelect">

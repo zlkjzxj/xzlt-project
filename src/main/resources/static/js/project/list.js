@@ -1,8 +1,7 @@
 layui.config({
     base: '/static/layui'
 }).use(['form', 'layer', 'laydate', 'table', 'laytpl'], function () {
-    $ = layui.jquery
-    ;
+    $ = layui.jquery;
     $.ajax({
         url: '/enterprise/listDataSelect',
         success: function (data) {
@@ -10,11 +9,11 @@ layui.config({
         }
     })
 
-    function clickEnterprise(id) {
+    function clickEnterprise(id, grade, contacts, phone, name) {
         var index = layui.layer.open({
                 // title: '岗位列表',
                 type: 2,
-                area: ["1000px", "800px"],
+                area: [($(document).width() - 200) + "px", ($(document).height() - 30) + "px"],
                 // area: 'auto',
                 content: "positionList.html",
                 success: function (layero, index) {
@@ -22,6 +21,11 @@ layui.config({
                         var body = layer.getChildFrame('body', index);
                         var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
                         iframeWin.atools.initTable(id);
+                        iframeWin.atools.company = id;
+                        iframeWin.atools.grade = grade;
+                        iframeWin.atools.contacts = contacts;
+                        iframeWin.atools.phone = phone;
+                        iframeWin.atools.companyName = name;
                         layui.layer.tips('点击此处返回项目列表', '.layui-layer-setwin .layui-layer-close', {
                             tips: 3
                         });
@@ -38,7 +42,7 @@ layui.config({
             if (i % 4 == 0) {
                 html += "<div class='layui-row layui-col-space10'>";
             }
-            html += "<div class='layui-col-md3' onClick=\"clickEnterprise(" + data[i].id + " );\">";
+            html += "<div class='layui-col-md3' onClick=\"clickEnterprise('" + data[i].id + "','" + data[i].grade + "','" + data[i].manager + "','" + data[i].phone + "','" + data[i].name + "' );\">";
             html += "<div class=\"layui-card\">";
             html += "<div class=\"layui-card-body\">";
             html += "<div class=\"layui-row\">";
@@ -72,5 +76,14 @@ layui.config({
         $("#enterpriseList").html(html);
     }
 
+    //搜索
+    $(".search_btn").on("click", function () {
+        $.ajax({
+            url: '/enterprise/listDataSelect?searchVal=' + $(".searchVal").val(),
+            success: function (data) {
+                initEnterpriseList(data.data);
+            }
+        })
+    });
     window.clickEnterprise = clickEnterprise;
 })

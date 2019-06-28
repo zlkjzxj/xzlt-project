@@ -50,7 +50,8 @@ layui.use(['form','layer','table'],function(){
         layui.layer.open({
             title : title,
             type : 2,
-            area : ["550px","700px"],
+            // area : ["550px","600px"],
+            area: [($(document).width() - 200) + "px", ($(document).height() - 30) + "px"],
             content : "info.html",
             success : function(layero, index){
                 var body = layui.layer.getChildFrame('body', index);

@@ -1,19 +1,15 @@
 package com.zlkj.business.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zlkj.admin.annotation.SysLog;
+import com.zlkj.admin.controller.BaseController;
 import com.zlkj.admin.dto.ResultInfo;
-import com.zlkj.admin.dto.UserDto;
 import com.zlkj.admin.dto.UserInfo;
-import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.entity.Department;
-import com.zlkj.admin.entity.Permission;
 import com.zlkj.admin.entity.User;
 import com.zlkj.admin.service.IDepartmentService;
 import com.zlkj.admin.service.IUserService;
 import com.zlkj.admin.util.Constant;
-import com.zlkj.admin.controller.BaseController;
 import com.zlkj.business.dto.ProjectCountInfo;
 import com.zlkj.business.dto.ProjectInfo;
 import com.zlkj.business.entity.Project;
@@ -66,23 +62,19 @@ public class ProjectController extends BaseController {
 //    @RequiresPermissions("project:view")
     public @ResponseBody
     ResultInfo<List<ProjectInfo>> listData(ProjectInfo project, Integer page, Integer limit) {
-//        if (page != null && limit != null) {
-//            project.setLimit1(limit * (page - 1));
-//            project.setLimit2(limit);
-//        }
-//        List<ProjectInfo> projectInfoList = iProjectService.findProjectByFuzzySearchVal(project);
-//        int count;
-//        count = iProjectService.selectCount(null);
-//        return new ResultInfo<>(projectInfoList, count);
-        EntityWrapper<Project> projectEntityWrapper = new EntityWrapper<>();
+        QueryWrapper<Project> projectEntityWrapper = new QueryWrapper<>();
         projectEntityWrapper.eq("company", project.getCompany());
-        List<Project> list = iProjectService.selectList(projectEntityWrapper);
+        if (!StringUtils.isEmpty(project.getSearchVal())) {
+            projectEntityWrapper.like("name", project.getSearchVal());
+        }
+        List<Project> list = iProjectService.list(projectEntityWrapper);
         List<ProjectInfo> infoList = new ArrayList<>();
         for (Project pro : list) {
-            User xmjl = iUserService.selectById(pro.getManager());
+            User xmjl = iUserService.getById(pro.getManager());
             ProjectInfo info = new ProjectInfo();
             info.setId(pro.getId());
             info.setName(pro.getName());
+            info.setNumber(pro.getNumber());
             info.setManagerName(xmjl.getName());
             info.setCompany(pro.getCompany());
             info.setManager(pro.getManager());
@@ -96,7 +88,7 @@ public class ProjectController extends BaseController {
             String memstr = "";
             for (int i = 0; i < members.length; i++) {
                 String memberstr = members[i];
-                User cy = iUserService.selectById(memberstr.split(":")[0]);
+                User cy = iUserService.getById(memberstr.split(":")[0]);
                 if (cy != null) {
                     memstr += cy.getName() + ",";
                 }
@@ -104,9 +96,9 @@ public class ProjectController extends BaseController {
             if (!"".equals(memstr)) {
                 info.setMembersName(memstr.substring(0, memstr.length() - 1));
             }
-            EntityWrapper<ProjectProgress> projectDtoWrapper = new EntityWrapper<>();
+            QueryWrapper<ProjectProgress> projectDtoWrapper = new QueryWrapper<>();
             projectDtoWrapper.eq("project_id", pro.getId());
-            List<ProjectProgress> progressList = iProjectProgressService.selectList(projectDtoWrapper);
+            List<ProjectProgress> progressList = iProjectProgressService.list(projectDtoWrapper);
             info.setProgress(progressList);
             infoList.add(info);
         }
@@ -133,30 +125,34 @@ public class ProjectController extends BaseController {
     public @ResponseBody
     ResultInfo<Boolean> add(Project project) {
         Project newProject = new Project();
-        EntityWrapper<Project> wrapper = new EntityWrapper<>(newProject);
+        QueryWrapper<Project> wrapper = new QueryWrapper<>(newProject);
         if (project != null && project.getNumber() != null) {
             wrapper.eq("number", project.getNumber());
             newProject.setNumber(null);
         }
         //判断此项目编号是否存在
-        Project oldProject = iProjectService.selectOne(wrapper);
+        Project oldProject = iProjectService.getOne(wrapper);
         LocalDate today = LocalDate.now();
         if (oldProject == null) {
             UserInfo user = this.getUserInfo();
             project.setLrr(user.getId());
             String progress = project.getProgress().replace("{", "").replace("}", "").replace("\"", "");
-            boolean b = iProjectService.insert(project);
-            String[] progress_s = progress.split(",");
+            boolean b = iProjectService.save(project);
+            String[] progress_s = new String[]{};
+            if (!"".equals(progress)) {
+                progress_s = progress.split(",");
+            }
             for (int i = 0; i < progress_s.length; i++) {
                 ProjectProgress projectProgress = new ProjectProgress();
                 projectProgress.setProjectId(project.getId());
                 String jd = progress_s[i];
-                projectProgress.setProgressValue(jd.split(":")[0]);
+                projectProgress.setProgressValue(Integer.parseInt(jd.split(":")[0]));
                 projectProgress.setProgress(jd.split(":")[1]);
+                //进度不等于0 的给设定时间
                 if (!"0".equals(jd.split(":")[1])) {
                     projectProgress.setTime(today.toString());
                 }
-                iProjectProgressService.insert(projectProgress);
+                iProjectProgressService.save(projectProgress);
             }
             return new ResultInfo<>("0", "添加成功", b);
         }
@@ -170,17 +166,79 @@ public class ProjectController extends BaseController {
     public @ResponseBody
     ResultInfo<Boolean> update(Project project) {
 
-        Project oldProject = iProjectService.selectById(project.getId());
+        Project oldProject = iProjectService.getById(project.getId());
 
-        //判断修改人是否一致
         if (oldProject != null) {
             //获取当前登录用户id
             LocalDate today = LocalDate.now();
             String progress = project.getProgress().replace("{", "").replace("}", "").replace("\"", "");
             boolean b = iProjectService.updateById(project);
-            String[] progress_s = progress.split(",");
+            String[] progress_s = new String[]{};
+            if (!"".equals(progress)) {
+                progress_s = progress.split(",");
+            }
+            QueryWrapper<ProjectProgress> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("project_id", project.getId());
+            List<ProjectProgress> list = iProjectProgressService.list(wrapper1);
+            List oldList = new ArrayList();
+            List newList = new ArrayList();
+            for (ProjectProgress p : list) {
+                oldList.add(p.getProgressValue());
+            }
+            System.out.println(progress_s.length);
             for (int i = 0; i < progress_s.length; i++) {
+                newList.add(Integer.parseInt(progress_s[i].split(":")[0]));
+            }
+            Map map = compareSameAndNot(oldList, newList);
+            List<Integer> addList = (List) map.get("add");
+            List<Integer> sameList = (List) map.get("same");
+            List<Integer> delList = (List) map.get("del");
+            //新增的添加
+            for (Integer add : addList) {
+                ProjectProgress projectProgress = new ProjectProgress();
+                projectProgress.setProjectId(project.getId());
+                for (String a : progress_s) {
+                    if ((a.split(":")[0]).equals(add + "")) {
+                        projectProgress.setProgressValue(add);
+                        projectProgress.setProgress(a.split(":")[1]);
+                        //进度不等于0 的给设定时间
+                        if (!"0".equals(a.split(":")[1])) {
+                            projectProgress.setTime(today.toString());
+                        }
+                        iProjectProgressService.save(projectProgress);
+                    }
+
+                }
+            }
+//            //不变的修改
+            for (Integer same : sameList) {
+                QueryWrapper<ProjectProgress> wrapper = new QueryWrapper<>();
+                wrapper.eq("project_id", project.getId());
+                wrapper.eq("progress_value", same);
+                ProjectProgress progress1 = iProjectProgressService.getOne(wrapper);
+                if (progress1 != null) {
+                    for (String a : progress_s) {
+                        if ((a.split(":")[0]).equals(same + "")) {
+                            progress1.setProgress(a.split(":")[1]);
+                        }
+                    }
+                    String time = progress1.getTime();
+                    if (time == null) {
+                        progress1.setTime(today.toString());
+                    }
+                    iProjectProgressService.updateById(progress1);
+                }
+            }
+            //删除的删除
+            for (Integer del : delList) {
+                QueryWrapper<ProjectProgress> wrapper = new QueryWrapper<>();
+                wrapper.eq("project_id", project.getId());
+                wrapper.eq("progress_value", del);
+                iProjectProgressService.remove(wrapper);
+            }
+           /* for (int i = 0; i < progress_s.length; i++) {
                 String jd = progress_s[i];
+                //进度不等于0 的给查出来修改进度，并判断修改时间
                 if (!"0".equals(jd.split(":")[1])) {
                     EntityWrapper<ProjectProgress> wrapper = new EntityWrapper<>();
                     wrapper.eq("project_id", project.getId());
@@ -199,7 +257,7 @@ public class ProjectController extends BaseController {
 
                 }
 
-            }
+            }*/
             return new ResultInfo<>("0", "追加成功", b);
         }
 
@@ -211,7 +269,7 @@ public class ProjectController extends BaseController {
     @RequiresPermissions("project:del")
     public @ResponseBody
     ResultInfo<Boolean> delBatch(Integer id) {
-        boolean b = iProjectService.deleteById(id);
+        boolean b = iProjectService.removeById(id);
         return new ResultInfo<>(b);
     }
 
@@ -253,5 +311,39 @@ public class ProjectController extends BaseController {
     protected void initBinder(WebDataBinder binder) {
         SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
         binder.registerCustomEditor(Date.class, new CustomDateEditor(dateFormat, true));
+    }
+
+    public static void main(String[] args) {
+        System.out.println("".length());
+//集合一
+//        List oldList = new ArrayList();
+//        oldList.add("2");
+//        oldList.add("3");
+//        oldList.add("4");
+//        //集合二
+//        List newList = new ArrayList();
+//        newList.add("1");
+//        newList.add("2");
+//        newList.add("5");
+//
+//        Map map = compareSameAndNot(oldList, newList);
+//        System.out.println(map.get("add"));
+//        System.out.println(map.get("same"));
+//        System.out.println(map.get("del"));
+    }
+
+    public static Map compareSameAndNot(List oldList, List newList) {
+        Collection existsa = new ArrayList(newList);
+        Collection notexistsa = new ArrayList(newList);
+        Collection existsb = new ArrayList(oldList);
+        Collection notexistsb = new ArrayList(oldList);
+        existsa.removeAll(oldList);
+        notexistsa.removeAll(existsa);
+        notexistsb.removeAll(newList);
+        Map map = new HashMap();
+        map.put("add", existsa);
+        map.put("same", notexistsa);
+        map.put("del", notexistsb);
+        return map;
     }
 }

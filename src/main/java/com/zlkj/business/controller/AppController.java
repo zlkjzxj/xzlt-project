@@ -1,33 +1,37 @@
 package com.zlkj.business.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import com.zlkj.admin.dto.AppParam;
-import com.zlkj.admin.dto.CodeDto;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.UserDto;
 import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.entity.User;
 import com.zlkj.admin.service.ICodeService;
 import com.zlkj.admin.service.IUserService;
+import com.zlkj.admin.util.CodeConstant;
+import com.zlkj.admin.util.HttpClientUtil;
 import com.zlkj.business.dto.EnterpriseDto;
 import com.zlkj.business.dto.ProjectDto;
-import com.zlkj.business.entity.Enterprise;
-import com.zlkj.business.entity.Project;
-import com.zlkj.business.entity.ProjectProgress;
-import com.zlkj.business.entity.Tc;
-import com.zlkj.business.service.IEnterpriseService;
-import com.zlkj.business.service.IProjectProgressService;
-import com.zlkj.business.service.IProjectService;
-import com.zlkj.business.service.ITcService;
+import com.zlkj.business.entity.*;
+import com.zlkj.business.service.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import sun.misc.BASE64Decoder;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
 import java.util.*;
+
+import static com.zlkj.admin.util.Constant.APPID;
+import static com.zlkj.admin.util.Constant.APPSECRET;
+import static com.zlkj.admin.util.Constant.WX_OPENID_URL;
 
 
 /**
@@ -51,6 +55,10 @@ public class AppController {
     private ITcService iTcService;
     @Resource
     private IProjectProgressService iProjectProgressService;
+    @Resource
+    private IWxUserService iWxUserService;
+    @Resource
+    private IWxViewProjectLogService iWxViewProjectLogService;
 
     /**
      * 小程序扫码后跳转的页面
@@ -59,7 +67,8 @@ public class AppController {
      * @return
      */
     @RequestMapping("/to_index")
-    public String index(AppParam appParam) {
+    public String index(AppParam appParam, Model model) {
+        model.addAttribute("enterpriseId", appParam.getEnterpriseId());
         return "app/index";
     }
 
@@ -83,41 +92,40 @@ public class AppController {
     @ResponseBody
     public ResultInfo<Map<String, Object>> getProjectInfo(AppParam appParam) {
         //判断项目id是为为空
+        long time1 = System.currentTimeMillis();
         if (StringUtils.isEmpty(appParam.getEnterpriseId())) {
             return new ResultInfo<>("-1", "接口参数验证失败");
         }
-//        EntityWrapper<Enterprise> enterpriseWrapper = new EntityWrapper<>();
-//        enterpriseWrapper.eq("id", appParam.getProjectId());
+        QueryWrapper<Enterprise> enterpriseWrapper = new QueryWrapper<>();
+        enterpriseWrapper.eq("number", appParam.getEnterpriseId());
 
-        Enterprise enterprise = iEnterpriseService.selectById(appParam.getEnterpriseId());
+        Enterprise enterprise = iEnterpriseService.getOne(enterpriseWrapper);
         List<Project> projectList;
         List<ProjectDto> projectDtoList = new ArrayList<>();
         if (enterprise != null) {
             enterprise.setQrcode(null);
-            //用户职位code
-            EntityWrapper<Code> userLevelwrapper = new EntityWrapper<>();
-            userLevelwrapper.eq("code", "userlevel");
-            List<Code> userLevelCodeList = iCodeService.selectList(userLevelwrapper);
-//            //公司code
-//            EntityWrapper<Code> campanywrapper = new EntityWrapper<>();
-//            userLevelwrapper.eq("code", "userlevel");
-//            List<Code> campanyCodeList = iCodeService.selectList(campanywrapper);
 
-            EntityWrapper<Project> projectWrapper = new EntityWrapper<>();
+            QueryWrapper<Project> projectWrapper = new QueryWrapper<>();
             projectWrapper.eq("company", enterprise.getId());
             //查出岗位列表
-            projectList = iProjectService.selectList(projectWrapper);
+            projectList = iProjectService.list(projectWrapper);
             for (Project project : projectList) {
                 Integer managerId = project.getManager();
-
+                System.out.println(JSON.toJSONString(project));
                 String memberStr = project.getMembers();
                 String[] members = memberStr.split(",");
-                User xmjl = iUserService.selectById(managerId);
+                QueryWrapper<User> xmjlWrapper = new QueryWrapper<>();
+                xmjlWrapper.select("id", "role_id", "name", "user_name", "phone", "company", "sign", "avatar");
+                xmjlWrapper.eq("id", managerId);
+                User xmjl = iUserService.getOne(xmjlWrapper);
+                System.out.println(xmjl);
                 UserDto jl = new UserDto();
+                jl.setId(xmjl.getId());
                 jl.setName(xmjl.getName());
                 jl.setSign(xmjl.getSign());
                 jl.setAvatar(xmjl.getAvatar());
-                for (Code code : userLevelCodeList) {
+                jl.setPhone(xmjl.getPhone());
+                for (Code code : CodeConstant.userLevelCodeList) {
                     if ("1".equals(code.getCodeValue() + "")) {
                         jl.setZw(code.getCodeName());
                         jl.setZwms(code.getCodeDesc());
@@ -127,27 +135,33 @@ public class AppController {
                 List<UserDto> xmcy = new ArrayList<>();
                 for (int i = 0; i < members.length; i++) {
                     String memberstr = members[i].replace("\"", "").replace("}", "").replace("{", "");
-                    User cy = iUserService.selectById(memberstr.split(":")[0]);
-                    UserDto userDto = new UserDto();
-                    for (Code code : userLevelCodeList) {
-                        if (memberstr.split(":")[1].equals(code.getCodeValue() + "")) {
-                            userDto.setZw(code.getCodeName());
-                            userDto.setZwms(code.getCodeDesc());
-                            break;
+                    if (memberStr.indexOf(":") > -1) {
+                        QueryWrapper<User> cyWrapper = new QueryWrapper<>();
+                        cyWrapper.select("id", "role_id", "name", "user_name", "phone", "company", "sign", "avatar");
+                        cyWrapper.eq("id", memberstr.split(":")[0]);
+                        User cy = iUserService.getOne(cyWrapper);
+                        UserDto userDto = new UserDto();
+                        for (Code code : CodeConstant.userLevelCodeList) {
+                            if (memberstr.split(":")[1].equals(code.getCodeValue() + "")) {
+                                userDto.setZw(code.getCodeName());
+                                userDto.setZwms(code.getCodeDesc());
+                                break;
+                            }
                         }
+                        userDto.setId(cy.getId());
+                        userDto.setName(cy.getName());
+                        userDto.setSign(cy.getSign());
+                        userDto.setAvatar(cy.getAvatar());
+                        xmcy.add(userDto);
                     }
-                    userDto.setName(cy.getName());
-                    userDto.setSign(cy.getSign());
-                    userDto.setAvatar(cy.getAvatar());
-                    xmcy.add(userDto);
                 }
                 ProjectDto projectInfo = new ProjectDto();
                 projectInfo.setName(project.getName());
                 projectInfo.setManager(jl);
                 projectInfo.setMembers(xmcy);
-                EntityWrapper<ProjectProgress> projectDtoWrapper = new EntityWrapper<>();
+                QueryWrapper<ProjectProgress> projectDtoWrapper = new QueryWrapper<>();
                 projectDtoWrapper.eq("project_id", project.getId());
-                List<ProjectProgress> progressList = iProjectProgressService.selectList(projectDtoWrapper);
+                List<ProjectProgress> progressList = iProjectProgressService.list(projectDtoWrapper);
                 projectInfo.setProgress(progressList);
                 projectDtoList.add(projectInfo);
             }
@@ -155,45 +169,43 @@ public class AppController {
         } else {
             return new ResultInfo<>("-1", "查无此企业");
         }
-        //测评code qyrs,clsj,qyxz,zyyt,jyzt,ltdjed,gzqy,gltxjqcd,nrylsl,jxry,yqbzq,zltsl,ldjf,swjf,xytc,qtjfx,starrating
 
-        String[] cpcodes = new String[]{"qyrs", "clsj", "qyxz", "zyyt", "jyzt", "ltdjed", "gzqy", "gltxjqcd", "nrylsl", "jxry",
-                "yqbzq", "zltsl", "xytc", "ldjf", "swjf"};
 
-        Map<String, List<CodeDto>> cpCodeMap = new LinkedHashMap<>();
-        for (int i = 0; i < cpcodes.length; i++) {
-            EntityWrapper<Code> wrapper = new EntityWrapper<>();
-            wrapper.eq("code", cpcodes[i]);
-            List<Code> codeList = iCodeService.selectList(wrapper);
-            List<CodeDto> dtoList = new ArrayList<>();
-            for (Code code : codeList) {
-                CodeDto dto = new CodeDto();
-                dto.setName(code.getName());
-                dto.setCodeName(code.getCodeName());
-                dto.setCode(code.getCode());
-                dto.setCodeValue(code.getCodeValue());
-                dto.setCodeDesc(code.getCodeDesc());
-                dto.setCodeMark(code.getCodeMark());
-                dto.setCodeIcon(code.getCodeIcon());
-                if (code.getCpTc() != null) {
-                    Tc tc = iTcService.selectById(code.getCpTc());
-                    dto.setCpTc(tc);
-                }
-                dtoList.add(dto);
-            }
-            cpCodeMap.put(cpcodes[i], dtoList);
-        }
-        //进度code
-        EntityWrapper<Code> wrapper1 = new EntityWrapper<>();
-        wrapper1.eq("code", "projectprogress");
-        List<Code> progressCodeList = iCodeService.selectList(wrapper1);
         Map<String, Object> map = new HashMap<>();
         map.put("enterprise", enterprise);
-        map.put("progressCodes", progressCodeList);
+        map.put("progressCodes", CodeConstant.progressCodeList);
         map.put("projectList", projectDtoList);
-        map.put("cpCodes", cpCodeMap);
+        map.put("cpCodes", CodeConstant.cpCodeMap);
+        map.put("managerphone", CodeConstant.phone);
         ResultInfo resultInfo = new ResultInfo(map);
+        long time2 = System.currentTimeMillis();
+        int time = (int) (time2 - time1);
+        System.out.println("小程序查询代码执行时长:" + time);
         return resultInfo;
+    }
+
+    /**
+     * get wxuser openid
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping("/getUserAvatar")
+    public void getUserAvatar(HttpServletResponse response, Integer id) {
+        QueryWrapper<User> userQueryWrapper = new QueryWrapper<>();
+        userQueryWrapper.select("avatar").eq("id", id);
+        User user = iUserService.getOne(userQueryWrapper);
+        if (user != null) {
+            BASE64Decoder decoder = new BASE64Decoder();
+            try {
+                byte[] bytes1 = decoder.decodeBuffer(user.getAvatar().split(",")[1]);
+
+                response.getOutputStream().write(bytes1);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
     /**
@@ -205,7 +217,7 @@ public class AppController {
     @RequestMapping("/updateCpValue")
     @ResponseBody
     public ResultInfo<EnterpriseDto> updateCpValue(@RequestBody Enterprise enterprise) {
-        Enterprise enterprise1 = iEnterpriseService.selectById(enterprise.getId());
+        Enterprise enterprise1 = iEnterpriseService.getById(enterprise.getId());
         if (enterprise1 != null) {
             if (0 == enterprise1.getAppcp()) {
                 enterprise.setAppcp(1);
@@ -231,6 +243,15 @@ public class AppController {
                         + Integer.parseInt(nrylsl) + Integer.parseInt(jxry) + Integer.parseInt(yqbzq) + Integer.parseInt(zltsl)
                         + Integer.parseInt(ldjf) + Integer.parseInt(swjf) + Integer.parseInt(xytc);
                 enterprise.setPjzf(zf);
+                for (Code code : CodeConstant.starRatingCodeList) {
+                    String value = code.getCodeName();
+                    Integer start = Integer.parseInt(value.split("~")[0]);
+                    Integer end = Integer.parseInt(value.split("~")[1]);
+                    if (zf >= start && zf <= end) {
+                        enterprise.setGrade(String.valueOf(code.getCodeMark()));
+                        break;
+                    }
+                }
                 boolean b = iEnterpriseService.updateById(enterprise);
                 EnterpriseDto dto = new EnterpriseDto();
                 dto.setName(enterprise.getName());
@@ -250,7 +271,7 @@ public class AppController {
                 dto.setLdjf(enterprise.getLdjf());
                 dto.setSwjf(enterprise.getSwjf());
                 dto.setXytc(enterprise.getXytc());
-                return new ResultInfo(dto);
+                return new ResultInfo<>("1001", "保存成功", dto);
             } else {
                 EnterpriseDto dto = new EnterpriseDto();
                 dto.setName(enterprise1.getName());
@@ -276,6 +297,61 @@ public class AppController {
         return new ResultInfo<>("-1", "查无此企业");
     }
 
+    /**
+     * 保存微信用户
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping("/saveWxUser")
+    @ResponseBody
+    public ResultInfo<Boolean> saveWxUser(WxUser user) {
+        if (!StringUtils.isEmpty(user.getOpenid())) {
+            WxUser oldUser = iWxUserService.getOne(new QueryWrapper<WxUser>().eq("openid", user.getOpenid()));
+            if (oldUser == null) {
+                boolean b = iWxUserService.save(user);
+                return new ResultInfo<>(b);
+            }
+            return new ResultInfo<>("1002", "用户已存在");
+        }
+        return new ResultInfo<>("1001", "用户openid为空");
+    }
+
+    /**
+     * 保存查看项目看板日志
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping("/saveWxViewProjectLog")
+    @ResponseBody
+    public ResultInfo<Boolean> saveWxViewProjectLog(WxViewProjectLog wxViewProjectLog) {
+        boolean b = false;
+        if (!StringUtils.isEmpty(wxViewProjectLog.getOpenid())) {
+            b = iWxViewProjectLogService.save(wxViewProjectLog);
+        }
+        return new ResultInfo<>(b);
+    }
+
+    /**
+     * get wxuser openid
+     *
+     * @param
+     * @return
+     */
+    @RequestMapping("/getWxUserOpenid")
+    @ResponseBody
+    public ResultInfo<WxLoginResponse> getWxUserOpenid(String code) {
+        Map<String, String> map = new HashMap();
+        map.put("appid", APPID);
+        map.put("secret", APPSECRET);
+        map.put("js_code", code);
+        map.put("grant_type", "authorization_code");
+
+        String result = HttpClientUtil.doPost(WX_OPENID_URL, map, "utf-8");
+        WxLoginResponse response = (WxLoginResponse) JSON.parseObject(result, WxLoginResponse.class);
+        return new ResultInfo<>(response);
+    }
     //    @RequestMapping("/getProjectInfo")
 //    public ResultInfo<Map<String, Object>> getProjectInfo(AppParam appParam) {
 //        String signature = appParam.getSignature();
@@ -297,7 +373,7 @@ public class AppController {
 //            return new ResultInfo<>("-1", "接口参数验证失败");
 //        }
 //        if (AppUtils.checkParam(signature, timestamp)) {
-//            EntityWrapper<Code> wrapper = new EntityWrapper<>();
+//            QueryWrapper<Code> wrapper = new QueryWrapper<>();
 //            wrapper.eq("code", "projectprogress");
 //            List<Code> codeList = iCodeService.selectList(wrapper);
 //            Map<String, Object> map = new HashMap<>();

@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <title>用户列表--layui后台管理模板 2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/css/public.css" media="all"/>
+</head>
+<style>
+    .layui-form-label {
+        width: 120px;
+    }
+
+    /*.layui-input-block {*/
+    /*margin-left: 150px;*/
+    /*min-height: 36px*/
+    /*}*/
+</style>
+<body class="childrenBody">
+<form class="layui-form layui-row">
+    <label class="layui-form-label">logo&二维码</label>
+    <div class="layui-input-inline" style="width: 100px;height: 100px;">
+        <!--<image src="/static/images/logo.png" id="imgBtn"-->
+        <!--style="width: 100px;height: 100px;"></image>-->
+        <img class="layui-upload-img layui-circle userFaceBtn userAvatar" src="/static/images/xzlt_logo.jpg"
+             id="logo" style="width: 100px;height: 100px;" hidden>
+        <input type="file" hidden id="logoFile" name="logoFile"/>
+    </div>
+    <div class="layui-input-inline" style="width: 100px;height: 100px;">
+        <div id="QRCode"></div>
+    </div>
+    </div>
+
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>
+    <div class="layui-center">
+        <div class="layui-input-inline">
+            <button type="button" class="layui-btn" id="coding" onclick="createCode()">生成企业二维码</button>
+        </div>
+    </div>
+    <img class="layui-upload-img" src="http://192.168.20.39:8889/test/qrcode/111.png"
+         style="width: 100px;height: 100px;" hidden>
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/enterprise/info.js"></script>
+<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/static/qrcode/jquery-qrcode.js"></script>
+<script>
+    //生成二维码
+    function createCode() {
+        // var QrUrl = "http://192.168.20.39:8888/test/index";
+        // var QrUrl = "http://www.dkiot.net:8080/test/index";
+        var QrUrl = "https://www.xahrnet.com/test/index";
+        var mode = 4 ;
+        console.log(mode);
+        // var QrUrl = JSON.stringify({"enterpriseId":"zxlt1559620123349","createTime":1559643902665});
+        $("#QRCode").qrcode({
+            render: "canvas", //也可以替换为table
+            // minVersion: 1,       // version range somewhere in 1 .. 40
+            // maxVersion: 40,
+            ecLevel: 'H',        //识别度  'L', 'M', 'Q' or 'H'
+            foreground: '#000',        //二维码颜色
+            background: '#ffffff',    //背景色
+            text: QrUrl,     //二维码内容
+            radius: 0.1,         // 0.0 .. 0.5
+            quiet: 3,            //边距
+            mode: mode,
+            width:256,//二维码的宽度和高度
+            height:256,
+            mSize: 0.2,          //图片大小
+            mPosX: 0.5,
+            mPosY: 0.5,
+            label: '兴中猎头',
+            // fontname: 'sans',
+            // fontcolor: '#000',
+            image: $('#logo')[0]
+        });
+    }
+ /*   var defaults = {
+        // render method: `'canvas'`, `'image'` or `'div'`
+        render: 'canvas',
+
+        // version range somewhere in 1 .. 40
+        minVersion: 1,
+        maxVersion: 40,
+
+        // error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
+        ecLevel: 'L',
+
+        // offset in pixel if drawn onto existing canvas
+        left: 0,
+        top: 0,
+
+        // size in pixel
+        size: 200,
+
+        // code color or image element
+        fill: '#000',
+
+        // background color or image element, `null` for transparent background
+        background: null,
+
+        // content
+        text: 'no text',
+
+        // corner radius relative to module width: 0.0 .. 0.5
+        radius: 0,
+
+        // quiet zone in modules
+        quiet: 0,
+
+        // modes
+        // 0: normal
+        // 1: label strip
+        // 2: label box
+        // 3: image strip
+        // 4: image box
+        mode: 0,
+
+        mSize: 0.1,
+        mPosX: 0.5,
+        mPosY: 0.5,
+
+        label: 'no label',
+        fontname: 'sans',
+        fontcolor: '#000',
+
+        image: null
+    };*/
+</script>
+</body>
+</html>

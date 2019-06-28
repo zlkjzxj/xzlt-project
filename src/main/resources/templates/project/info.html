@@ -26,57 +26,20 @@
 <form class="layui-form layui-row">
     <input type="hidden" value="" id="id" name="id">
     <input type="hidden" id="grade" name="grade" value="0">
+    <input type="hidden" id="contacts" name="contacts">
+    <input type="hidden" id="phone" name="phone">
     <input type="hidden" id="progress" name="progress" value="0">
     <input type="hidden" id="managerId" name="managerId">
-    <input type="hidden" id="companyId" name="companyId">
+    <input type="hidden" id="company" name="company">
     <input type="hidden" id="membersId" name="membersId">
-    <input type="hidden" id="gradeId" name="gradeId">
     <div class="layui-form-item">
         <div class="layui-inline layui-col-md5">
             <label class="layui-form-label">所属公司</label>
-            <div class="layui-input-inline">
-                <select name="company" id="company" lay-filter="company" lay-verify="required">
-                    <option value="">请选择所属公司</option>
-                </select>
-            </div>
-        </div>
-        <div class="layui-inline layui-col-md6">
-            <label class="layui-form-label">企业评分</label>
-            <div class="layui-input-inline">
-                <div id="gradeDiv" style="margin: 0; height: 36px;line-height: 18px;"></div>
-            </div>
-            <div class="layui-input-inline " style="width: 50px; height: 36px; line-height: 36px;">
-                <div id="gradeSpan">0星</div>
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">联系人</label>
-            <div class="layui-input-inline">
-                <input name="contacts" id="contacts" class="layui-input" readonly autocomplete="off">
-            </div>
-        </div>
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">联系电话</label>
-            <div class="layui-input-inline">
-                <input name="phone" id="phone" class="layui-input" readonly autocomplete="off" lay-verify="phone">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">岗位名称</label>
-        <div class="layui-input-block">
-            <input name="name" id="name" class="layui-input" lay-verify="name|required"
-                   placeholder="请输入项目名称" autocomplete="off">
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">岗位编号</label>
             <div class="layui-input-block">
-                <input name="number" id="number" class="layui-input" lay-verify="required"
-                       placeholder="请输入项目编号" readonly autocomplete="off">
+                <!--<select name="company" id="company" lay-filter="company" lay-verify="required">
+                    <option value="">请选择所属公司</option>
+                </select>-->
+                <input name="companyName" id="companyName" class="layui-input" readonly>
             </div>
         </div>
         <div class="layui-inline layui-col-md5">
@@ -89,17 +52,53 @@
     </div>
     <div class="layui-form-item">
         <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">项目经理</label>
-            <div class="layui-input-inline">
+            <label class="layui-form-label ">项目名称</label>
+            <div class="layui-input-block">
+                <input name="name" id="name" class="layui-input" lay-verify="name|required"
+                       placeholder="请输入项目名称" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">项目编号</label>
+            <div class="layui-input-block">
+                <input name="number" id="number" class="layui-input" lay-verify="required"
+                       placeholder="请输入项目编号" readonly>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">项目负责人</label>
+            <div class="layui-input-block">
                 <select name="manager" id="manager" lay-filter="manager" lay-verify="required">
-                    <option value="">请选择项目经理</option>
+                    <option value="">请选择项目负责人</option>
                 </select>
             </div>
         </div>
         <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">项目成员</label>
-            <div class="layui-input-inline">
+            <label class="layui-form-label" id="memberLabel">项目成员</label>
+            <div class="layui-input-block">
                 <input type="text" id="memberSelect" name class="layui-input" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 10px;"/>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">选择进度套餐</label>
+            <div class="layui-input-inline">
+                <select name="tc" id="tc" lay-filter="tc">
+                    <option value="">人才招聘套餐</option>
+                    <option value="">人才测评套餐</option>
+                    <option value="">其他套餐</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline">
+                <a class="layui-btn layui-btn-md" lay-filter="addProgress" id="addProgress">
+                    <i class="layui-icon">&#xe654;</i>添加</a>
             </div>
         </div>
     </div>
@@ -111,6 +110,30 @@
             <i class="layui-icon">&#xe609;</i>保存</a>
         <!--<a class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="look" lay-submit>预览</a>-->
     </div>
+    <!--存放添加进度条的模板-->
+    <script id="progressHtml" type="text/text">
+        <div class="layui-form-item">
+            <div class="layui-form-inline">
+                {{# layui.each(d.list, function(index, item){ }}
+                <input type="checkbox" name="progressBox" title="{{item.codeName}}" value="{{item.codeValue}}" lay-skin="primary"/>
+                {{# }); }}
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    </script>
 </form>
 <script type="text/javascript" src="/static/layui/layui.js"></script>
 <script type="text/javascript" src="/static/js/project/info.js"></script>

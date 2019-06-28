@@ -1,6 +1,6 @@
 package com.zlkj.admin.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Role;
 import com.zlkj.admin.dao.RoleMapper;
 import com.zlkj.admin.service.IRoleService;
@@ -21,7 +21,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements IR
     public Boolean saveRole(Role role) {
         Boolean res = false;
         if (role.getId() == null) {
-            res = this.insert(role);
+            res = this.save(role);
         } else {
             res = this.updateById(role);
         }

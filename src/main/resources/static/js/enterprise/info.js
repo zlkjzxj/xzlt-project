@@ -193,16 +193,13 @@ layui.config({
             return false;
         }
         var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
-        var saveImage = canvas.toDataURL('image/png');
-        var bs64 = saveImage;
-        // var field = Object.assign(data.field, {
-        //         'qrcode': bs64,
-        //     })
-        // ;
         var form = document.querySelector(".layui-form");
         var formData = new FormData(form);
-        console.log(formData);
-        console.log(formData.get("name"));
+        var logoChange = $("#logoChange").val();
+        var bs64 = "";
+        if (logoChange == 'true') {
+            bs64 = canvas.toDataURL('image/jpg');
+        }
         formData.append("qrcode", bs64);
         if ($("#id").val() === "") {
             $.ajax({
@@ -265,6 +262,9 @@ layui.config({
             //用attr将img的src属性改成获得的url
             $("#logo").attr("src", imgURL);
             $("#logoChange").val("true");
+            setTimeout(function () {
+                window.createCode();
+            }, 500);
             // 使用下面这句可以在内存中释放对此 url 的伺服，跑了之后那个 URL 就无效了
             // URL.revokeObjectURL(imgURL);
         }

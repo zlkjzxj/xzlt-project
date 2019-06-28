@@ -1,8 +1,7 @@
 package com.zlkj.business.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zlkj.business.entity.ProjectProgress;
-import com.zlkj.business.entity.Tc;
 
 /**
  * <p>

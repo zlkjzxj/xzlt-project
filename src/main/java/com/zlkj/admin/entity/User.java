@@ -1,11 +1,7 @@
 package com.zlkj.admin.entity;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
-import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
@@ -53,6 +49,11 @@ public class User extends Model<User> {
     @TableField("password")
     @JsonIgnore
     private String password;
+    /**
+     * 电话
+     */
+    @TableField("phone")
+    private String phone;
     /**
      * 所属公司
      */

@@ -4,7 +4,6 @@ layui.config({
     var form = layui.form
     layer = parent.layer === undefined ? layui.layer : top.layer,
         $ = layui.jquery;
-
     //初始化用户级别和所属公司
     var initParam = sessionStorage.getItem("initParam");
     initParam = JSON.parse(initParam);
@@ -13,12 +12,12 @@ layui.config({
 
     userLevel.forEach(function (e) {
         $("#levelSelect").append("<option value='" + e.codeValue + "'>" + e.codeName + "</option>");
-        $("#levelSelect").val($("#userLevel").val());//默认选中
     });
     company.forEach(function (e) {
         $("#companySelect").append("<option value='" + e.codeValue + "'>" + e.codeName + "</option>");
-        $("#companySelect").val($("#company").val());//默认选中
     });
+    $("#levelSelect").val($("#userLevel").val());//默认选中
+    $("#companySelect").val($("#company").val());//默认选中
     form.render('select');//刷新select选择框渲染
 
     //初始化角色下拉框
@@ -31,8 +30,15 @@ layui.config({
         });
         $("#roleSelect").val($("#roleId").val());//默认选中
         form.render('select');//刷新select选择框渲染
-    });
+        var id = $("#id").val();
+        if (id != "") {
+            $.get("/user/getAvatar?id=" + id, function (data) {
+                $("#userFace").attr("src", data.data);
+            });
+        }
 
+
+    });
     //添加验证规则
     form.verify({
         newPwd: function (value, item) {
@@ -74,10 +80,7 @@ layui.config({
         var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
         var form = document.querySelector(".layui-form");
         var formdata = new FormData(form);
-        console.log(formdata);
-        console.log(formdata.get("name"));
         if ($("#id").val() === "") {
-            console.log(data.field);
             $.ajax({
                 url: "/user/add",
                 data: formdata,
@@ -85,13 +88,14 @@ layui.config({
                 processData: false,  //必须false才会避开jQuery对 formdata 的默认处理
                 contentType: false,  //必须false才会自动加上正确的Content-Type
                 success: function (res) {
+                    console.log(res);
                     if (res.data) {
                         layer.close(index);
                         layer.msg("添加成功！");
                         //刷新父页面
                         parent.location.reload();
                     } else {
-                        layer.msg(data.msg);
+                        layer.msg(res.msg);
                     }
                 }
             })

@@ -1,8 +1,11 @@
 package com.zlkj.business.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.zlkj.business.dto.EnterpriseDto;
 import com.zlkj.business.entity.Enterprise;
 import org.apache.ibatis.annotations.Mapper;
+
+import java.util.List;
 
 /**
  * <p>
@@ -14,4 +17,5 @@ import org.apache.ibatis.annotations.Mapper;
  */
 @Mapper
 public interface EnterpriseMapper extends BaseMapper<Enterprise> {
+    List<Enterprise> getListBySearchVar(EnterpriseDto enterprise);
 }

@@ -1,6 +1,6 @@
 package com.zlkj.admin.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zlkj.admin.dto.MenuInfo;
 import com.zlkj.admin.dto.PermissionInfo;
 import com.zlkj.admin.entity.Permission;

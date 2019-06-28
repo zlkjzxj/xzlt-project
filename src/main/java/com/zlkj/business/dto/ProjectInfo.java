@@ -1,11 +1,7 @@
 package com.zlkj.business.dto;
 
-import com.baomidou.mybatisplus.annotations.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.zlkj.admin.dto.UserDto;
-import com.zlkj.admin.entity.Code;
-import com.zlkj.admin.entity.User;
 import com.zlkj.business.entity.ProjectProgress;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -59,4 +55,5 @@ public class ProjectInfo {
     @JsonIgnore
     private String order;
 
+    private String searchVal;
 }

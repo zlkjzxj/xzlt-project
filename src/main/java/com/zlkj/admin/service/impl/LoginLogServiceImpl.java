@@ -1,6 +1,6 @@
 package com.zlkj.admin.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.LoginLog;
 import com.zlkj.admin.dao.LoginLogMapper;
 import com.zlkj.admin.service.ILoginLogService;

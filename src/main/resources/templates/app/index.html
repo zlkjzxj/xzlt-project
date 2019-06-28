@@ -1,22 +1,28 @@
 <!DOCTYPE html>
 <html lang="en">
-
+<html xmlns:th="http://www.thymeleaf.org" xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title></title>
     <link rel="icon" href="/favicon.png" type="image/x-icon">
-    <link href="../../static/public/static/css/main.css" rel="stylesheet">
-    <script type="text/javascript" src="../../static/public/config/ip.js"></script>
+    <link href="/static/public/static/css/main.css" rel="stylesheet">
+    <script type="text/javascript" src="/static/public/config/ip.js"></script>
 </head>
 <body>
 <div id="root"></div>
 <input id='ip' type="hidden"/>
-<script type="text/javascript" src="../../static/public/static/js/main.js"></script>
+<input id='enterpriseId' type="hidden" th:value="${enterpriseId}"/>
 </body>
 <script type="text/javascript">
     console.log(window, "window....")
+    var enterpriseId = document.getElementById("enterpriseId").value;
+    console.log(enterpriseId);
+    window.IPTEST = '/app/getProjectInfo?enterpriseId=' + enterpriseId;
+    // window.IPTEST = 'http://192.168.20.39:8889/app/getProjectInfo?enterpriseId=' + enterpriseId;
+    console.log(window.IPTEST);
 </script>
+<script type="text/javascript" src="/static/public/static/js/main.js"></script>
 </body>
 </html>

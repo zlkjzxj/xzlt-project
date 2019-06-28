@@ -20,7 +20,8 @@
     <input type="hidden" value="" id="company">
     <div class="layui-col-md3  user_right">
         <div class="layui-upload-list">
-            <img class="layui-upload-img layui-circle userFaceBtn userAvatar"  id="userFace" >
+            <img class="layui-upload-img layui-circle userFaceBtn userAvatar" id="userFace"
+                 src="/static/images/default.jpg">
             <input type="file" hidden id="avatarFile" name="avatarFile"/>
         </div>
         <button type="button" id="userFaceBtn" class="layui-btn layui-btn-primary userFaceBtn"><i class="layui-icon">&#xe67c;</i>
@@ -43,6 +44,13 @@
             </div>
         </div>
         <div class="layui-form-item">
+            <label class="layui-form-label">手机号码</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" id="phone" name="phone" lay-verify="required|phone"
+                       placeholder="请输入电话号码">
+            </div>
+        </div>
+        <div class="layui-form-item">
             <label class="layui-form-label">所属公司</label>
             <div class="layui-input-block">
                 <select name="company" id="companySelect" lay-verify="required">
@@ -51,12 +59,12 @@
             </div>
         </div>
         <!--<div class="layui-form-item">-->
-            <!--<label class="layui-form-label">用户级别</label>-->
-            <!--<div class="layui-input-block">-->
-                <!--<select name="userLevel" id="levelSelect" lay-verify="required">-->
-                    <!--<option value="">请选择用户级别</option>-->
-                <!--</select>-->
-            <!--</div>-->
+        <!--<label class="layui-form-label">用户级别</label>-->
+        <!--<div class="layui-input-block">-->
+        <!--<select name="userLevel" id="levelSelect" lay-verify="required">-->
+        <!--<option value="">请选择用户级别</option>-->
+        <!--</select>-->
+        <!--</div>-->
         <!--</div>-->
         <div class="layui-form-item">
             <label class="layui-form-label">所属角色</label>

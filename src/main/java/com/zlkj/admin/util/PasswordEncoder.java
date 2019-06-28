@@ -13,15 +13,16 @@ public class PasswordEncoder {
 
     /**
      * 创建盐值
+     *
      * @param length 盐值位数
      * @return
      */
-    public static String createSalt(int length){
-        String str="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random=new Random();
-        StringBuffer sb=new StringBuffer();
-        for(int i=0;i<length;i++){
-            int number=random.nextInt(62);
+    public static String createSalt(int length) {
+        String str = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(62);
             sb.append(str.charAt(number));
         }
         return sb.toString();
@@ -29,11 +30,12 @@ public class PasswordEncoder {
 
     /**
      * 密码加密
+     *
      * @param userName 用户名
      * @param passWord 原密码
      * @return 盐值、加密密码
      */
-    public static Map<String, String> enCodePassWord(String userName, String passWord){
+    public static Map<String, String> enCodePassWord(String userName, String passWord) {
         Map<String, String> map = new HashMap<>();
         //盐值
         String salt = createSalt(32);
@@ -46,10 +48,17 @@ public class PasswordEncoder {
         SimpleHash simpleHash = new SimpleHash("md5", passWord, userName + salt, hashIterations);
         map.put(SALT, salt);
         map.put(PASSWORD, simpleHash.toString());
-        return  map;
+        return map;
     }
 
-    public static void main(String[] args){
+    public static String enCodePassWord1(String userName, String passWord, String salt) {
+        Map<String, String> map = new HashMap<>();
+        int hashIterations = 2;
+        SimpleHash simpleHash = new SimpleHash("md5", passWord, userName + salt, hashIterations);
+        return simpleHash.toString();
+    }
+
+    public static void main(String[] args) {
         //用户名
         String name = "test";
 

@@ -1,17 +1,7 @@
 package com.zlkj.admin.dto;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
-import com.baomidou.mybatisplus.enums.IdType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-
-import java.io.Serializable;
-import java.util.Date;
 
 /**
  * <p>
@@ -34,6 +24,7 @@ public class UserDto {
     private Integer company;
     private String avatar;
     private String sign;
+    private String phone;
 
     private String zw;
     private String zwms;

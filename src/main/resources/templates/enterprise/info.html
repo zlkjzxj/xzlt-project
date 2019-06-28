@@ -17,6 +17,10 @@
         width: 120px;
     }
 
+    #QRCode canvas {
+        width: 100px;
+    }
+
     /*.layui-input-block {*/
     /*margin-left: 150px;*/
     /*min-height: 36px*/
@@ -146,7 +150,7 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">猎头定金额度</label>
+                <label class="layui-form-label">定金额度</label>
                 <div class="layui-input-inline">
                     <select name="ltdjed" id="ltdjed" lay-filter="ltdjed" lay-verify="required"></select>
                 </div>
@@ -174,7 +178,7 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">奖项荣誉</label>
+                <label class="layui-form-label">奖项荣誉(只填最高奖项)</label>
                 <div class="layui-input-inline">
                     <select name="jxry" id="jxry" lay-filter="jxry" lay-verify="required"></select>
                 </div>
@@ -188,7 +192,7 @@
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">找猎头数量</label>
+                <label class="layui-form-label">合作供应商数(同一时期内)</label>
                 <div class="layui-input-inline">
                     <select name="zltsl" id="zltsl" lay-filter="zltsl" lay-verify="required"></select>
                 </div>
@@ -210,13 +214,13 @@
         </div>
         <div class="layui-form-item">
             <div class="layui-inline">
-                <label class="layui-form-label">选用套餐</label>
+                <label class="layui-form-label">选用套餐(猎头填写)</label>
                 <div class="layui-input-inline">
                     <select name="xytc" id="xytc" lay-filter="xytc" lay-verify="required"></select>
                 </div>
             </div>
             <div class="layui-inline">
-                <label class="layui-form-label">其他加分项</label>
+                <label class="layui-form-label">沟通满意度</label>
                 <div class="layui-input-inline">
                     <select name="qtjfx" id="qtjfx" lay-filter="qtjfx" lay-verify="required">
                     </select>
@@ -249,6 +253,11 @@
         var logoChange = $("#logoChange").val();
         if (logoChange == "true") {
             element.innerHTML = "";
+        } else {
+            if ($("#addoredit").val() != "edit") {
+                layer.msg("请点击图片选择企业头像");
+                return;
+            }
         }
         if (element.childNodes.length > 0) {
             return;
@@ -265,24 +274,23 @@
         var QrUrl = JSON.stringify(obj);
         $("#QRCode").qrcode({
             render: "canvas", //也可以替换为table
-            minVersion: 1,       // version range somewhere in 1 .. 40
-            maxVersion: 40,
+            // minVersion: 1,       // version range somewhere in 1 .. 40
+            // maxVersion: 40,
             ecLevel: 'H',        //识别度  'L', 'M', 'Q' or 'H'
-            left: 0,
-            top: 0,
-            size: 100,           //尺寸
-            fill: '#000',        //二维码颜色
-            background: null,    //背景色
+            foreground: '#000',        //二维码颜色
+            background: '#ffffff',    //背景色
             text: QrUrl,     //二维码内容
             radius: 0.1,         // 0.0 .. 0.5
             quiet: 2,            //边距
             mode: 4,
-            mSize: 0.2,          //图片大小
+            width: 256,
+            height: 256,
+            mSize: 0.3,      //图片大小
             mPosX: 0.5,
             mPosY: 0.5,
             label: 'jQuery.qrcode',
-            fontname: 'sans',
-            fontcolor: '#000',
+            // fontname: 'sans',
+            // fontcolor: '#000',
             image: $('#logo')[0]
         });
     }

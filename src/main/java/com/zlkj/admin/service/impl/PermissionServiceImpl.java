@@ -1,7 +1,7 @@
 package com.zlkj.admin.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.admin.code.ResourceType;
 import com.zlkj.admin.dto.MenuInfo;
 import com.zlkj.admin.dto.PermissionInfo;
@@ -27,10 +27,10 @@ import java.util.List;
 @Service
 public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permission> implements IPermissionService {
 
-//    @Cacheable("permissionCache")
+    //    @Cacheable("permissionCache")
     @Override
     public List<Permission> getAllPermissions() {
-        List<Permission> permissions = this.baseMapper.selectList(new EntityWrapper<>());
+        List<Permission> permissions = this.baseMapper.selectList(new QueryWrapper<>());
         return permissions;
     }
 
@@ -38,74 +38,74 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public Boolean savePermission(Permission permission) {
         Boolean res = false;
-        if (permission.getId()==null) {
-            if(permission.getParentId()==null){
+        if (permission.getId() == null) {
+            if (permission.getParentId() == null) {
                 permission.setParentId(0);
                 permission.setParentIds("0");
             } else {
                 Permission ps = this.baseMapper.selectById(permission.getParentId());
-                permission.setParentIds(ps.getParentIds()+"/"+ps.getId());
+                permission.setParentIds(ps.getParentIds() + "/" + ps.getId());
             }
-            res = this.insert(permission);
+            res = this.save(permission);
         } else {
             res = this.updateById(permission);
         }
         return res;
     }
 
-//    @CacheEvict(value = "permissionCache", allEntries = true)
+    //    @CacheEvict(value = "permissionCache", allEntries = true)
     @Override
     public Boolean delBatchPermission(List<Integer> ids) {
         Boolean res = false;
         //目录和菜单只能单个删除
-        if(ids.size() == 1){
-            Permission permission = this.selectById(ids.get(0));
+        if (ids.size() == 1) {
+            Permission permission = this.getById(ids.get(0));
             Permission con = new Permission();
             con.setParentId(permission.getId());
-            List<Permission> list = this.baseMapper.selectList(new EntityWrapper<>(con));
-            if(list!=null&&list.size()>0){
+            List<Permission> list = this.baseMapper.selectList(new QueryWrapper<>(con));
+            if (list != null && list.size() > 0) {
                 throw new BusinessException(Constant.YES_ERROR, "有子权限不能删除！");
             }
-            res = this.deleteById(ids.get(0));
+            res = this.removeById(ids.get(0));
         } else {
             res = this.baseMapper.deleteBatchIds(ids) > 0;
         }
         return res;
     }
 
-//    @Cacheable(value = "permissionCache")
+    //    @Cacheable(value = "permissionCache")
     @Override
     public List<PermissionInfo> allPermissionInfo() {
         return this.baseMapper.allPermissionInfo();
     }
 
-//    @Cacheable(value = "permissionCache", key="'code:'+#p0")
+    //    @Cacheable(value = "permissionCache", key="'code:'+#p0")
     @Override
     public List<MenuInfo> getMenuPermissions(String code) {
         List<MenuInfo> menuInfoList = new ArrayList<>();
-        EntityWrapper<Permission> wrapper = new EntityWrapper<>();
+        QueryWrapper<Permission> wrapper = new QueryWrapper<>();
         Permission permission = new Permission();
         permission.setPermissionCode(code);
         wrapper.setEntity(permission);
-        permission = this.selectOne(wrapper);
+        permission = this.getOne(wrapper);
         Permission con = new Permission();
-        con.setParentIds(permission.getParentIds()+"/"+permission.getId());
+        con.setParentIds(permission.getParentIds() + "/" + permission.getId());
         con.setAvailable(1);
         wrapper.setEntity(con);
-        String[] resourceTypes = { ResourceType.DIRECTORY.getCode(), ResourceType.MENU.getCode() };
+        String[] resourceTypes = {ResourceType.DIRECTORY.getCode(), ResourceType.MENU.getCode()};
         wrapper.in("resource_type", resourceTypes);
-        List<Permission> list = this.selectList(wrapper);
+        List<Permission> list = this.list(wrapper);
         for (Permission ps : list) {
             MenuInfo info = new MenuInfo();
             info.setOnlyId(ps.getId());
             info.setTitle(ps.getPermissionName());
             info.setHref(ps.getUrl());
-            if (ps.getResourceType().equals(ResourceType.DIRECTORY.getCode())){
+            if (ps.getResourceType().equals(ResourceType.DIRECTORY.getCode())) {
                 con = new Permission();
-                con.setParentIds(ps.getParentIds()+"/"+ps.getId());
+                con.setParentIds(ps.getParentIds() + "/" + ps.getId());
                 con.setAvailable(1);
                 wrapper.setEntity(con);
-                List<Permission> list2 = this.selectList(wrapper);
+                List<Permission> list2 = this.list(wrapper);
                 List<MenuInfo> subMenuInfoList = new ArrayList<>();
                 for (Permission subPs : list2) {
                     MenuInfo subInfo = new MenuInfo();
@@ -121,13 +121,13 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
         return menuInfoList;
     }
 
-//    @Cacheable(value = "permissionCache")
+    //    @Cacheable(value = "permissionCache")
     @Override
     public List<Permission> getTopDirectoryPermissions() {
         Permission permission = new Permission();
         permission.setResourceType(ResourceType.TOP_DIRECTORY.getCode());
         permission.setAvailable(1);
-        return this.selectList(new EntityWrapper<>(permission));
+        return this.list(new QueryWrapper<>(permission));
     }
 
 }

@@ -1,11 +1,8 @@
 layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
     var form = layui.form,
-        layer = parent.layer === undefined ? layui.layer : top.layer,
+        layer = layui.layer,
         $ = layui.jquery,
-        laypage = layui.laypage,
         table = layui.table;
-
-
     var roleList;
     $.post("/role/selectListData", {
         available: 1
@@ -42,7 +39,7 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
                     return name;
                 }
             },
-            {field: 'glbm', title: '管理部门', minWidth: 100, align: "center"},
+            {field: 'phone', title: '手机号码', minWidth: 150, align: "center"},
             {
                 field: 'state', title: '用户状态', minWidth: 100, align: 'center', templet: function (d) {
                     if (d.state === 1) {
@@ -57,20 +54,20 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
             {field: 'updateTime', title: '修改时间', align: 'center', minWidth: 100},
             {field: 'createTime', title: '创建时间', align: 'center', minWidth: 100},
             {
-                title: '重置密码', align: 'center',  templet: function () {
+                title: '重置密码', align: 'center', templet: function () {
                     return '<a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="editPass">重置密码</a>';
                 }
             },
         ]],
         done: function (res, curr, count) {
             // 隐藏列
-            $(".layui-table-box").find("[data-field='glbm']").css("display", "none");
-            /*laypage.render({
-                elem: '#userList',
-                count: count,
-                limit: 5,
-                limits: [5, 10, 15]
-            })*/
+            // $(".layui-table-box").find("[data-field='glbm']").css("display", "none");
+            /* laypage.render({
+                 elem: '#userList',
+                 count: count,
+                 limit: 5,
+                 limits: [5, 10, 15]
+             })*/
         }
     });
 
@@ -92,33 +89,37 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
 
     //添加用户
     function addUser(edit) {
-        var h = "650px";
+        var h = "600px";
         var title = "添加用户";
         if (edit) {
-            h = "650px";
+            h = "600px";
             title = "编辑用户";
             //必须提前设置，不然就没用了
         }
         layui.layer.open({
             title: title,
             type: 2,
-            area: ["1000px", h],
+            area: [($(document).width() - 200) + "px", ($(document).height() - 30) + "px"],
             content: "info.html",
             success: function (layero, index) {
                 var body = layui.layer.getChildFrame('body', index);
                 if (edit) {
-                    console.log(edit);
                     body.find("#pwd1").remove();
                     body.find("#id").val(edit.id);
-                    body.find("#userFace").attr("src",edit.avatar);
+                    console.log("id", body.find("#id").val());
+                    // body.find("#userFace").attr("src", edit.avatar);
                     body.find("#name").val(edit.name);
                     body.find("#userName").val(edit.userName);
+                    body.find("#phone").val(edit.phone);
                     body.find("#roleId").val(edit.roleId);
                     body.find("#userLevel").val(edit.userLevel);
                     body.find("#company").val(edit.company);
                     body.find("#stateSelect").val(edit.state);
                     body.find("#sign").val(edit.sign);
                     form.render();
+                    // var iframeWin = window[layero.find('iframe')[0]['name']]; //得到
+                    // console.log(iframeWin);
+                    // iframeWin.init();
                 }
             }
         })
@@ -175,5 +176,4 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
             layer.msg("请选择需要删除的用户");
         }
     })
-
 })

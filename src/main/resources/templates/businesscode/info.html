@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>编辑参数--layui后台管理模板 2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/css/public.css" media="all"/>
+</head>
+<body class="childrenBody">
+<form class="layui-form linksAdd">
+    <input type="hidden" value="" id="id" name="id">
+    <div class="layui-form-item">
+        <label class="layui-form-label">参数名称</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input name" id="name" name="name" lay-verify="required"
+                   placeholder="请输入参数名称">
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">参数代码</label>
+        <div class="layui-input-block">
+            <input type="text" class="layui-input code" id="code" name="code" lay-verify="required"
+                   placeholder="请输入参数代码" readonly>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <label class="layui-form-label">参数值</label>
+        <div class="layui-input-block">
+            <div class="layui-btn-container">
+                <a class="layui-btn layui-btn-md" lay-filter="addRow" id="addRow" data-type="addRow">添加一行</a>
+            </div>
+            <table id="codeList" lay-filter="codeList"></table>
+        </div>
+    </div>
+</form>
+<hr class="layui-bg-gray" style="height: 1px;margin-top: 20px;">
+<div id="action" class="layui-center">
+    <button type="button" name="btnSave" class="layui-btn" data-type="save">保存</button>
+</div>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/js/businesscode/info.js"></script>
+</body>
+<script type="text/html" id="tableBar">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+<script>
+</script>
+</html>

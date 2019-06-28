@@ -8,17 +8,24 @@
         <version>2.1.4.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+    <packaging>war</packaging>
     <groupId>com.zlkj</groupId>
     <artifactId>xzlt-project</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>xzlt-project</name>
-    <description>Demo project for Spring Boot</description>
+    <description>xzlt project for Spring Boot</description>
 
     <properties>
         <java.version>1.8</java.version>
     </properties>
 
     <dependencies>
+        <!--<dependency>-->
+        <!--<groupId>org.springframework.boot</groupId>-->
+        <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
+        <!--&lt;!&ndash;<scope>provided</scope>&ndash;&gt;-->
+        <!--<version>2.1.4.RELEASE</version>-->
+        <!--</dependency>-->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-thymeleaf</artifactId>
@@ -26,6 +33,12 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
+            <!--<exclusions>-->
+            <!--<exclusion>-->
+            <!--<groupId>org.springframework.boot</groupId>-->
+            <!--<artifactId>spring-boot-starter-tomcat</artifactId>-->
+            <!--</exclusion>-->
+            <!--</exclusions>-->
         </dependency>
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
@@ -61,15 +74,21 @@
             <artifactId>druid</artifactId>
             <version>1.0.11</version>
         </dependency>
+        <!--mybatis插件 ，引入之后不需要引mybatis了-->
         <dependency>
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus</artifactId>
-            <version>2.3</version>
+            <version>3.1.1</version>
         </dependency>
         <dependency>
             <groupId>com.baomidou</groupId>
-            <artifactId>mybatisplus-spring-boot-starter</artifactId>
-            <version>1.0.5</version>
+            <artifactId>mybatis-plus-boot-starter</artifactId>
+            <version>3.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-generator</artifactId>
+            <version>3.1.1</version>
         </dependency>
         <!--shiro jar-->
         <dependency>
@@ -120,6 +139,19 @@
             <artifactId>velocity</artifactId>
             <groupId>org.apache.velocity</groupId>
             <version>1.7</version>
+        </dependency>
+        <!--mybatis分页-->
+        <!--https://mvnrepository.com/artifact/com.github.pagehelper/pagehelper-spring-boot-starter-->
+        <!--<dependency>-->
+        <!--<groupId>com.github.pagehelper</groupId>-->
+        <!--<artifactId>pagehelper-spring-boot-starter</artifactId>-->
+        <!--<version>1.2.10</version>-->
+        <!--</dependency>-->
+        <!-- https://mvnrepository.com/artifact/org.apache.httpcomponents/httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.2</version>
         </dependency>
     </dependencies>
 

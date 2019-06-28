@@ -44,22 +44,22 @@ public class WebLogAspect {
         HttpServletRequest request = attributes.getRequest();
 
         // 请求参数
-        Object[] args = joinPoint.getArgs();
-        String requestParam = "";
-        if (args != null && args.length > 0) {
-            try {
-                requestParam = JSONObject.toJSONString(args[0]);
-            } catch (Exception e) {
-
-            }
-        }
+//        Object[] args = joinPoint.getArgs();
+//        String requestParam = "";
+//        if (args != null && args.length > 0) {
+//            try {
+//                requestParam = JSONObject.toJSONString(args[0]);
+//            } catch (Exception e) {
+//
+//            }
+//        }
 
         // 记录下请求内容
-        logger.info("URL : " + request.getRequestURL().toString());
-        logger.info("HTTP_METHOD : " + request.getMethod());
-        logger.info("IP : " + request.getRemoteAddr());
-        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-        logger.info("ARGS : " + requestParam);
+//        logger.info("URL : " + request.getRequestURL().toString());
+//        logger.info("HTTP_METHOD : " + request.getMethod());
+//        logger.info("IP : " + request.getRemoteAddr());
+//        logger.info("CLASS_METHOD : " + joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
+//        logger.info("ARGS : " + requestParam);
 
         // 添加系统操作日志
         MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
@@ -71,9 +71,8 @@ public class WebLogAspect {
             log.setUserId(userInfo.getId());
             log.setUserName(userInfo.getUserName());
             log.setOperMethod(joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
-//            log.setRequestParam(requestParam);
             log.setOperDesc(sysLog.value());
-            ilogService.insert(log);
+            ilogService.save(log);
         }
 
     }
@@ -81,8 +80,8 @@ public class WebLogAspect {
     @AfterReturning(returning = "ret", pointcut = "webLog()")
     public void doAfterReturning(Object ret) {
         // 处理完请求，返回内容
-        logger.info("RESPONSE : " + ret);
-        logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
+//        logger.info("RESPONSE : " + ret);
+//        logger.info("SPEND TIME : " + (System.currentTimeMillis() - startTime.get()));
     }
 
 }

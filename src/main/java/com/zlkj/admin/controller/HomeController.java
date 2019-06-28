@@ -19,6 +19,7 @@ import org.apache.shiro.session.Session;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -45,6 +46,12 @@ public class HomeController extends BaseController {
     @RequestMapping("/manual")
     public String toManual() {
         return "manual";
+    }
+
+    @RequestMapping("/CzmE23jVA1.txt")
+    @ResponseBody
+    public String CzmE23jVA() {
+        return "531afae23e6eeccd3ef982da2ebb4949";
     }
 
     /**
@@ -102,7 +109,7 @@ public class HomeController extends BaseController {
                 int loginErrorCount = Integer.parseInt(session.getAttribute(Constant.LOGIN_ERROR_COUNT) + "");
                 if (++loginErrorCount == Constant.MAX_LOGIN_ERROR_NUM) {
                     //锁定账号
-                    User user = iUserService.selectById(Integer.parseInt(session.getAttribute(Constant.LOGIN_USER_ID) + ""));
+                    User user = iUserService.getById(Integer.parseInt(session.getAttribute(Constant.LOGIN_USER_ID) + ""));
                     user.setState(2);
                     iUserService.updateById(user);
                 }

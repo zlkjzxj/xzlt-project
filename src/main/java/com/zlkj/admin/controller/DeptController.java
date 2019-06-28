@@ -1,6 +1,6 @@
 package com.zlkj.admin.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.entity.Department;
@@ -42,13 +42,13 @@ public class DeptController extends BaseController {
 //    @RequiresPermissions("dept:view")
     public @ResponseBody
     ResultInfo<List<Department>> listData(Department department) {
-        EntityWrapper<Department> wrapper = new EntityWrapper<>(department);
+        QueryWrapper<Department> wrapper = new QueryWrapper<>(department);
         if (department != null && department.getBmmc() != null) {
             wrapper.eq("bmmc", department.getBmmc());
             department.setBmmc(null);
         }
 //        List<Department> list = iDepartmentService.selectList(wrapper);
-        return new ResultInfo<>(iDepartmentService.selectList(wrapper));
+        return new ResultInfo<>(iDepartmentService.list(wrapper));
     }
 
     @SysLog("添加部门操作")
@@ -56,7 +56,7 @@ public class DeptController extends BaseController {
     @RequiresPermissions("dept:add")
     public @ResponseBody
     ResultInfo<Boolean> add(Department department) {
-        return new ResultInfo<>(iDepartmentService.insert(department));
+        return new ResultInfo<>(iDepartmentService.save(department));
     }
 
     @SysLog("修改部门操作")
@@ -72,7 +72,7 @@ public class DeptController extends BaseController {
     @RequiresPermissions("user:del")
     public @ResponseBody
     ResultInfo<Boolean> delBatch(Integer[] idArr) {
-        boolean b = iDepartmentService.deleteBatchIds(Arrays.asList(idArr));
+        boolean b = iDepartmentService.removeByIds(Arrays.asList(idArr));
         return new ResultInfo<>(b);
     }
 
@@ -80,7 +80,7 @@ public class DeptController extends BaseController {
 //    @RequiresPermissions("dept:view")
     public @ResponseBody
     ResultInfo<List<TreeNode>> listDataJson(Department department) {
-        EntityWrapper<Department> wrapper = new EntityWrapper<>(department);
+        QueryWrapper<Department> wrapper = new QueryWrapper<>(department);
         Integer pid = 0;
         wrapper.eq("isshow", 1);
         if (department != null && department.getPid() != null) {
@@ -88,7 +88,7 @@ public class DeptController extends BaseController {
             pid = department.getPid();
             department.setPid(null);
         }
-        List<Department> list = iDepartmentService.selectList(wrapper);
+        List<Department> list = iDepartmentService.list(wrapper);
         List<TreeNode> nodeList = new ArrayList<>();
         list.forEach(node -> {
             TreeNode<TreeNode> treeNode = new TreeNode<>(node.getId(), node.getBmmc(), node.getPid(), true);
@@ -101,7 +101,7 @@ public class DeptController extends BaseController {
 //    @RequiresPermissions("dept:view")
     public @ResponseBody
     List<TreeNode> listDataJsonWithoutCode(Department department) {
-        EntityWrapper<Department> wrapper = new EntityWrapper<>(department);
+        QueryWrapper<Department> wrapper = new QueryWrapper<>(department);
         Integer pid = 0;
         wrapper.eq("isshow", 1);
         if (department != null && department.getPid() != null) {
@@ -109,7 +109,7 @@ public class DeptController extends BaseController {
             pid = department.getPid();
             department.setPid(null);
         }
-        List<Department> list = iDepartmentService.selectList(wrapper);
+        List<Department> list = iDepartmentService.list(wrapper);
         List<TreeNode> nodeList = new ArrayList<>();
         list.forEach(node -> {
             TreeNode<TreeNode> treeNode = new TreeNode<>(node.getId(), node.getBmmc(), node.getPid(), false, false);
@@ -139,6 +139,6 @@ public class DeptController extends BaseController {
     public @ResponseBody
     ResultInfo<Integer> count() {
         return new ResultInfo<>(
-                iDepartmentService.selectCount(new EntityWrapper<>()));
+                iDepartmentService.count(new QueryWrapper<>()));
     }
 }

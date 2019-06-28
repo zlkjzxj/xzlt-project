@@ -1,33 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.zlkj.admin.dao.CodeMapper">
-	<select id="queryList" resultType="map">
-		select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables
-		where table_schema = (select database())
-		<if test="tableName != null and tableName.trim() != ''">
-			and table_name like concat('%', #{tableName}, '%')
-		</if>
-		order by create_time desc
-		<if test="offset != null and limit != null">
-			limit #{offset}, #{limit}
-		</if>
-	</select>
+    <select id="queryList" resultType="map">
+        select table_name tableName, engine, table_comment tableComment, create_time createTime from
+        information_schema.tables
+        where table_schema = (select database())
+        <if test="tableName != null and tableName.trim() != ''">
+            and table_name like concat('%', #{tableName}, '%')
+        </if>
+        order by create_time desc
+        <if test="offset != null and limit != null">
+            limit #{offset}, #{limit}
+        </if>
+    </select>
 
-	<select id="queryTotal" resultType="int">
-		select count(*) from information_schema.tables
-		where table_schema = (select database())
-		<if test="tableName != null and tableName.trim() != ''">
-			and table_name like concat('%', #{tableName}, '%')
-		</if>
-	</select>
+    <select id="queryTotal" resultType="int">
+        select count(*) from information_schema.tables
+        where table_schema = (select database())
+        <if test="tableName != null and tableName.trim() != ''">
+            and table_name like concat('%', #{tableName}, '%')
+        </if>
+    </select>
 
-	<select id="queryTable" resultType="map">
-		select table_name tableName, engine, table_comment tableComment, create_time createTime from information_schema.tables
-			where table_schema = (select database()) and table_name = #{tableName}
-	</select>
+    <select id="queryTable" resultType="map">
+        SELECT
+            table_name    tableName,
+            engine,
+            table_comment tableComment,
+            create_time   createTime
+        FROM information_schema.tables
+        WHERE table_schema = (SELECT database()) AND table_name = #{tableName}
+    </select>
 
-	<select id="queryColumns" resultType="map">
-		select column_name columnName, data_type dataType, column_comment columnComment, column_key columnKey, extra from information_schema.columns
- 			where table_name = #{tableName} and table_schema = (select database()) order by ordinal_position
-	</select>
+    <select id="queryColumns" resultType="map">
+        SELECT
+            column_name    columnName,
+            data_type      dataType,
+            column_comment columnComment,
+            column_key     columnKey,
+            extra
+        FROM information_schema.columns
+        WHERE table_name = #{tableName} AND table_schema = (SELECT database())
+        ORDER BY ordinal_position
+    </select>
+    <select id="getCodeType" resultType="map" parameterType="java.lang.Integer">
+        SELECT DISTINCT
+            (code),
+            s.name
+        FROM sys_code s
+        WHERE code_type = #{codeType}
+    </select>
+
 </mapper>

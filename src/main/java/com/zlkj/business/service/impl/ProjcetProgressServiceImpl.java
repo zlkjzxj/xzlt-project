@@ -1,6 +1,6 @@
 package com.zlkj.business.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.business.dao.ProjectProgressMapper;
 import com.zlkj.business.entity.ProjectProgress;
 import com.zlkj.business.service.IProjectProgressService;

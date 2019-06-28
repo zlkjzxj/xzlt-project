@@ -1,6 +1,6 @@
 package com.zlkj.admin.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.extension.service.IService;
 import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.User;
 

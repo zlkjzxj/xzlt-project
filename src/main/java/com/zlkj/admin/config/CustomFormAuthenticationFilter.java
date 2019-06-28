@@ -42,8 +42,7 @@ public class CustomFormAuthenticationFilter extends FormAuthenticationFilter {
 //             */
 //            httpServletResponse.sendRedirect("/login");
 //        }
-
-        // 取出验证码  
+        // 取出验证码
         String validateCode = (String) session.getAttribute(Constants.KAPTCHA_SESSION_KEY);
         // 取出页面的验证码  
         // 输入的验证和session中的验证进行对比  

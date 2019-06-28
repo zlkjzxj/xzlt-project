@@ -1,16 +1,7 @@
 package com.zlkj.business.dto;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
-import com.baomidou.mybatisplus.enums.IdType;
-import com.fasterxml.jackson.annotation.JsonFormat;
-import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Date;
 
 /**
  * @Description 企业实体类
@@ -39,5 +30,7 @@ public class EnterpriseDto {
     private String xytc;
     private String qtjfx;
     private Integer pjzf;
+
+    private String searchVal;
 
 }

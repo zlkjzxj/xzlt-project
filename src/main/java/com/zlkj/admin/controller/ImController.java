@@ -1,6 +1,6 @@
 package com.zlkj.admin.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.*;
@@ -44,7 +44,7 @@ public class ImController extends BaseController {
 
         List<ImMine> imMineList = new ArrayList<>();
         User u = new User();
-        List<User> userList = iUserService.selectList(new EntityWrapper<>(u));
+        List<User> userList = iUserService.list(new QueryWrapper<>(u));
         userList.forEach(user -> {
             ImMine mine = new ImMine(user.getName(), user.getId(), "online", user.getSign(), user.getAvatar());
             imMineList.add(mine);
@@ -73,7 +73,7 @@ public class ImController extends BaseController {
         List<ImMine> imMineList = new ArrayList<>();
         User u = new User();
         u.setCompany(6);
-        List<User> userList = iUserService.selectList(new EntityWrapper<>(u));
+        List<User> userList = iUserService.list(new QueryWrapper<>(u));
         userList.forEach(user -> {
             ImMine mine = new ImMine(user.getName(), user.getId(), user.getSign(), user.getAvatar());
             imMineList.add(mine);

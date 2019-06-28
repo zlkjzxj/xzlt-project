@@ -1,11 +1,7 @@
 package com.zlkj.admin.entity;
 
-import com.baomidou.mybatisplus.activerecord.Model;
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
-import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
@@ -61,6 +57,11 @@ public class Code extends Model<Code> {
      */
     @JsonIgnore
     private Integer available;
+    /**
+     * code_type
+     */
+    @TableField("code_type")
+    private Integer codeType;
     /**
      * 代码描述
      */

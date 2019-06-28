@@ -1,6 +1,6 @@
 package com.zlkj.admin.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Param;
 import com.zlkj.admin.dao.ParamMapper;
 import com.zlkj.admin.service.IParamService;
@@ -20,7 +20,7 @@ public class ParamServiceImpl extends ServiceImpl<ParamMapper, Param> implements
     public Boolean saveParam(Param param) {
         Boolean res;
         if (param.getId() == null) {
-            res = this.insert(param);
+            res = this.save(param);
         } else {
             res = this.updateById(param);
         }

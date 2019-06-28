@@ -1,7 +1,8 @@
 package com.zlkj.admin.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.entity.Log;
 import com.zlkj.admin.service.ILogService;
@@ -41,14 +42,14 @@ public class LogController extends BaseController {
     ResultInfo<List<Log>> listData(String userName, String operTime, Integer page, Integer limit) {
         Log log = new Log();
         log.setUserName(userName);
-        EntityWrapper<Log> wrapper = new EntityWrapper<>(log);
+        QueryWrapper<Log> wrapper = new QueryWrapper<>(log);
         if (!StringUtils.isEmpty(operTime)) {
             wrapper.ge("create_time", FormatUtil.parseDate(operTime.split(" - ")[0] + " 00:00:00", null));
             wrapper.le("create_time", FormatUtil.parseDate(operTime.split(" - ")[1] + " 23:59:59", null));
         }
-        wrapper.orderBy("create_time", false);
-        Page<Log> pageObj = ilogService.selectPage(new Page<>(page, limit), wrapper);
-        return new ResultInfo<>(pageObj.getRecords(), pageObj.getSize());
+        wrapper.orderBy(false, false, new String[]{"create_time"});
+        IPage<Log> pageObj = ilogService.page(new Page<>(page, limit), wrapper);
+        return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
     }
 
 }

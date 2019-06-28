@@ -25,11 +25,18 @@
     <input type="hidden" id="projectId"/>
     <input id="departVal" type="hidden">
     <blockquote class="layui-elem-quote quoteBox">
-        企业列表
+        <form class="layui-form">
+            <div class="layui-input-inline">
+                <input type="text" class="layui-input searchVal" style="width: 300px;"
+                       placeholder="搜索条件：企业名称|企业负责人|电话"/>
+            </div>
+            <div class="layui-inline">
+                <a class="layui-btn search_btn" data-type="reload">搜索</a>
+            </div>
+        </form>
     </blockquote>
     <!--<table id="projectList" lay-filter="projectList" lay-size="lg"></table>-->
-    <div id="enterpriseList">
-    </div>
+    <div id="enterpriseList"></div>
     <!--审核状态-->
     <script type="text/html" id="newsStatus">
         {{#  if(d.newsStatus == "1"){ }}
@@ -50,7 +57,7 @@
 </form>
 <script type="text/javascript" src="/static/layui/layui.js"></script>
 <script type="text/javascript" src="/static/js/project/list.js"></script>
-<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
-<script type="text/javascript" src="/static/md5/md5.js"></script>
+<!--<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>-->
+<!--<script type="text/javascript" src="/static/md5/md5.js"></script>-->
 </body>
 </html>

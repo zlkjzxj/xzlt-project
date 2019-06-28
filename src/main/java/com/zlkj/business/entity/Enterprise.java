@@ -1,10 +1,6 @@
 package com.zlkj.business.entity;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.FieldFill;
-import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.annotation.*;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jdk.nashorn.internal.ir.annotations.Ignore;
 import lombok.Data;
@@ -29,7 +25,7 @@ public class Enterprise {
     /**
      * 企业名称
      */
-    @TableField("name")
+    @TableField("`name`")
     private String name;
     /**
      * 企业编号
@@ -49,7 +45,7 @@ public class Enterprise {
     /**
      * 企业描述
      */
-    @TableField("desc")
+    @TableField("`desc`")
     private String desc;
     /**
      * 企业评分

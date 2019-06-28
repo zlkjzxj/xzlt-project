@@ -1,7 +1,7 @@
 package com.zlkj.admin.service.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.admin.entity.Department;
 import com.zlkj.admin.dao.DepartmentMapper;
 import com.zlkj.admin.service.IDepartmentService;
@@ -28,7 +28,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
     @Override
     public List<Integer> getAllChildrenDepartment(int id) {
         Department department = new Department();
-        EntityWrapper<Department> wrapper = new EntityWrapper<>(department);
+        QueryWrapper<Department> wrapper = new QueryWrapper<>(department);
         wrapper.eq("pid", id);
         List<Department> departmentList = departmentMapper.selectList(wrapper);
         List<Integer> ids = new ArrayList<>();
@@ -46,7 +46,7 @@ public class DepartmentServiceImpl extends ServiceImpl<DepartmentMapper, Departm
             for (Department d : list) {
                 ids.add(d.getId());
                 Department department = new Department();
-                EntityWrapper<Department> wrapper = new EntityWrapper<>(department);
+                QueryWrapper<Department> wrapper = new QueryWrapper<>(department);
                 wrapper.eq("pid", d.getId());
                 List<Department> departmentList = departmentMapper.selectList(wrapper);
                 if (!departmentList.isEmpty()) {

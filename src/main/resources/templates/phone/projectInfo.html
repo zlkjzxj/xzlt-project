@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <title>用户列表--layui后台管理模板 2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/css/public.css" media="all"/>
+    <!-- <style>
+         .layui-form-label {
+             width: 130px;
+         }
+
+         .layui-input-block {
+             margin-left: 160px;
+         }
+     </style>-->
+</head>
+
+<body class="childrenBody">
+<form class="layui-form layui-row">
+    <input type="hidden" value="" id="id" name="id">
+    <input type="hidden" id="grade" name="grade" value="0">
+    <input type="hidden" id="contacts" name="contacts">
+    <input type="hidden" id="phone" name="phone">
+    <input type="hidden" id="progress" name="progress" value="0">
+    <input type="hidden" id="managerId" name="managerId">
+    <input type="hidden" id="company" name="company">
+    <input type="hidden" id="membersId" name="membersId">
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">所属公司</label>
+            <div class="layui-input-block">
+                <!--<select name="company" id="company" lay-filter="company" lay-verify="required">
+                    <option value="">请选择所属公司</option>
+                </select>-->
+                <input name="companyName" id="companyName" class="layui-input" readonly>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">立项时间</label>
+            <div class="layui-input-block">
+                <input name="lxsj" id="lxsj" class="layui-input" lay-verify="required"
+                       placeholder="请选择立项时间" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label ">项目名称</label>
+            <div class="layui-input-block">
+                <input name="name" id="name" class="layui-input" lay-verify="name|required"
+                       placeholder="请输入项目名称" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">项目编号</label>
+            <div class="layui-input-block">
+                <input name="number" id="number" class="layui-input" lay-verify="required"
+                       placeholder="请输入项目编号" readonly>
+            </div>
+        </div>
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">项目负责人</label>
+            <div class="layui-input-block">
+                <select name="manager" id="manager" lay-filter="manager" lay-verify="required">
+                    <option value="">请选择项目负责人</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label" id="memberLabel">项目成员</label>
+            <div class="layui-input-block">
+                <input type="text" id="memberSelect" name class="layui-input" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 10px;"/>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label"></label>
+            <div class="layui-input-inline">
+                <a class="layui-btn layui-btn-md" lay-filter="addProgress" id="addProgress">
+                    <i class="layui-icon">&#xe654;</i>添加</a>
+            </div>
+        </div>
+    </div>
+    <div id="sliders">
+    </div>
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>
+    <div class="layui-center">
+        <a class="layui-btn layui-btn-lg" lay-filter="addProject" id="addProject" lay-submit>
+            <i class="layui-icon">&#xe609;</i>保存</a>
+        <!--<a class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="look" lay-submit>预览</a>-->
+    </div>
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
+<script>
+    layui.config({
+        base: '/static/layui'
+    }).extend({
+        tableSelect: '/extend/tableSelect'
+    }).use(['form', 'layer', 'laytpl', 'laydate', 'upload', 'rate', 'slider', 'table', 'tableSelect'], function () {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : top.layer,
+            laydate = layui.laydate,
+            $ = layui.jquery,
+            rate = layui.rate,
+            slider = layui.slider
+        ;
+        var date = new Date();
+        var year = date.getFullYear();
+
+        //存放选中成员的级别
+        var user_level = {};
+        //存放进度
+        var progress_value = {};
+        //这是初始化项目经理和项目成员的
+        var userList = [];
+        $.post("/phone/listDataSelect", {
+            available: 1
+        }, function (data) {
+            userList = data.data;
+            //渲染表格要放到这，不然容易出错！
+            initManagerAndMembers(userList)
+        });
+        //人员职位
+        var userLevel = [];
+        //项目进度
+        var projectprogress = [];
+        var projectprogressChoice = [];
+
+        $.post("/phone/getProgressAndLevel", function (data) {
+            console.log(data.data)
+            userLevel = data.data.userlevel;
+            projectprogress = data.data.projectprogress;
+        });
+
+        //这是初始化项目编号的
+        function initNumber(number) {
+            if (number == '') {
+                $.post("/phone/getAddSequence?year=" + year, function (data) {
+                    $("#number").val(data.data);
+                });
+            } else {
+                $("#number").val(number);
+            }
+        }
+
+        initNumber('');
+        form.render();
+        var layerOpen = true;
+        $("#memberSelect").on('click', function () {
+            var elem = $("#memberLabel");
+            var t = elem.position().top + "px";
+            var l = elem.position().left + elem.outerWidth + "px";
+            var tableName = "memeberTable";
+            var tableBox = '<div  style="left:' + l + ';top:' + t + ';border: 1px solid #d2d2d2;background-color: #fff;">';
+            tableBox += '<table id="' + tableName + '" lay-filter="' + tableName + '" class="layui-table" cellpadding="0" cellspacing="0" border="0">';
+            tableBox += '<tr>';
+            tableBox += '<td width="20px"></td>';
+            tableBox += '<td>姓名</td>';
+            tableBox += '<td>职位</td>';
+            tableBox += '</tr>';
+            console.log(userList);
+            userList.forEach(function (elem, index) {
+                tableBox += '<tr>';
+                tableBox += '<td class ="layui-table-cell"><input  name="memberBox" type="checkbox" style="width: 16px;height: 16px;"/></td>';
+                tableBox += '<td id="' + elem.id + '">' + elem.name + '</td>';
+                tableBox += '<td>';
+                userLevel.forEach(function (e) {
+                    var checkValue = user_level[elem.id];
+                    if (e.codeValue == checkValue) {
+                        tableBox += '<input type="radio" name="' + e.code + elem.id + '" value="' + e.codeValue + '" style="width: 16px;height: 16px; vertical-align: -3px;" checked>' + e.codeName;
+                    } else {
+                        tableBox += '<input type="radio" name="' + e.code + elem.id + '" value="' + e.codeValue + '" style="width: 16px;height: 16px; vertical-align: -3px;">' + e.codeName;
+                    }
+                });
+                tableBox += '</td>';
+                tableBox += '</tr>';
+            })
+            tableBox += "</table>"
+            tableBox += '</div>';
+            if (layerOpen) {
+                layerOpen = false;
+                var index = layer.open({
+                    type: 1,
+                    title: '项目成员',
+                    content: tableBox,
+                    area: ['300px', '550px'],
+                    fixed: false,
+                    shade: 0,
+                    success: function (layero, index) {
+                        // layero.css("position", "relative").append(layero);
+                        // console.log(t);
+                        // layero.css("top", t).append(layero);
+                    },
+                    cancel: function (index, layero) {
+                        layerOpen = true;
+                    },
+                    btn: ['选择'],
+                    yes: function (index, layero) {
+                        var names = [], flag = true;
+                        for (var key in user_level) {
+                            delete user_level[key]
+                        }
+                        var checks = layero.find("input[name='memberBox']:checked");
+                        if (checks.length > 4) {
+                            flag = false;
+                            layer.msg("项目成员最多只能选四个");
+                            return false;
+                        }
+                        layero.find("input[name='memberBox']:checked").each(function () {
+                            var name = $(this).parent().next().text();
+                            var id = $(this).parent().next().attr("id");
+                            var radio = $(this).parent().next().next().find("input[type='radio']:checked").val();
+
+                            if (radio == undefined) {
+                                flag = false;
+                                layer.msg("请选择职位");
+                                return false;
+                            } else {
+                                names.push(name);
+                                user_level[id] = radio;
+
+                            }
+                        });
+                        if (flag) {
+                            layerOpen = true;
+                            $("#memberSelect").val(names.join(","));
+                            layer.close(index);
+                        }
+                    }
+                })
+            }
+
+        })
+
+        function initManagerAndMembers(users) {
+            //渲染项目经理select
+            users.forEach(function (e) {
+                $("#manager").append("<option value='" + e.id + "'>" + e.name + "</option>");
+                // $("#levelSelect").val($("#userLevel").val());//默认选中
+            });
+            console.log($("#managerId").val())
+            if ($("#managerId") !== '') {
+                $("#manager").val($("#managerId").val())
+            }
+            form.render('select');//刷新select选择框渲染
+
+        }
+
+        $("#addProgress").on('click', function () {
+            // var tableBox = "<form class=\"layui-form\">";
+            // var tableBox = "<div class=\" layui-form-item\">"
+            // tableBox += "<div class=\"layui-input-block\" >"
+            // projectprogress.forEach(function (elem) {
+            //     tableBox += '<input  name="memberBox" type="checkbox" value="' + elem.codeValue + '" title="' + elem.codeName + '"/>';
+            // })
+            // tableBox += "</div>"
+            // tableBox += "</div>"
+            // tableBox += "</form>"var elem = $("#memberSelect");
+            var elem = $("#addProgress");
+            console.log(elem)
+            console.log(elem.offset())
+            var t = elem.offset().top + elem.outerHeight() + "px";
+            var l = elem.offset().left + "px";
+            var progressChoicValues = [];
+            // projectprogressChoice.forEach(function (ele) {
+            //     progressChoicValues.push(ele.codeValue);
+            // });
+            var tableBox = '<div  style="left:' + l + ';top:' + t + ';border: 1px solid #d2d2d2;background-color: #fff;">';
+            tableBox += "<table  class=\"layui-table\" cellpadding=\"0\" cellspacing=\"0\" border=\"0\">";
+            projectprogress.forEach(function (elem, index) {
+                if (index % 3 == 0) {
+                    tableBox += "<tr>";
+                }
+                tableBox += "<td>";
+                tableBox += '<input  name="progressBox" type="checkbox" value="' + elem.codeValue + '" style="width: 16px;height: 16px;" />' + elem.codeName;
+                tableBox += "</td>";
+                if (index % 3 == 2) {
+                    tableBox += "</tr>";
+                }
+            })
+            tableBox += "</table>";
+            tableBox += "</div>"
+            var index = layer.open({
+                type: 1,
+                content: tableBox,
+                area: ['300px', '550px'],
+                fixed: true,
+                shade: 0,
+                success: function (layero, index) {
+
+                },
+                cancel: function (index, layero) {
+                    layerOpen = true;
+                },
+                btn: ['选择'],
+                yes: function (index, layero) {
+                    var newChoices = [];
+                    var checks = layero.find("input[name='progressBox']:checked");
+                    console.log(checks);
+                    layero.find("input[name='progressBox']:checked").each(function (d) {
+                        var that = $(this).val()
+                        projectprogress.forEach(function (elem) {
+                            if (elem.codeValue === Number(that) && progressChoicValues.indexOf(Number(that)) < 0) {
+                                projectprogressChoice.push(elem);
+                                newChoices.push(elem);
+                                return false;
+                            }
+                        })
+                    });
+                    initProgress(newChoices);
+                    layer.close(index);
+                }
+            })
+
+        })
+
+
+        //循环生成项目进度列表
+        function initProgress(newChoices) {
+            newChoices.forEach(function (e) {
+                var id = "silde" + e.codeValue;
+                var html = "<div class='layui-form-item'>";
+                html += "<div class='layui-inline'>";
+                html += "<label class='layui-form-label'>" + e.codeName + "</label>";
+                html += "</div>";
+                html += "<div class='layui-row' style='padding: 0 0 0 10px;'>";
+                html += "<div class='layui-col-xs9' >";
+                html += "<div id='" + id + "' class='demo-slider' ></div> ";
+                html += "</div>";
+                html += "<div class='layui-col-xs2'style='margin-left: 10px;'>";
+                html += "<button class='layui-btn layui-btn-sm removeBtn' type='button' value=" + e.codeValue + "><i class='layui-icon'>&#xe640;</i></button>";
+                html += "</div>";
+                html += "</div>";
+                $("#sliders").append(html);
+                progress_value[e.codeValue] = 0;
+                //开启输入框
+                slider.render({
+                    elem: '#' + id
+                    , input: true //输入框
+                    , change: function (value) {
+                        progress_value[e.codeValue] = value;
+                    }
+                });
+            })
+        }
+
+        $(document).on('click', '.removeBtn', function () {
+            var codeValue = $(this).val();
+            console.log(codeValue);
+            projectprogressChoice.forEach(function (elem, index) {
+                if (elem.codeValue == codeValue) {
+                    projectprogressChoice.splice(index, 1);
+                    delete progress_value[codeValue]
+                }
+            })
+            $(this).parent().parent().remove();
+
+        })
+
+
+        laydate.render({
+            elem: '#lxsj',
+            theme: 'grid'
+            // theme: '#393D49'
+            // , calendar: true
+        });
+        form.on('select(company)', function (d) {
+            $.post("/enterprise/getObject?id=" + d.value, function (data) {
+                // $("#number1").val(data.data);
+                var obj = data.data;
+                if (obj != null) {
+                    $("#contacts").val(obj.manager);
+                    $("#phone").val(obj.phone);
+                    rate.render({
+                        elem: '#gradeDiv'
+                        , value: obj.grade
+                        // , half: true //开启半星
+                        , readonly: true
+                    });
+                    $("#gradeSpan").text(obj.grade + "星");
+                    $("#grade").val(obj.grade);
+                } else {
+                    $("#contacts").val("");
+                    $("#phone").val("");
+                    rate.render({
+                        elem: '#gradeDiv'
+                        , value: 0
+                        // , half: true //开启半星
+                        , readonly: true
+                    });
+                    $("#gradeSpan").text(0 + "星");
+                    $("#grade").val(0);
+                }
+                // //rate 重新复制星星就对不齐了
+                // var rates = document.getElementsByClassName("layui-rate")[0].children;
+                // for (var i = 0; i < rates.length; i++) {
+                //     rates[i].className = 'layui-inline';
+                // }
+
+            });
+        });
+        form.verify({
+            // name: [/^[a-zA-Z0-9\u4e00-\u9fa5]{1,40}$/, "项目名只能是长度20内的数字|字母|汉字"],
+            numberOrEmpty: function (value) {
+                if (value != '') {
+                    if (!/\d+(,\d+)*(.[0-9]{1,2})?/.test(value)) {
+                        return '请输入正确的数字';
+                    }
+                }
+            }
+        })
+        form.on("submit(addProject)", function (data) {
+            console.log(data);
+            console.log(user_level);
+            console.log(progress_value);
+            console.log(user_level.length, progress_value.length)
+            //弹出loading
+            var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
+            var field = Object.assign(data.field, {
+                    'members': JSON.stringify(user_level),
+                    'progress': JSON.stringify(progress_value)
+                })
+            ;
+            console.log(field);
+            var url = '/phone/addProject';
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: field,
+                dataType: 'json',
+                success: function (res) {
+                    if (res.data) {
+                        layer.close(index);
+                        layer.msg("操作成功！");
+                        //刷新父页面
+                        parent.location.reload();
+                    } else {
+                        layer.msg(data.msg);
+                    }
+                },
+                error: function (e) {
+                    layer.close(index);
+                    layer.msg(e.msg);
+                }
+            })
+            return false;
+        })
+
+    })
+
+</script>
+</body>
+</html>

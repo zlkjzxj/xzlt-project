@@ -1,5 +1,8 @@
 package com.zlkj.admin.util;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * @Description 接口工具类
  * @Author sunny
@@ -33,5 +36,15 @@ public class AppUtils {
     public static boolean checkCreateTime(String createTime) {
         Long s = (System.currentTimeMillis() - Long.parseLong(createTime)) / (1000 * 60 * 60 * 24);
         return s >= Constant.QRCODE_EXPIRE_TIME;
+    }
+
+    /**
+     * 生成照片名字：：日期时间+6位随机数
+     */
+    public static String createZImgPath() {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
+        String time = sdf.format(new Date());
+        int a = (int) ((Math.random() * 9 + 1) * 100000);
+        return time + a + ".jpg";
     }
 }

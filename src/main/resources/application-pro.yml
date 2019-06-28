@@ -1,7 +1,10 @@
 server:
   port: 8889
 #  servlet:
-#    context-path: /zl_manager
+#    context-path: /xzlt
+  servlet:
+    session:
+      timeout: PT1M
 spring:
   datasource:
     driver-class-name: com.mysql.jdbc.Driver
@@ -16,6 +19,11 @@ spring:
     mode: HTML
   mvc:
     static-path-pattern: /static/**
+#mybatis配置文件根据需要可以添加
+#mybatis:
+#  config-locations: classpath:mybatis/mybatis-config.xml
+#  mapperLocations: classpath:/mapper/*/*Mapper.xml
+#  typeAliasesPackage: com.zlkj.admin.entity,com.zlkj.business.entity
 
 mybatis-plus:
   type-aliases-package: com.zlkj.admin.entity,com.zlkj.business.entity
@@ -25,7 +33,26 @@ mybatis-plus:
     field-strategy: 2
     db-column-underline: true
     refresh-mapper: true
-    meta-object-handler: com.zlkj.admin.config.AutoMetaObjectHandler
+   # meta-object-handler: com.zlkj.admin.config.AutoMetaObjectHandler
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false
+
+
+#    扩展：Duration
+#        通过查看springboot源码发现setTimeouot方法，这里要求传入Duration的实例
+#        public void setTimeout(Duration timeout) {
+#           this.timeout = timeout;
+#        }
+#
+#        而Duration是在Java8中新增的，主要用来计算日期差值，Duration是被final声明的，并且是线程安全的
+#        转换字符串方式，类似于 SimpleDateFormat 的格式化日期方式 
+#        Duration 字符串类似数字有正负之分,默认正,负以’-‘开头,紧接着’P’,下面所有字母都不区分大小写: 
+#        ‘D’ – 天 
+#        ‘H’ – 小时 
+#        ‘M’ – 分钟 
+#        ‘S’ – 秒 
+#        字符’T’是紧跟在时分秒之前的，每个单位都必须由数字开始,且时分秒顺序不能乱,比如:P2DT3M5S,P3D,PT3S 
+#        PT3M2S 等于 -PT-3M-2S
+#
+#        最后总结一下Duration最实用的一个功能其实是 between 方法，因为有很多时候我们需要计算两个日期之间的天数或者小时数，用这个就可以很方便的进行操作。

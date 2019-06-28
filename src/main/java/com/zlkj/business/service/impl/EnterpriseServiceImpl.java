@@ -1,14 +1,10 @@
 package com.zlkj.business.service.impl;
 
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.zlkj.business.dao.EnterpriseMapper;
-import com.zlkj.business.dao.ProjectMapper;
-import com.zlkj.business.dto.ProjectCountInfo;
-import com.zlkj.business.dto.ProjectInfo;
+import com.zlkj.business.dto.EnterpriseDto;
 import com.zlkj.business.entity.Enterprise;
-import com.zlkj.business.entity.Project;
 import com.zlkj.business.service.IEnterpriseService;
-import com.zlkj.business.service.IProjectService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -24,5 +20,11 @@ import java.util.List;
  */
 @Service
 public class EnterpriseServiceImpl extends ServiceImpl<EnterpriseMapper, Enterprise> implements IEnterpriseService {
+    @Resource
+    private EnterpriseMapper enterpriseMapper;
 
+    @Override
+    public List<Enterprise> selectListBySearchVar(EnterpriseDto enterprise) {
+        return enterpriseMapper.getListBySearchVar(enterprise);
+    }
 }

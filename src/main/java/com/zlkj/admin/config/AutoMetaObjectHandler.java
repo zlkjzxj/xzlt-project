@@ -1,6 +1,6 @@
 package com.zlkj.admin.config;
 
-import com.baomidou.mybatisplus.mapper.MetaObjectHandler;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 
 import java.util.Date;
@@ -11,7 +11,7 @@ import java.util.Date;
  * @author sunny
  */
 
-public class AutoMetaObjectHandler extends MetaObjectHandler {
+public class AutoMetaObjectHandler implements MetaObjectHandler {
 
     @Override
     public void insertFill(MetaObject metaObject) {

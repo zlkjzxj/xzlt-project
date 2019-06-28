@@ -109,7 +109,7 @@ public class ShiroRealm extends AuthorizingRealm {
 //        loginLog.setIpAddress(SecurityUtils.getSubject().getSession().getAttribute(Constant.LOGIN_IP_ADDRESS).toString());
         loginLog.setIpAddress(o.toString());
         loginLog.setGeographyLocation(AddressUtils.getAddressByIp(loginLog.getIpAddress()));
-        iloginLogService.insert(loginLog);
+        iloginLogService.save(loginLog);
     }
 
 }

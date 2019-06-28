@@ -10,9 +10,10 @@ public class Constant {
     /**
      * APP调用需要的ID,SECRET,TOKEN
      */
-    public static String APPID = "xz05cd18000b01e645";
-    public static String APPSECRET = "79a81f438a4ab8fabca67360867daa1a";
+    public static String APPID = "wx105e93170aaab213";
+    public static String APPSECRET = "14eb2a837c396d42ef40f8ff54f1b39c";
     public static String APP_TOKEN = "xzlt";
+    public static String WX_OPENID_URL = "https://api.weixin.qq.com/sns/jscode2session";
 
     /**
      * 登录错误次数统计

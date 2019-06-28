@@ -1,7 +1,8 @@
 package com.zlkj.admin.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.InitCode;
 import com.zlkj.admin.dto.ResultInfo;
@@ -41,8 +42,8 @@ public class ParamController {
 //    @RequiresPermissions("code:view")
     public @ResponseBody
     ResultInfo<List<Param>> listData(Param param, Integer page, Integer limit) {
-        EntityWrapper<Param> wrapper = new EntityWrapper<>(param);
-        Page<Param> pageObj = paramService.selectPage(new Page<>(page, limit), wrapper);
+        QueryWrapper<Param> wrapper = new QueryWrapper<>(param);
+        IPage<Param> pageObj = paramService.page(new Page<>(page, limit), wrapper);
         return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
     }
 
@@ -59,16 +60,16 @@ public class ParamController {
 //    @RequiresPermissions("role:del")
     public @ResponseBody
     ResultInfo<Boolean> delBatch(Integer id) {
-        return new ResultInfo<>(paramService.deleteById(id));
+        return new ResultInfo<>(paramService.removeById(id));
     }
 
     @RequestMapping("/getInitParam")
     public @ResponseBody
     ResultInfo<InitCode> getInitParam() {
         //加载翻译参数
-        Param param = new Param();
-        param.setCode("init_code");
-        Param param1 = paramMapper.selectOne(param);
+        QueryWrapper queryWrapper = new QueryWrapper();
+        queryWrapper.eq("code", "init_code");
+        Param param1 = paramMapper.selectOne(queryWrapper);
         String value = param1.getValue();
 
         Map<String, List<Code>> codeMap = new HashMap<>(10);
@@ -76,7 +77,7 @@ public class ParamController {
         if (!StringUtils.isEmpty(value)) {
             String[] arrays = value.split(",");
             for (int i = 0; i < arrays.length; i++) {
-                EntityWrapper<Code> wrapper = new EntityWrapper<>(new Code());
+                QueryWrapper<Code> wrapper = new QueryWrapper<>(new Code());
                 wrapper.eq("code", arrays[i]);
                 wrapper.eq("available", 1);
                 List<Code> codeList = codeMapper.selectList(wrapper);

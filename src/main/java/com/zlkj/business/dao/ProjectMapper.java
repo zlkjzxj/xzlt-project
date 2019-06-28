@@ -1,6 +1,6 @@
 package com.zlkj.business.dao;
 
-import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zlkj.business.dto.ProjectCountInfo;
 import com.zlkj.business.dto.ProjectInfo;
 import com.zlkj.business.entity.Project;

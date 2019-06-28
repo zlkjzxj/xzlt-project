@@ -1,7 +1,8 @@
 package com.zlkj.admin.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.entity.Role;
@@ -44,7 +45,7 @@ public class RoleController extends BaseController {
     @RequestMapping("/selectListData")
     @ResponseBody
     public ResultInfo<List<Role>> selectListData(Role role) {
-        List<Role> list = iRoleService.selectList(new EntityWrapper<>(role));
+        List<Role> list = iRoleService.list(new QueryWrapper<>(role));
         return new ResultInfo<>(list);
     }
 
@@ -52,7 +53,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions("role:view")
     public @ResponseBody
     ResultInfo<List<Role>> listData(Role role, Integer page, Integer limit) {
-        EntityWrapper<Role> wrapper = new EntityWrapper<>(role);
+        QueryWrapper<Role> wrapper = new QueryWrapper<>(role);
         if (role != null && role.getRoleCode() != null) {
             wrapper.like("role_code", role.getRoleCode());
             role.setRoleCode(null);
@@ -61,8 +62,8 @@ public class RoleController extends BaseController {
             wrapper.like("role_name", role.getRoleName());
             role.setRoleName(null);
         }
-        Page<Role> pageObj = iRoleService.selectPage(new Page<>(page, limit), wrapper);
-        return new ResultInfo<>(pageObj.getRecords(), pageObj.getSize());
+        IPage<Role> pageObj = iRoleService.page(new Page<>(page, limit), wrapper);
+        return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
     }
 
     @SysLog("保存角色操作")
@@ -78,13 +79,13 @@ public class RoleController extends BaseController {
     @RequiresPermissions("role:del")
     public @ResponseBody
     ResultInfo<Boolean> delBatch(Integer[] idArr) {
-        EntityWrapper<User> wrapper = new EntityWrapper<>();
+        QueryWrapper<User> wrapper = new QueryWrapper<>();
         wrapper.in("role_id", idArr);
-        List<User> userList = iUserService.selectList(wrapper);
+        List<User> userList = iUserService.list(wrapper);
         if (userList != null && userList.size() > 0) {
             return new ResultInfo<>("用户拥有角色不能删除！");
         }
-        return new ResultInfo<>(iRoleService.deleteBatchIds(Arrays.asList(idArr)));
+        return new ResultInfo<>(iRoleService.removeByIds(Arrays.asList(idArr)));
     }
 
 }

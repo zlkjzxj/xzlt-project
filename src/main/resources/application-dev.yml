@@ -15,6 +15,11 @@ spring:
   mvc:
     static-path-pattern: /static/**
 
+##mybatis配置文件根据需要可以添加
+#mybatis:
+#  config-locations: classpath:mybatis/mybatis-config.xml
+#  mapperLocations: classpath:/mapper/*/*Mapper.xml
+#  typeAliasesPackage: com.zlkj.admin.entity,com.zlkj.business.entity
 mybatis-plus:
   #指定多个实体包
   type-aliases-package: com.zlkj.admin.entity,com.zlkj.business.entity
@@ -25,7 +30,7 @@ mybatis-plus:
     field-strategy: 2
     db-column-underline: true
     refresh-mapper: true
-    meta-object-handler: com.zlkj.admin.config.AutoMetaObjectHandler
+#    meta-object-handler: com.zlkj.admin.config.AutoMetaObjectHandler
   configuration:
     map-underscore-to-camel-case: true
     cache-enabled: false

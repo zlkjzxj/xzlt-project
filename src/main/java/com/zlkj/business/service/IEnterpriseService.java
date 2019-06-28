@@ -1,7 +1,10 @@
 package com.zlkj.business.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.zlkj.business.dto.EnterpriseDto;
 import com.zlkj.business.entity.Enterprise;
+
+import java.util.List;
 
 /**
  * <p>
@@ -12,5 +15,10 @@ import com.zlkj.business.entity.Enterprise;
  * @since 2018-07-16
  */
 public interface IEnterpriseService extends IService<Enterprise> {
-
+    /**
+     * 根据查询条件查询数据
+     * @param enterprise
+     * @return
+     */
+    List<Enterprise> selectListBySearchVar(EnterpriseDto enterprise);
 }

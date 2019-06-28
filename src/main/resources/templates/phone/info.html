@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <title>用户列表--layui后台管理模板 2.0</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/css/public.css" media="all"/>
+</head>
+<style>
+    .layui-form-label {
+        width: 120px;
+    }
+
+    #QRCode canvas {
+        width: 100px;
+    }
+
+    /*.layui-input-block {*/
+    /*margin-left: 150px;*/
+    /*min-height: 36px*/
+    /*}*/
+</style>
+<body class="childrenBody">
+<form class="layui-form layui-row">
+    <input type="hidden" id="id" name="id">
+    <input type="hidden" id="number" name="number">
+    <input type="hidden" id="addoredit">
+    <input type="hidden" id="logoChange" value="false">
+    <input type="hidden" id="pjzf" name="pjzf">
+
+    <div class="layui-col-md4 layui-col-xs12">
+        <blockquote class="layui-elem-quote title" style="margin-bottom: 10px;"><i class="seraph icon-caidan"></i>
+            企业基本信息
+        </blockquote>
+        <div class="layui-form-item">
+            <label class="layui-form-label">企业名称</label>
+            <div class="layui-input-inline">
+                <input name="name" id="name" class="layui-input" lay-verify="required"
+                       placeholder="请输入企业名称" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">企业负责人</label>
+            <div class="layui-input-inline">
+                <input name="manager" id="manager" class="layui-input" lay-verify="required"
+                       placeholder="请输入企业负责人" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">联系电话</label>
+            <div class="layui-input-inline">
+                <input name="phone" id="phone" class="layui-input" lay-verify="phone"
+                       placeholder="请输入负责人联系电话" autocomplete="off">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">企业简介</label>
+            <div class="layui-input-inline">
+                <textarea name="desc" id="desc" placeholder="请输入企业简介" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item ">
+            <label class="layui-form-label">logo&二维码</label>
+            <div class="layui-input-inline" style="width: 100px;height: 100px;">
+                <!--<image src="/static/images/logo.png" id="imgBtn"-->
+                <!--style="width: 100px;height: 100px;"></image>-->
+                <img class="layui-upload-img layui-circle userFaceBtn userAvatar" src="/static/images/clicklogo.png"
+                     id="logo" style="width: 100px;height: 100px;">
+                <input type="file" hidden id="logoFile" name="logoFile"/>
+            </div>
+            <div class="layui-input-inline" style="width: 100px;height: 100px;">
+                <div id="QRCode"></div>
+            </div>
+        </div>
+    </div>
+
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>
+    <div class="layui-center">
+        <div class="layui-input-inline">
+            <button type="button" class="layui-btn" id="coding" onclick="createCode()">生成企业二维码</button>
+        </div>
+        <div class="layui-input-inline">
+            <button class="layui-btn" lay-submit lay-filter="addProject" id="addProject">立即提交</button>
+        </div>
+    </div>
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/static/qrcode/jquery-qrcode.js"></script>
+<script>
+    layui.config({
+        base: '/static/layui'
+    }).use(['form', 'layer', 'rate'], function () {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : top.layer,
+            $ = layui.jquery
+        ;
+
+        function GetQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) return unescape(r[2]);
+            return null;
+        }
+
+        var addoredit = GetQueryString("type");
+        $("#addoredit").val(addoredit);
+        // var logo = GetQueryString("logo");
+        // $("#logo").attr("src", logo);
+        // if (addoredit == 'edit') {
+        //     $("#coding").click();
+        // }
+        form.verify({
+            // name: [/^[a-zA-Z0-9\u4e00-\u9fa5]{1,40}$/, "项目名只能是长度20内的数字|字母|汉字"],
+            //1、编号构成：年度+部门+项目类型+序号+追加
+            numberOrEmpty: function (value) {
+                if (value != '') {
+                    if (!/\d+(,\d+)*(.[0-9]{1,2})?/.test(value)) {
+                        return '请输入正确的数字';
+                    }
+                }
+            }
+        })
+
+        form.on("submit(addProject)", function (data) {
+            var canvas = document.getElementsByTagName("canvas")[0];
+            if (canvas === undefined) {
+                layer.msg("请点击生成企业二维码");
+                return false;
+            }
+            var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
+            var form = document.querySelector(".layui-form");
+            var formData = new FormData(form);
+            var logoChange = $("#logoChange").val();
+            var bs64 = "";
+            if (logoChange == 'true') {
+                bs64 = canvas.toDataURL('image/jpg');
+            }
+            formData.append("qrcode", bs64);
+            if ($("#id").val() === "") {
+                $.ajax({
+                    url: '/phone/enterpriseAdd',
+                    method: 'POST',
+                    processData: false,  //必须false才会避开jQuery对 formdata 的默认处理
+                    contentType: false,  //必须false才会自动加上正确的Content-Type
+                    data: formData,
+                    success: function (res) {
+                        layer.close(index);
+                        if (res.data) {
+                            layer.msg("企业信息保存成功");
+                            parent.location.reload();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg(e.msg);
+                    }
+                })
+            } else {
+                $.ajax({
+                    url: '/phone/enterpriseEdit',
+                    method: 'POST',
+                    processData: false,  //必须false才会避开jQuery对 formdata 的默认处理
+                    contentType: false,  //必须false才会自动加上正确的Content-Type
+                    data: formData,
+                    success: function (res) {
+                        if (res.data) {
+                            layer.msg("企业信息修改成功");
+                            parent.location.reload();
+                        } else {
+                            layer.msg(res.msg);
+                        }
+                    },
+                    error: function (e) {
+                        layer.msg(e.msg);
+                    }
+                })
+            }
+            return false;
+        })
+        $("#logo").on('click', function () {
+            $("#logoFile").trigger('click');
+        })
+        $("#logoFile").change(function (event) {
+            var files = event.target.files, file;
+            if (files && files.length > 0) {
+                // 获取目前上传的文件
+                file = files[0];// 文件大小校验的动作
+                if (file.size > 1024 * 1024 * 2) {
+                    alert('图片大小不能超过 2MB!');
+                    return false;
+                }
+                // 获取 window 的 URL 工具
+                var URL = window.URL || window.webkitURL;
+                // 通过 file 生成目标 url
+                var imgURL = URL.createObjectURL(file);
+                //用attr将img的src属性改成获得的url
+                $("#logo").attr("src", imgURL);
+                $("#logoChange").val("true");
+                setTimeout(function () {
+                    window.createCode();
+                }, 500);
+                // 使用下面这句可以在内存中释放对此 url 的伺服，跑了之后那个 URL 就无效了
+                // URL.revokeObjectURL(imgURL);
+            }
+        })
+    })
+
+    //生成二维码
+    function createCode() {
+        var element = document.getElementById("QRCode");
+        var logoChange = $("#logoChange").val();
+        if (logoChange == "true") {
+            element.innerHTML = "";
+        } else {
+            if ($("#addoredit").val() != "edit") {
+                layer.msg("请点击图片选择企业头像");
+                return;
+            }
+        }
+        if (element.childNodes.length > 0) {
+            return;
+        }
+        var date = new Date();
+        //生成企业编号
+        var number = $("#number").val();
+        console.log(number);
+        if (number == "") {
+            $("#number").val("zxlt" + date.getTime());
+        }
+        var obj = {enterpriseId: $("#number").val(), createTime: date.getTime()}
+        console.log(obj);
+        var QrUrl = JSON.stringify(obj);
+        $("#QRCode").qrcode({
+            render: "canvas", //也可以替换为table
+            // minVersion: 1,       // version range somewhere in 1 .. 40
+            // maxVersion: 40,
+            ecLevel: 'H',        //识别度  'L', 'M', 'Q' or 'H'
+            foreground: '#000',        //二维码颜色
+            background: '#ffffff',    //背景色
+            text: QrUrl,     //二维码内容
+            radius: 0.1,         // 0.0 .. 0.5
+            quiet: 2,            //边距
+            mode: 4,
+            width: 256,
+            height: 256,
+            mSize: 0.3,      //图片大小
+            mPosX: 0.5,
+            mPosY: 0.5,
+            label: 'jQuery.qrcode',
+            // fontname: 'sans',
+            // fontcolor: '#000',
+            image: $('#logo')[0]
+        });
+    }
+</script>
+</body>
+</html>

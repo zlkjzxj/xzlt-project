@@ -1578,7 +1578,6 @@ layui.define(['laytpl', 'laypage', 'layer', 'form', 'util'], function (exports) 
                     , field = othis.parent().data('field')
                     , index = othis.parents('tr').eq(0).data('index')
                     , data = table.cache[that.key][index];
-
                 data[field] = value; //更新缓存中的值
 
                 layui.event.call(this, MOD_NAME, 'edit(' + filter + ')', commonMember.call(this, {

@@ -21,12 +21,12 @@ layui.config({
             even: true,
             // toolbar:true,
             autoSort: true,
-            sortType: 'server',
+            // sortType: 'server',
             // title: '宜元中林项目表',//导出Excel的时候会用到
-            // initSort: {//默认排序
-            //     field: 'number' //排序字段，对应 cols 设定的各字段名
-            //     , type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
-            // },
+            initSort: {//默认排序
+                field: 'createTime' //排序字段，对应 cols 设定的各字段名
+                , type: 'desc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+            },
             cols: [[
                 {type: "radio", fixed: "left"},
                 {field: 'name', title: '企业名称', align: "left", width: 250},
@@ -34,7 +34,8 @@ layui.config({
                 {field: 'phone', title: '负责人电话', align: 'center', width: 200},
                 {field: 'pjzf', title: '企业评分', align: 'center', width: 150},
                 {field: 'grade', title: '企业星级', align: 'center', width: 150},
-                {field: 'desc', title: '企业描述', align: 'center',},
+                {field: 'createTime', title: '录入时间', align: 'center', width: 150},
+                {field: 'desc', title: '企业描述', align: 'center'},
                 {
                     field: 'qrcode', title: '二维码', align: 'center', templet: function (d) {
                         if (d.qrcode != null) {
@@ -60,14 +61,14 @@ layui.config({
         });
 */
 
-        //搜索【此功能需要后台配合，所以暂时没有动态效果演示】
+        //搜索
         $(".search_btn").on("click", function () {
             table.reload("projectList", {
                 page: {
                     curr: 1 //重新从第 1 页开始
                 },
                 where: {
-                    fuzzySearchVal: $(".searchVal").val()
+                    searchVal: $(".searchVal").val()
                 }
             })
         });
@@ -115,14 +116,13 @@ layui.config({
             var index = layui.layer.open({
                     title: title,
                     type: 2,
-                    area: ["1200px", "650px"],
+                    area: [($(document).width() - 200) + "px", ($(document).height() - 30) + "px"],
                     // area: 'auto',
                     content: "info.html",
                     success: function (layero, index) {
                         var body = layui.layer.getChildFrame('body', index);
                         body.find("#addoredit").val(type);
                         if (type === 'edit') {
-
                             body.find("#id").val(data.id);
                             body.find("#name").val(data.name);
                             body.find("#number").val(data.number);
@@ -159,7 +159,7 @@ layui.config({
                     }
                 }
             )
-
+            layer.full(index);
         }
     }
 )
