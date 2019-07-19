@@ -20,6 +20,7 @@ layui.config({
         , value: gradeValue
         // , half: true //开启半星
         , text: true
+        , readonly: true
         , setText: function (value) {
             this.span.text(value + "星");
             $("#grade").val(value);
@@ -94,6 +95,7 @@ layui.config({
             , value: $("#grade").val()
             // , half: true //开启半星
             , text: true
+            , readonly: true
             , setText: function (value) {
                 this.span.text(value + "星");
             }
@@ -157,6 +159,7 @@ layui.config({
                     , value: rateValue
                     // , half: true //开启半星
                     , text: true
+                    , readonly: true
                     , setText: function (value) {
                         this.span.text(value + "星");
                         $("#grade").val(value);

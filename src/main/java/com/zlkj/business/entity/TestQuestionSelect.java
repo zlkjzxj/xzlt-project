@@ -39,4 +39,9 @@ public class TestQuestionSelect {
      */
     @TableField("select_mark")
     private String selectMark;
+    /**
+     * 工作流程
+     */
+    @TableField("answer")
+    private String answer;
 }

@@ -11,11 +11,14 @@ import com.zlkj.admin.util.Constant;
 import com.zlkj.admin.util.ImageConstant;
 import com.zlkj.business.dto.EnterpriseDto;
 import com.zlkj.business.entity.Enterprise;
+import com.zlkj.business.entity.Project;
 import com.zlkj.business.service.IEnterpriseService;
+import com.zlkj.business.service.IProjectService;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -42,7 +45,8 @@ public class EnterpriseController extends BaseController {
 
     @Resource
     private IEnterpriseService iEnterpriseService;
-
+    @Resource
+    private IProjectService iProjectService;
 
     @RequestMapping("/*")
     public void toHtml() {
@@ -60,7 +64,9 @@ public class EnterpriseController extends BaseController {
     ResultInfo<List<Enterprise>> listData(EnterpriseDto enterprise, Integer page, Integer limit) {
         QueryWrapper<Enterprise> enterpriseEntityWrapper = new QueryWrapper<>();
         if (!StringUtils.isEmpty(enterprise.getSearchVal())) {
-            enterpriseEntityWrapper.like("name", enterprise.getSearchVal()).or().like("manager", enterprise.getSearchVal());
+            enterpriseEntityWrapper.like("name", enterprise.getSearchVal())
+                    .or().like("manager", enterprise.getSearchVal())
+                    .or().like("phone", enterprise.getSearchVal());
         }
         IPage pageObj = iEnterpriseService.page(new Page(page, limit), enterpriseEntityWrapper);
         return new ResultInfo<>(pageObj.getRecords(), pageObj.getTotal());
@@ -162,6 +168,7 @@ public class EnterpriseController extends BaseController {
     @SysLog("修改企业")
     @RequestMapping("/edit")
     @RequiresPermissions("enterprise:edit")
+    @Transactional
     public @ResponseBody
     ResultInfo<Boolean> update(@RequestParam("logoFile") MultipartFile logoFile, Enterprise enterprise) {
         //获取旧的企业信息
@@ -218,6 +225,25 @@ public class EnterpriseController extends BaseController {
         } else {
             enterprise.setLogo(enterprise1.getLogo());
             enterprise.setQrcode(enterprise1.getQrcode());
+        }
+        //判断企业负责人和联系电话的变更，然后变更项目里面的
+        if (StringUtils.isNotEmpty(enterprise.getManager()) && !enterprise1.getManager().equals(enterprise.getManager())) {
+            QueryWrapper<Project> projectEntityWrapper = new QueryWrapper<>();
+            projectEntityWrapper.eq("company", enterprise1.getId());
+            List<Project> list = iProjectService.list(projectEntityWrapper);
+            for (Project project : list) {
+                project.setContacts(enterprise.getManager());
+                iProjectService.saveOrUpdate(project);
+            }
+        }
+        if (StringUtils.isNotEmpty(enterprise.getPhone()) && !enterprise1.getPhone().equals(enterprise.getPhone())) {
+            QueryWrapper<Project> projectEntityWrapper = new QueryWrapper<>();
+            projectEntityWrapper.eq("company", enterprise1.getId());
+            List<Project> list = iProjectService.list(projectEntityWrapper);
+            for (Project project : list) {
+                project.setPhone(enterprise.getPhone());
+                iProjectService.saveOrUpdate(project);
+            }
         }
         boolean b = iEnterpriseService.updateById(enterprise);
         return new ResultInfo<>(b);

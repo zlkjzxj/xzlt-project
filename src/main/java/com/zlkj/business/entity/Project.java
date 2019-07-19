@@ -40,6 +40,15 @@ public class Project {
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date lxsj;
+
+    /**
+     * 结束时间
+     */
+    @TableField(value = "jssj", fill = FieldFill.INSERT_UPDATE)
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    private Date jssj;
+
     /**
      * 项目经理Id
      */

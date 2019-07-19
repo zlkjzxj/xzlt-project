@@ -33,7 +33,6 @@ public class TestUserMark {
      * 项目编号
      */
     @TableField("question_type_id")
-    @JsonIgnore
     private String questionTypeId;
     /**
      * 服务特点

@@ -65,4 +65,9 @@ public class TestQuestionType {
      */
     @TableField("open_sign")
     private Integer openSign;
+    /**
+     * 顾问背景
+     */
+    @TableField("ymlx")
+    private Integer ymlx;
 }

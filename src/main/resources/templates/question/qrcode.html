@@ -21,6 +21,13 @@
     /*margin-left: 150px;*/
     /*min-height: 36px*/
     /*}*/
+    .qrcode {
+        width: 100%;
+        height: 150px;
+        marign: 10px;
+        background-repeat: no-repeat;
+        background-size: 100% 100%;
+    }
 </style>
 <body class="childrenBody">
 <form class="layui-form layui-row">
@@ -28,7 +35,7 @@
     <div class="layui-input-inline" style="width: 100px;height: 100px;">
         <!--<image src="/static/images/logo.png" id="imgBtn"-->
         <!--style="width: 100px;height: 100px;"></image>-->
-        <img class="layui-upload-img layui-circle userFaceBtn userAvatar" src="/static/images/xzlt_logo.jpg"
+        <img class="layui-upload-img layui-circle userFaceBtn userAvatar" src="/static/images/logo1.png"
              id="logo" style="width: 100px;height: 100px;" hidden>
         <input type="file" hidden id="logoFile" name="logoFile"/>
     </div>
@@ -43,20 +50,28 @@
             <button type="button" class="layui-btn" id="coding" onclick="createCode()">生成企业二维码</button>
         </div>
     </div>
-    <img class="layui-upload-img" src="http://192.168.20.39:8889/test/qrcode/111.png"
-         style="width: 100px;height: 100px;" hidden>
+    <img class="layui-upload-img" src="http://192.168.20.39:8889/test/qrcode.png"
+         style="width: 100%;height: 200px;">
 </form>
 <script type="text/javascript" src="/static/layui/layui.js"></script>
 <script type="text/javascript" src="/static/js/enterprise/info.js"></script>
 <script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
 <script type="text/javascript" src="/static/qrcode/jquery-qrcode.js"></script>
+<script type="text/javascript" src="/static/kss.js"></script>
 <script>
+    //65指键盘中的A
+    new kscreenshot(
+        {
+            key: 65
+        }
+    )
+
     //生成二维码
     function createCode() {
         // var QrUrl = "http://192.168.20.39:8888/test/index";
         // var QrUrl = "http://www.dkiot.net:8080/test/index";
         var QrUrl = "https://www.xahrnet.com/test/index";
-        var mode = 4 ;
+        var mode = 4;
         console.log(mode);
         // var QrUrl = JSON.stringify({"enterpriseId":"zxlt1559620123349","createTime":1559643902665});
         $("#QRCode").qrcode({
@@ -70,8 +85,8 @@
             radius: 0.1,         // 0.0 .. 0.5
             quiet: 3,            //边距
             mode: mode,
-            width:256,//二维码的宽度和高度
-            height:256,
+            width: 256,//二维码的宽度和高度
+            height: 256,
             mSize: 0.2,          //图片大小
             mPosX: 0.5,
             mPosY: 0.5,
@@ -81,57 +96,58 @@
             image: $('#logo')[0]
         });
     }
- /*   var defaults = {
-        // render method: `'canvas'`, `'image'` or `'div'`
-        render: 'canvas',
 
-        // version range somewhere in 1 .. 40
-        minVersion: 1,
-        maxVersion: 40,
+    /*   var defaults = {
+           // render method: `'canvas'`, `'image'` or `'div'`
+           render: 'canvas',
 
-        // error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
-        ecLevel: 'L',
+           // version range somewhere in 1 .. 40
+           minVersion: 1,
+           maxVersion: 40,
 
-        // offset in pixel if drawn onto existing canvas
-        left: 0,
-        top: 0,
+           // error correction level: `'L'`, `'M'`, `'Q'` or `'H'`
+           ecLevel: 'L',
 
-        // size in pixel
-        size: 200,
+           // offset in pixel if drawn onto existing canvas
+           left: 0,
+           top: 0,
 
-        // code color or image element
-        fill: '#000',
+           // size in pixel
+           size: 200,
 
-        // background color or image element, `null` for transparent background
-        background: null,
+           // code color or image element
+           fill: '#000',
 
-        // content
-        text: 'no text',
+           // background color or image element, `null` for transparent background
+           background: null,
 
-        // corner radius relative to module width: 0.0 .. 0.5
-        radius: 0,
+           // content
+           text: 'no text',
 
-        // quiet zone in modules
-        quiet: 0,
+           // corner radius relative to module width: 0.0 .. 0.5
+           radius: 0,
 
-        // modes
-        // 0: normal
-        // 1: label strip
-        // 2: label box
-        // 3: image strip
-        // 4: image box
-        mode: 0,
+           // quiet zone in modules
+           quiet: 0,
 
-        mSize: 0.1,
-        mPosX: 0.5,
-        mPosY: 0.5,
+           // modes
+           // 0: normal
+           // 1: label strip
+           // 2: label box
+           // 3: image strip
+           // 4: image box
+           mode: 0,
 
-        label: 'no label',
-        fontname: 'sans',
-        fontcolor: '#000',
+           mSize: 0.1,
+           mPosX: 0.5,
+           mPosY: 0.5,
 
-        image: null
-    };*/
+           label: 'no label',
+           fontname: 'sans',
+           fontcolor: '#000',
+
+           image: null
+       };*/
 </script>
 </body>
 </html>

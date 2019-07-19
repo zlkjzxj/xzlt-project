@@ -1,10 +1,12 @@
 package com.zlkj.business.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.zlkj.admin.config.ApplicationRunner;
 import com.zlkj.admin.controller.BaseController;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.service.ICodeService;
+import com.zlkj.admin.util.SpringContextUtil;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -70,6 +72,9 @@ public class BusinessCodeController extends BaseController {
             map.put("code", codes.get(0).getCode());
             iCodeService.removeByMap(map);
             iCodeService.saveBatch(codes);
+            //修改完之后更新系统启动加载的参数
+            ApplicationRunner applicationRunner = SpringContextUtil.getBean(ApplicationRunner.class);
+            applicationRunner.initCode();
             return new ResultInfo(true);
         }
         return new ResultInfo<>(false);

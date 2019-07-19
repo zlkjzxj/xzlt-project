@@ -31,6 +31,8 @@ public class ProjectInfo {
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date lxsj;
+    @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
+    private Date jssj;
 
     /**
      * 翻译字段

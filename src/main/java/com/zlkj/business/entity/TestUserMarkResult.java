@@ -40,5 +40,5 @@ public class TestUserMarkResult {
      * 顾问背景
      */
     @TableField("value")
-    private String value;
+    private Integer value;
 }

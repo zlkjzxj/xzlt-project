@@ -15,6 +15,7 @@ import java.util.List;
 public class TestQuestionTypeDto {
     private Integer id;
     private String testTypeName;
+    private String testTypeHeader;
     private String testTypeCode;
     private String testQuestionType;
     private String testQuestionTypeName;
@@ -23,11 +24,13 @@ public class TestQuestionTypeDto {
     private String resultDesc;
     private Integer cpSign;
     private Integer openSign;
+    private Integer ymlx;
 
     private List<TestCode> result;
     private List<TestCode> job;
     private List<TestQuestionDto> question;
     private TestUserMarkDto testUserMarkDto;
     private TestUser user;
+    private String qrcode;
 
 }

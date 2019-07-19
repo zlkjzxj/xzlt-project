@@ -19,6 +19,8 @@ spring:
     mode: HTML
   mvc:
     static-path-pattern: /static/**
+  resources:
+    static-locations:
 #mybatis配置文件根据需要可以添加
 #mybatis:
 #  config-locations: classpath:mybatis/mybatis-config.xml

@@ -92,7 +92,6 @@ public class AppController {
     @ResponseBody
     public ResultInfo<Map<String, Object>> getProjectInfo(AppParam appParam) {
         //判断项目id是为为空
-        long time1 = System.currentTimeMillis();
         if (StringUtils.isEmpty(appParam.getEnterpriseId())) {
             return new ResultInfo<>("-1", "接口参数验证失败");
         }
@@ -178,9 +177,6 @@ public class AppController {
         map.put("cpCodes", CodeConstant.cpCodeMap);
         map.put("managerphone", CodeConstant.phone);
         ResultInfo resultInfo = new ResultInfo(map);
-        long time2 = System.currentTimeMillis();
-        int time = (int) (time2 - time1);
-        System.out.println("小程序查询代码执行时长:" + time);
         return resultInfo;
     }
 

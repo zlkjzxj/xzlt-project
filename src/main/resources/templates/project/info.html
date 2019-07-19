@@ -43,26 +43,20 @@
             </div>
         </div>
         <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">立项时间</label>
-            <div class="layui-input-block">
-                <input name="lxsj" id="lxsj" class="layui-input" lay-verify="required"
-                       placeholder="请选择立项时间" autocomplete="off">
-            </div>
-        </div>
-    </div>
-    <div class="layui-form-item">
-        <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label ">项目名称</label>
-            <div class="layui-input-block">
-                <input name="name" id="name" class="layui-input" lay-verify="name|required"
-                       placeholder="请输入项目名称" autocomplete="off">
-            </div>
-        </div>
-        <div class="layui-inline layui-col-md5">
             <label class="layui-form-label">项目编号</label>
             <div class="layui-input-block">
                 <input name="number" id="number" class="layui-input" lay-verify="required"
                        placeholder="请输入项目编号" readonly>
+            </div>
+        </div>
+
+    </div>
+    <div class="layui-form-item">
+        <div class="layui-inline layui-col-md10">
+            <label class="layui-form-label ">项目名称</label>
+            <div class="layui-input-block">
+                <input name="name" id="name" class="layui-input" lay-verify="name|required"
+                       placeholder="请输入项目名称" autocomplete="off">
             </div>
         </div>
     </div>
@@ -82,23 +76,39 @@
             </div>
         </div>
     </div>
-    <hr class="layui-bg-gray" style="height: 1px;margin-top: 10px;"/>
     <div class="layui-form-item">
         <div class="layui-inline layui-col-md5">
-            <label class="layui-form-label">选择进度套餐</label>
-            <div class="layui-input-inline">
-                <select name="tc" id="tc" lay-filter="tc">
-                    <option value="">人才招聘套餐</option>
-                    <option value="">人才测评套餐</option>
-                    <option value="">其他套餐</option>
-                </select>
+            <label class="layui-form-label">立项时间</label>
+            <div class="layui-input-block">
+                <input name="lxsj" id="lxsj" class="layui-input" lay-verify="required"
+                       placeholder="请选择立项时间" autocomplete="off">
             </div>
         </div>
         <div class="layui-inline layui-col-md5">
+            <label class="layui-form-label">结束时间</label>
+            <div class="layui-input-block">
+                <input name="jssj" id="jssj" class="layui-input" lay-verify="required"
+                       placeholder="请选择立项时间" autocomplete="off">
+            </div>
+        </div>
+    </div>
+    <hr class="layui-bg-gray" style="height: 1px;margin-top: 10px;"/>
+    <div class="layui-form-item">
+        <!-- <div class="layui-inline layui-col-md5">
+             <label class="layui-form-label">选择进度套餐</label>
+             <div class="layui-input-inline">
+                 <select name="tc" id="tc" lay-filter="tc">
+                     <option value="">人才招聘套餐</option>
+                     <option value="">人才测评套餐</option>
+                     <option value="">其他套餐</option>
+                 </select>
+             </div>
+         </div>-->
+        <div class="layui-inline layui-col-md10">
             <label class="layui-form-label"></label>
             <div class="layui-input-inline">
                 <a class="layui-btn layui-btn-md" lay-filter="addProgress" id="addProgress">
-                    <i class="layui-icon">&#xe654;</i>添加</a>
+                    <i class="layui-icon">&#xe654;</i>添加项目进度</a>
             </div>
         </div>
     </div>
@@ -119,6 +129,17 @@
                 {{# }); }}
             </div>
         </div>
+
+
+
+
+
+
+
+
+
+
+
 
 
 

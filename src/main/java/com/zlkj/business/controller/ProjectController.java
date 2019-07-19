@@ -79,6 +79,7 @@ public class ProjectController extends BaseController {
             info.setCompany(pro.getCompany());
             info.setManager(pro.getManager());
             info.setLxsj(pro.getLxsj());
+            info.setJssj(pro.getJssj());
             info.setGrade(pro.getGrade());
             info.setContacts(pro.getContacts());
             info.setPhone(pro.getPhone());
@@ -220,12 +221,13 @@ public class ProjectController extends BaseController {
                     for (String a : progress_s) {
                         if ((a.split(":")[0]).equals(same + "")) {
                             progress1.setProgress(a.split(":")[1]);
+                            String time = progress1.getTime();
+                            if (time == null && !"0".equals(a.split(":")[1])) {
+                                progress1.setTime(today.toString());
+                            }
                         }
                     }
-                    String time = progress1.getTime();
-                    if (time == null) {
-                        progress1.setTime(today.toString());
-                    }
+
                     iProjectProgressService.updateById(progress1);
                 }
             }

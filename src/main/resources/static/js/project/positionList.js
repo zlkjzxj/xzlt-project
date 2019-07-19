@@ -39,6 +39,7 @@ layui.config({
                     {field: 'name', title: '项目名称', align: "left", width: 200},
                     {field: 'number', title: '项目编号', align: "left", width: 200},
                     {field: 'lxsj', title: '立项时间', align: 'center', width: 120, sort: true},
+                    {field: 'jssj', title: '结束时间', align: 'center', width: 120, sort: true},
                     {field: 'managerName', title: '项目经理', align: 'center', width: 100},
                     {field: 'membersName', title: '项目成员', align: 'center', width: 350},
                     {field: 'grade', title: '评分', align: 'center', width: 100},
@@ -158,6 +159,7 @@ layui.config({
                         body.find("#name").val(data.name);
                         body.find("#number").val(data.number);
                         body.find("#lxsj").val(data.lxsj);
+                        body.find("#jssj").val(data.jssj);
                         body.find("#managerId").val(data.manager);
                         // body.find("#membersId").val(data.members);
                         body.find("#company").val(data.company);

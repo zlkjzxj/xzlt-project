@@ -352,6 +352,13 @@ layui.config({
         // theme: '#393D49'
         // , calendar: true
     });
+    laydate.render({
+        elem: '#jssj',
+        theme: 'grid'
+        // theme: '#393D49'
+        // , calendar: true
+    });
+
     form.on('select(company)', function (d) {
         $.post("/enterprise/getObject?id=" + d.value, function (data) {
             // $("#number1").val(data.data);

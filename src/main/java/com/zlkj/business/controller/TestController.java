@@ -237,10 +237,10 @@ public class TestController {
      */
     @RequestMapping("/getTestInfo")
     public @ResponseBody
-    ResultInfo<List<TestQuestionTypeDto>> getTestInfo() {
+    ResultInfo<Map<String, Object>> getTestInfo() {
         //测试类型
         QueryWrapper<TestQuestionType> typeQueryWrapper = new QueryWrapper<>();
-        typeQueryWrapper.select("id", "test_type_name", "test_type_code", "test_question_type", "test_question_type_name", "back_img");
+        typeQueryWrapper.select("id", "test_type_name", "test_type_code", "test_type_header", "test_question_type", "test_question_type_name", "back_img", "ymlx");
         typeQueryWrapper.ne("test_question_type", "");
         List<TestQuestionType> typeList = iTestQuestionTypeService.list(typeQueryWrapper);
         List<TestQuestionTypeDto> questionTypeDtoList = new ArrayList<>();
@@ -248,14 +248,23 @@ public class TestController {
             TestQuestionTypeDto dto = new TestQuestionTypeDto();
             dto.setId(type.getId());
             dto.setTestTypeName(type.getTestTypeName());
+            dto.setTestTypeHeader(type.getTestTypeHeader());
             dto.setTestTypeCode(type.getTestTypeCode());
             dto.setTestQuestionType(type.getTestQuestionType());
             dto.setTestQuestionTypeName(type.getTestQuestionTypeName());
             dto.setBackImg(type.getBackImg());
             dto.setOpenSign(type.getOpenSign());
+            dto.setYmlx(type.getYmlx());
             questionTypeDtoList.add(dto);
         }
-        return new ResultInfo<>(questionTypeDtoList);
+        //logo
+        QueryWrapper<TestCode> codeWrapper = new QueryWrapper<>();
+        codeWrapper.eq("code", "testlogo");
+        TestCode logo = iTestCodeService.getOne(codeWrapper);
+        Map<String, Object> map = new HashMap<>(2);
+        map.put("questionTypeList", questionTypeDtoList);
+        map.put("logo", logo.getCodeDesc());
+        return new ResultInfo<>(map);
 
     }
 
@@ -302,6 +311,11 @@ public class TestController {
         dto.setResult(resultList);
         dto.setJob(jobList);
         dto.setQuestion(questionsDtoList);
+        //logo
+        QueryWrapper<TestCode> codeWrapper = new QueryWrapper<>();
+        codeWrapper.eq("code", "testqrcode");
+        TestCode logo = iTestCodeService.getOne(codeWrapper);
+        dto.setQrcode(logo.getCodeDesc());
         return new ResultInfo<>(dto);
 
     }
@@ -396,4 +410,70 @@ public class TestController {
         return new ResultInfo<>(userMarkDto);
     }
 
+    /**
+     * 进主页面获取测试题
+     *
+     * @return
+     */
+    @RequestMapping("/getResultInfo")
+    public @ResponseBody
+    ResultInfo<TestQuestionTypeDto> getResultInfo(@RequestBody TestUserMark userMark) {
+        TestQuestionTypeDto typeDto = new TestQuestionTypeDto();
+        TestUserMarkDto userMarkDto = new TestUserMarkDto();
+        QueryWrapper<TestQuestionType> wrapper = new QueryWrapper<>();
+        wrapper.select("id", "test_question_type", "test_question_result", "ymlx", "result_desc").eq("id", userMark.getQuestionTypeId());
+        TestQuestionType type = iTestQuestionTypeService.getOne(wrapper);
+        typeDto.setYmlx(type.getYmlx());
+        typeDto.setResultDesc(type.getResultDesc());
+        //userMark
+        QueryWrapper<TestUserMark> markWrapper = new QueryWrapper<>();
+        markWrapper.eq("user_id", userMark.getUserId()).eq("question_type_id", userMark.getQuestionTypeId());
+        TestUserMark mark = iTestUserMarkService.getOne(markWrapper);
+        if (mark != null) {
+            //markResult
+            QueryWrapper<TestUserMarkResult> markResultQueryWrapper = new QueryWrapper<>();
+            markResultQueryWrapper.eq("user_id", userMark.getUserId()).eq("question_type_id", userMark.getQuestionTypeId());
+            markResultQueryWrapper.orderByDesc("value");
+            List<TestUserMarkResult> results = iTestUserMarkResultService.list(markResultQueryWrapper);
+            //测试结果
+            QueryWrapper<TestCode> resultWrapper = new QueryWrapper<>();
+            resultWrapper.eq("code", type.getTestQuestionType());
+            List<TestCode> resultList = iTestCodeService.list(resultWrapper);
+            //结果对应的职业类型
+            QueryWrapper<TestCode> jobWrapper = new QueryWrapper<>();
+            jobWrapper.eq("code", type.getTestQuestionResult());
+            List<TestCode> jobList = iTestCodeService.list(jobWrapper);
+            typeDto.setResult(resultList);
+            typeDto.setJob(jobList);
+           /* //xun huan paixu result
+            if ("2".equals(userMark.getQuestionTypeId())) {
+                List<TestCode> jobList1 = new ArrayList<>();
+                for (TestUserMarkResult result : results) {
+                    for (TestCode code : jobList) {
+                        if (result.getCode().equals(code.getCodeDesc1())) {
+                            jobList1.add(code);
+                            continue;
+                        }
+                    }
+                }
+                typeDto.setJob(jobList1);
+            } else {
+                typeDto.setJob(jobList);
+            }*/
+            //测试题
+            userMarkDto.setUserId(mark.getUserId());
+            userMarkDto.setQuestionTypeId(mark.getQuestionTypeId());
+            userMarkDto.setResults(results);
+            userMarkDto.setTestResult(mark.getTestResult());
+            userMarkDto.setTestJob(mark.getTestJob());
+            typeDto.setTestUserMarkDto(userMarkDto);
+        }
+        //logo
+        QueryWrapper<TestCode> codeWrapper = new QueryWrapper<>();
+        codeWrapper.eq("code", "testqrcode");
+        TestCode logo = iTestCodeService.getOne(codeWrapper);
+        typeDto.setQrcode(logo.getCodeDesc());
+        return new ResultInfo<>(typeDto);
+
+    }
 }
