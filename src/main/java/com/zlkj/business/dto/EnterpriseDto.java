@@ -30,6 +30,7 @@ public class EnterpriseDto {
     private String xytc;
     private String qtjfx;
     private Integer pjzf;
+    private Integer lrr;
 
     private String searchVal;
 

@@ -26,7 +26,6 @@ import org.springframework.web.multipart.MultipartFile;
 import sun.misc.BASE64Decoder;
 
 import javax.annotation.Resource;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -63,6 +62,8 @@ public class EnterpriseController extends BaseController {
     public @ResponseBody
     ResultInfo<List<Enterprise>> listData(EnterpriseDto enterprise, Integer page, Integer limit) {
         QueryWrapper<Enterprise> enterpriseEntityWrapper = new QueryWrapper<>();
+        UserInfo user = this.getUserInfo();
+        enterpriseEntityWrapper.eq("lrr", user.getId());
         if (!StringUtils.isEmpty(enterprise.getSearchVal())) {
             enterpriseEntityWrapper.like("name", enterprise.getSearchVal())
                     .or().like("manager", enterprise.getSearchVal())
@@ -75,6 +76,8 @@ public class EnterpriseController extends BaseController {
     @RequestMapping("/listDataSelect")
     public @ResponseBody
     ResultInfo<List<Enterprise>> listDataSelect(EnterpriseDto enterprise) {
+        UserInfo user = this.getUserInfo();
+        enterprise.setLrr(user.getId());
         List<Enterprise> list = iEnterpriseService.selectListBySearchVar(enterprise);
         return new ResultInfo<>(list);
     }
@@ -138,6 +141,8 @@ public class EnterpriseController extends BaseController {
         } else {
             enterprise.setLogo(ImageConstant.URL + ImageConstant.USER_DEFAULT_AVATAR);
         }
+        UserInfo user = this.getUserInfo();
+        enterprise.setLrr(user.getId());
         enterprise.setAppcp(0);
         boolean b = iEnterpriseService.save(enterprise);
         return new ResultInfo<>(b);

@@ -152,6 +152,11 @@ public class Enterprise {
      */
     @TableField("appcp")
     private Integer appcp;
+    /**
+     * 录入人
+     */
+    @TableField("lrr")
+    private Integer lrr;
 
     /**
      * 创建时间

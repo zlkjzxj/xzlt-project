@@ -28,6 +28,7 @@ public class ProjectInfo {
     private String grade;
     private String contacts;
     private String phone;
+    private String lrr;
 
     @JsonFormat(pattern = "yyyy-MM-dd", timezone = "GMT+8")
     private Date lxsj;

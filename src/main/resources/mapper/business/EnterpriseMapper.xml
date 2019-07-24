@@ -5,9 +5,11 @@
             parameterType="com.zlkj.business.dto.EnterpriseDto">
         SELECT e.* FROM biz_enterprise e
         <where>
+            lrr = #{lrr}
             <if test="searchVal !=null and searchVal!='' ">
                 CONCAT(e.name, e.`manager`,e.phone) LIKE CONCAT('%', #{searchVal}, '%')
             </if>
+
         </where>
 
     </select>
