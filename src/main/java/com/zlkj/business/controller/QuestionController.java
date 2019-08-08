@@ -140,6 +140,7 @@ public class QuestionController {
         QueryWrapper<TestUserMarkResult> resultQueryWrapper = new QueryWrapper<>();
         resultQueryWrapper.eq("user_id", userId);
         resultQueryWrapper.eq("question_type_id", questionTypeId);
+        resultQueryWrapper.orderByAsc("code");
         List<TestUserMarkResult> results = iTestUserMarkResultService.list(resultQueryWrapper);
         markDto.setResults(results);
         dto.setResult(resultList);
@@ -153,11 +154,59 @@ public class QuestionController {
         QueryWrapper<Code> wrapper1 = new QueryWrapper<>();
         wrapper1.eq("code", "qualification");
         List<Code> qualificationList = iCodeService.list(wrapper1);
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(3);
         map.put("dto", dto);
         map.put("genders", genderList);
         map.put("qualifications", qualificationList);
         return new ResultInfo<>(map);
     }
 
+    /**
+     * @return
+     */
+    @RequestMapping("/getResultDetail2")
+    @ResponseBody
+    public ResultInfo<Map<String, Object>> getResultDetail2(Integer userId, Integer questionTypeId) {
+        TestUser user = iTestUserService.getById(userId);
+        //测试类型
+        QueryWrapper<TestQuestionType> typeQueryWrapper = new QueryWrapper<>();
+        typeQueryWrapper.ne("test_question_type", "");
+        TestQuestionType type = iTestQuestionTypeService.getById(questionTypeId);
+        TestQuestionTypeDto dto = new TestQuestionTypeDto();
+        dto.setUser(user);
+        dto.setId(type.getId());
+        dto.setTestTypeName(type.getTestTypeName());
+        dto.setTestTypeCode(type.getTestTypeCode());
+        dto.setTestQuestionType(type.getTestQuestionType());
+        dto.setTestQuestionTypeName(type.getTestQuestionTypeName());
+        dto.setResultDesc(type.getResultDesc());
+        //测试结果
+        QueryWrapper<TestCode> resultWrapper = new QueryWrapper<>();
+        resultWrapper.eq("code", type.getTestQuestionResult());
+        List<TestCode> resultList = iTestCodeService.list(resultWrapper);
+
+        TestUserMarkDto markDto = new TestUserMarkDto();
+        markDto.setUserName(user.getUserName());
+        QueryWrapper<TestUserMarkResult> resultQueryWrapper = new QueryWrapper<>();
+        resultQueryWrapper.eq("user_id", userId);
+        resultQueryWrapper.eq("question_type_id", questionTypeId);
+        resultQueryWrapper.orderByAsc("code");
+        List<TestUserMarkResult> results = iTestUserMarkResultService.list(resultQueryWrapper);
+        markDto.setResults(results);
+        dto.setResult(resultList);
+        dto.setTestUserMarkDto(markDto);
+        //性别
+        QueryWrapper<Code> wrapper = new QueryWrapper<>();
+        wrapper.eq("code", "gender");
+        List<Code> genderList = iCodeService.list(wrapper);
+        //学历
+        QueryWrapper<Code> wrapper1 = new QueryWrapper<>();
+        wrapper1.eq("code", "qualification");
+        List<Code> qualificationList = iCodeService.list(wrapper1);
+        Map<String, Object> map = new HashMap<>(3);
+        map.put("dto", dto);
+        map.put("genders", genderList);
+        map.put("qualifications", qualificationList);
+        return new ResultInfo<>(map);
+    }
 }

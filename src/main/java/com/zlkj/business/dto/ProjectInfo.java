@@ -40,6 +40,8 @@ public class ProjectInfo {
      */
     private String managerName;
     private String membersName;
+    private String companyName;
+    private String progress1;
     /**
      * 分页用的参数
      */

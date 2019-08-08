@@ -3,9 +3,11 @@ package com.zlkj.admin.controller;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
+import com.sun.xml.internal.rngom.parse.host.Base;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.InitCode;
 import com.zlkj.admin.dto.ResultInfo;
+import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.entity.Param;
 import com.zlkj.admin.dao.CodeMapper;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import javax.annotation.Resource;
+import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,10 +33,10 @@ import java.util.Map;
  */
 @Controller
 @RequestMapping("/param")
-public class ParamController {
-    @Autowired
+public class ParamController extends BaseController {
+    @Autowired()
     private IParamService paramService;
-    @Resource
+    @Resource()
     private ParamMapper paramMapper;
     @Resource
     protected CodeMapper codeMapper;
@@ -51,7 +54,7 @@ public class ParamController {
     @RequestMapping("/save")
 //    @RequiresPermissions(value = {"role:add", "role:edit"}, logical = Logical.OR)
     public @ResponseBody
-    ResultInfo<Boolean> save(Param param) {
+    ResultInfo<Boolean> save(@Valid Param param) {
         return new ResultInfo<>(paramService.saveParam(param));
     }
 
@@ -66,21 +69,46 @@ public class ParamController {
     @RequestMapping("/getInitParam")
     public @ResponseBody
     ResultInfo<InitCode> getInitParam() {
-        //加载翻译参数
+        //加载翻译参数 通用code
         QueryWrapper queryWrapper = new QueryWrapper();
         queryWrapper.eq("code", "init_code");
-        Param param1 = paramMapper.selectOne(queryWrapper);
-        String value = param1.getValue();
+        Param param = paramMapper.selectOne(queryWrapper);
+        String value = param.getValue();
+        //加载翻译参数 不一样的code
+        QueryWrapper queryWrapper1 = new QueryWrapper();
+        queryWrapper1.eq("code", "init_code1");
+        Param param1 = paramMapper.selectOne(queryWrapper1);
+        String value1 = param1.getValue();
 
+        UserInfo user = this.getUserInfo();
         Map<String, List<Code>> codeMap = new HashMap<>(10);
         Map<String, String> paramMap = new HashMap<>(2);
         if (!StringUtils.isEmpty(value)) {
             String[] arrays = value.split(",");
             for (int i = 0; i < arrays.length; i++) {
-                QueryWrapper<Code> wrapper = new QueryWrapper<>(new Code());
+                QueryWrapper<Code> wrapper = new QueryWrapper<>();
                 wrapper.eq("code", arrays[i]);
                 wrapper.eq("available", 1);
                 List<Code> codeList = codeMapper.selectList(wrapper);
+                codeMap.put(arrays[i], codeList);
+            }
+        }
+        if (!StringUtils.isEmpty(value1)) {
+            String[] arrays = value1.split(",");
+            for (int i = 0; i < arrays.length; i++) {
+                QueryWrapper<Code> wrapper = new QueryWrapper<>();
+                wrapper.and(wq -> wq.eq("enterprise_id", user.getEnterpriseId()));
+                wrapper.eq("code", arrays[i]);
+                wrapper.eq("available", 1);
+                wrapper.orderByAsc("code_value");
+                List<Code> codeList = codeMapper.selectList(wrapper);
+                if (codeList.isEmpty()) {
+                    QueryWrapper<Code> wrapper1 = new QueryWrapper<>();
+                    wrapper1.eq("code", arrays[i]);
+                    wrapper1.eq("available", 1);
+                    wrapper1.eq("enterprise_id", "").or().eq("enterprise_id", null);
+                    codeList = codeMapper.selectList(wrapper1);
+                }
                 codeMap.put(arrays[i], codeList);
             }
         }

@@ -7,6 +7,7 @@
         <id column="id" property="id"/>
         <result column="role_id" property="roleId"/>
         <result column="name" property="name"/>
+        <result column="enterprise_id" property="enterpriseId"/>
         <result column="user_name" property="userName"/>
         <result column="password" property="password"/>
         <result column="salt" property="salt"/>
@@ -25,6 +26,7 @@
         <association property="roleInfo" javaType="com.zlkj.admin.dto.RoleInfo">
             <id column="rid" property="id"/>
             <result column="permission_ids" property="permissionIds"/>
+            <result column="enterprise_id" property="enterpriseId"/>
             <result column="available" property="available"/>
             <result column="role_name" property="roleName"/>
             <result column="role_code" property="roleCode"/>
@@ -62,5 +64,9 @@
                                            ) > 0 AND p.available = 1)
         WHERE u.user_name = #{userName}
     </select>
-
+    <select id="getEnterprises" resultType="com.zlkj.admin.entity.User" parameterType="com.zlkj.admin.entity.User">
+        SELECT DISTINCT
+            (enterprise_id)
+        FROM sys_user
+    </select>
 </mapper>

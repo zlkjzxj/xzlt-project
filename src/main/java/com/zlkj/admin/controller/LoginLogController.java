@@ -41,8 +41,11 @@ public class LoginLogController extends BaseController {
     public @ResponseBody
     ResultInfo<List<LoginLog>> listData(String userName, String loginTime, Integer page, Integer limit) {
         LoginLog loginLog = new LoginLog();
-        loginLog.setUserName(userName);
+        if (!StringUtils.isEmpty(userName)) {
+            loginLog.setUserName(userName);
+        }
         QueryWrapper<LoginLog> wrapper = new QueryWrapper<>(loginLog);
+        wrapper.eq("enterprise_id", this.getUserInfo().getEnterpriseId());
         if (!StringUtils.isEmpty(loginTime)) {
             wrapper.ge("create_time", FormatUtil.parseDate(loginTime.split(" - ")[0] + " 00:00:00", null));
             wrapper.le("create_time", FormatUtil.parseDate(loginTime.split(" - ")[1] + " 23:59:59", null));

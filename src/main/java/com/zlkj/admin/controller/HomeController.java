@@ -66,7 +66,6 @@ public class HomeController extends BaseController {
 
     @RequestMapping({"/", "/index"})
     public String index(Model model) {
-        System.out.println("mabi de 为啥来着了");
         List<TopDirectoryInfo> topDirectoryList = new ArrayList<>();
         //获取当前用户角色信息
         UserInfo userInfo = this.getUserInfo();

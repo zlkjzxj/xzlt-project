@@ -103,6 +103,7 @@ public class ShiroRealm extends AuthorizingRealm {
     private void addLoginLog(UserInfo userInfo) {
         LoginLog loginLog = new LoginLog();
         loginLog.setUserId(userInfo.getId());
+        loginLog.setEnterpriseId(userInfo.getEnterpriseId());
         loginLog.setUserName(userInfo.getUserName());
         Session session = SecurityUtils.getSubject().getSession();
         Object o = session.getAttribute(Constant.LOGIN_IP_ADDRESS);

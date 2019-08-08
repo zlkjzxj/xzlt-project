@@ -23,12 +23,17 @@
     <select id="findProjectById" resultType="com.zlkj.business.dto.ProjectInfo" parameterType="java.lang.String">
         SELECT
             p.*,
+            p.`progress`                     AS progress1,
             (SELECT NAME
              FROM sys_user s
              WHERE s.id = p.manager)         AS managerName,
             (SELECT GROUP_CONCAT(s.NAME)
              FROM sys_user s
-             WHERE INSTR(p.`members`, s.id)) AS membersName
+             WHERE INSTR(p.`members`, s.id)) AS membersName,
+            (SELECT b.name
+             FROM biz_enterprise b
+             WHERE p.company = b.id)         AS companyName
+
         FROM biz_project p
         WHERE p.number = #{number}
     </select>

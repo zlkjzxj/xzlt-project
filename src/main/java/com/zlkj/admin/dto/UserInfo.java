@@ -39,4 +39,14 @@ public class UserInfo extends User implements Serializable {
         return this.getUserName() + this.getSalt();
     }
     //重新对盐重新进行了定义，用户名+salt，这样就更加不容易被破解
+
+    private Integer projectCount;
+
+    public Integer getProjectCount() {
+        return projectCount;
+    }
+
+    public void setProjectCount(Integer projectCount) {
+        this.projectCount = projectCount;
+    }
 }

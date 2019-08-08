@@ -19,7 +19,7 @@ public class CodeServiceImpl extends ServiceImpl<CodeMapper, Code> implements IC
     private CodeMapper codeMapper;
 
     @Override
-    public List<Code> getCodeType(Integer codeType) {
+    public List<Code> getCodeType(Code codeType) {
         return codeMapper.getCodeType(codeType);
     }
 }

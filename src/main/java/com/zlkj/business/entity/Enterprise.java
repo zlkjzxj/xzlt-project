@@ -23,6 +23,11 @@ public class Enterprise {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     /**
+     * 企业代号
+     */
+    @TableField("enterprise_id")
+    private String enterpriseId;
+    /**
      * 企业名称
      */
     @TableField("`name`")

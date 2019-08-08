@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.sun.tools.internal.xjc.reader.xmlschema.bindinfo.BIConversion;
 import com.zlkj.admin.dto.AppParam;
+import com.zlkj.admin.dto.CodeDto;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.UserDto;
 import com.zlkj.admin.entity.Code;
@@ -124,7 +125,7 @@ public class AppController {
                 jl.setSign(xmjl.getSign());
                 jl.setAvatar(xmjl.getAvatar());
                 jl.setPhone(xmjl.getPhone());
-                for (Code code : CodeConstant.userLevelCodeList) {
+                for (Code code : CodeConstant.USER_LEVEL_MAP.get(enterprise.getEnterpriseId())) {
                     if ("1".equals(code.getCodeValue() + "")) {
                         jl.setZw(code.getCodeName());
                         jl.setZwms(code.getCodeDesc());
@@ -140,7 +141,7 @@ public class AppController {
                         cyWrapper.eq("id", memberstr.split(":")[0]);
                         User cy = iUserService.getOne(cyWrapper);
                         UserDto userDto = new UserDto();
-                        for (Code code : CodeConstant.userLevelCodeList) {
+                        for (Code code : CodeConstant.USER_LEVEL_MAP.get(enterprise.getEnterpriseId())) {
                             if (memberstr.split(":")[1].equals(code.getCodeValue() + "")) {
                                 userDto.setZw(code.getCodeName());
                                 userDto.setZwms(code.getCodeDesc());
@@ -170,12 +171,21 @@ public class AppController {
         }
 
 
-        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>(5);
         map.put("enterprise", enterprise);
-        map.put("progressCodes", CodeConstant.progressCodeList);
+
+        map.put("progressCodes", CodeConstant.PROGRESSCODE_MAP.get(enterprise.getEnterpriseId()));
+
         map.put("projectList", projectDtoList);
-        map.put("cpCodes", CodeConstant.cpCodeMap);
-        map.put("managerphone", CodeConstant.phone);
+
+        //根据企业id给测评code添加gzqy
+        List<CodeDto> gzqy = CodeConstant.GZQY_MAP.get(enterprise.getEnterpriseId());
+        Map<String, List<CodeDto>> cpCodeMap = CodeConstant.cpCodeMap;
+        cpCodeMap.put("gzyq", gzqy);
+        map.put("cpCodes", cpCodeMap);
+
+        map.put("managerphone", CodeConstant.PHONE_MAP.get(enterprise.getEnterpriseId()));
+
         ResultInfo resultInfo = new ResultInfo(map);
         return resultInfo;
     }

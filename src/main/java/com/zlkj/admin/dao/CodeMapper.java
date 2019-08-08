@@ -9,5 +9,5 @@ import java.util.List;
  * @author Administrator
  */
 public interface CodeMapper extends BaseMapper<Code> {
-    List<Code> getCodeType(Integer codeType);
+    List<Code> getCodeType(Code codeType);
 }

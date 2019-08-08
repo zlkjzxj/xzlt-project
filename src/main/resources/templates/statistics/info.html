@@ -64,9 +64,7 @@
         <div class="layui-inline layui-col-md5">
             <label class="layui-form-label">项目负责人</label>
             <div class="layui-input-block">
-                <select name="manager" id="manager" lay-filter="manager" lay-verify="required">
-                    <option value="">请选择项目负责人</option>
-                </select>
+                <input type="text" id="manager" name class="layui-input" autocomplete="off">
             </div>
         </div>
         <div class="layui-inline layui-col-md5">
@@ -93,137 +91,86 @@
         </div>
     </div>
     <hr class="layui-bg-gray" style="height: 1px;margin-top: 10px;"/>
-    <div class="layui-form-item layui-row">
-        <div class="layui-col-md5 layui-inline">
-            <label class="layui-form-label">参数类型</label>
-            <div class="layui-input-block">
-                <select name="codeType" id="codeType" lay-filter="codeType" style="width: 150px;">
-                </select>
-            </div>
-        </div>
-        <div class="layui-col-md5 layui-inline">
-            <div class="layui-input-block">
-                <a class="layui-btn layui-btn-md" lay-filter="addProgress" id="addProgress">
-                    <i class="layui-icon">&#xe654;</i>添加项目进度</a>
-            </div>
-        </div>
-    </div>
     <div id="sliders">
     </div>
-    <hr class="layui-bg-gray" style="height: 1px;margin-top: 50px;"/>
-    <div class="layui-center">
-        <a class="layui-btn layui-btn-lg" lay-filter="addProject" id="addProject" lay-submit>
-            <i class="layui-icon">&#xe609;</i>保存</a>
-        <!--<a class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="look" lay-submit>预览</a>-->
-    </div>
-    <!--存放添加进度条的模板-->
-    <script id="progressHtml" type="text/text">
-        <div class="layui-form-item">
-            <div class="layui-form-inline">
-                {{# layui.each(d.list, function(index, item){ }}
-                <input type="checkbox" name="progressBox" title="{{item.codeName}}" value="{{item.codeValue}}" lay-skin="primary"/>
-                {{# }); }}
-            </div>
-        </div>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    </script>
 </form>
 <script type="text/javascript" src="/static/layui/layui.js"></script>
-<script type="text/javascript" src="/static/js/project/info.js"></script>
-<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
-<script type="text/javascript" src="/static/qrcode/jquery-qrcode.js"></script>
 <script>
-    //生成二维码
-    function createCode() {
-        var element = document.getElementById("QRCode");
-        if (element.childNodes.length > 0) {
-            return;
+    layui.config({
+        base: '/static/layui'
+    }).extend({
+        // selectM: '/extend/selectM',
+        tableSelect: '/extend/tableSelect'
+    }).use(['form', 'layer', 'laytpl', 'laydate', 'upload', 'rate', 'slider', 'table', 'tableSelect'], function () {
+        var form = layui.form,
+            layer = parent.layer === undefined ? layui.layer : top.layer,
+            laydate = layui.laydate,
+            $ = layui.jquery,
+            rate = layui.rate,
+            slider = layui.slider,
+            laytpl = layui.laytpl
+        ;
+        var number = $("#number").val();
+        $.ajax({
+            url: '/statistics/getProjectInfo?number=' + number,
+            success: function (data) {
+                var d = data.data;
+                console.log(d);
+                $("#companyName").val(d.companyName);
+                $("#number").val(d.number);
+                $("#name").val(d.name);
+                $("#manager").val(d.managerName);
+                $("#memberSelect").val(d.membersName);
+                $("#lxsj").val(d.lxsj);
+                $("#jssj").val(d.jssj);
+                initProgress(d.progress1)
+            }
+        })
+
+
+        //循环生成项目进度列表
+        function initProgress(progress) {
+            var initParam = sessionStorage.getItem("initParam");
+            var codes = JSON.parse(initParam)['codeMap'];
+            //项目进度
+            var projectprogress = codes['projectprogress'];
+            var projectprogressChoice = [];
+            //给进度赋值
+            console.log(progress)
+            var progress_value = JSON.parse(progress)
+            var keys = Object.keys(progress_value);
+            projectprogress.forEach(function (elem) {
+                if (keys.indexOf(elem.codeValue + "") > -1) {
+                    projectprogressChoice.push(elem);
+                }
+            })
+            console.log(projectprogressChoice)
+            projectprogressChoice.forEach(function (e) {
+                var id = "silde" + e.codeValue;
+                var html = "<div class='layui-form-item'>";
+                html += "<div class='layui-inline layui-col-md10'>";
+                html += "<label class='layui-form-label'>" + e.codeName + "</label>";
+                html += "<div class='layui-input-block' style='padding: 15px 80px 0 0;'>";
+                html += "<div id='" + id + "' class='demo-slider' ></div> ";
+                html += "</div>";
+                html += "</div>";
+                html += "</div>";
+                $("#sliders").append(html);
+                // progress_value[e.codeValue] = 0;
+                //开启输入框
+                var ins = slider.render({
+                    elem: '#' + id
+                    , input: true //输入框
+                    , disabled: true //禁用滑块
+                    , change: function (value) {
+                        progress_value[e.codeValue] = value;
+                    }
+                });
+                ins.setValue(progress_value[e.codeValue])
+            })
+
         }
-        var date = new Date();
-        var obj = {projectId: $("#number").val(), createTime: date.getTime()}
-        var QrUrl = JSON.stringify(obj);
-        $("#QRCode").qrcode({
-            render: "canvas", //也可以替换为table
-            minVersion: 1,       // version range somewhere in 1 .. 40
-            maxVersion: 40,
-            ecLevel: 'H',        //识别度  'L', 'M', 'Q' or 'H'
-            left: 0,
-            top: 0,
-            size: 100,           //尺寸
-            fill: '#000',        //二维码颜色
-            background: null,    //背景色
-            text: QrUrl,     //二维码内容
-            radius: 0.1,         // 0.0 .. 0.5
-            quiet: 2,            //边距
-            mode: 4,
-            mSize: 0.2,          //图片大小
-            mPosX: 0.5,
-            mPosY: 0.5,
-            label: 'jQuery.qrcode',
-            fontname: 'sans',
-            fontcolor: '#000',
-            image: $('#imgBtn')[0]
-        });
-    }
+    })
 </script>
 </body>
 </html>

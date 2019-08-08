@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.User;
 
+import java.util.List;
+
 /**
  * <p>
  * 系统用户表 Mapper 接口
@@ -16,4 +18,5 @@ public interface UserMapper extends BaseMapper<User> {
 
     UserInfo findUserInfo(String userName);
 
+    List<User> getEnterprises();
 }

@@ -28,11 +28,15 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
     //监听行双击事件
     table.on('rowDouble(resultList)', function (obj) {
         console.log(obj.data);
+        var content = 'resultinfo.html';
+        if (obj.data.questionTypeId == 2) {
+            content = 'resultinfo1.html';
+        }
         var index = layui.layer.open({
             title: '测试结果详情页',
             type: 2,
             area: ["1000px", "700px"],
-            content: "resultinfo.html",
+            content: content,
             success: function (layero, index) {
                 var body = layui.layer.getChildFrame('body', index);
                 setTimeout(function () {

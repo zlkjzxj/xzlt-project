@@ -3,6 +3,7 @@ package com.zlkj.admin.entity;
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -15,6 +16,7 @@ import java.util.Date;
  * @author Auto Generator
  * @since 2018-07-16
  */
+@Data
 @TableName("sys_role")
 public class Role extends Model<Role> {
 
@@ -25,6 +27,12 @@ public class Role extends Model<Role> {
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
+	/**
+	 * 企业代号
+	 */
+	@TableField("enterprise_id")
+	private String enterpriseId;
+
     /**
      * 权限ID列表
      */
@@ -56,79 +64,4 @@ public class Role extends Model<Role> {
 	@TableField(value = "create_time", fill = FieldFill.INSERT)
 	@JsonFormat(pattern="yyyy-MM-dd HH:mm:ss",timezone = "GMT+8")
 	private Date createTime;
-
-
-	public Integer getId() {
-		return id;
-	}
-
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getPermissionIds() {
-		return permissionIds;
-	}
-
-	public void setPermissionIds(String permissionIds) {
-		this.permissionIds = permissionIds;
-	}
-
-	public Integer getAvailable() {
-		return available;
-	}
-
-	public void setAvailable(Integer available) {
-		this.available = available;
-	}
-
-	public String getRoleName() {
-		return roleName;
-	}
-
-	public void setRoleName(String roleName) {
-		this.roleName = roleName;
-	}
-
-	public String getRoleCode() {
-		return roleCode;
-	}
-
-	public void setRoleCode(String roleCode) {
-		this.roleCode = roleCode;
-	}
-
-	public Date getUpdateTime() {
-		return updateTime;
-	}
-
-	public void setUpdateTime(Date updateTime) {
-		this.updateTime = updateTime;
-	}
-
-	public Date getCreateTime() {
-		return createTime;
-	}
-
-	public void setCreateTime(Date createTime) {
-		this.createTime = createTime;
-	}
-
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
-
-	@Override
-	public String toString() {
-		return "Role{" +
-			", id=" + id +
-			", permissionIds=" + permissionIds +
-			", available=" + available +
-			", roleName=" + roleName +
-			", roleCode=" + roleCode +
-			", updateTime=" + updateTime +
-			", createTime=" + createTime +
-			"}";
-	}
 }

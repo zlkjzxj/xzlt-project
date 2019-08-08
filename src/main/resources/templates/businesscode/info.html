@@ -29,15 +29,24 @@
                    placeholder="请输入参数代码" readonly>
         </div>
     </div>
-    <div class="layui-form-item">
-        <label class="layui-form-label">参数值</label>
-        <div class="layui-input-block">
-            <div class="layui-btn-container">
-                <a class="layui-btn layui-btn-md" lay-filter="addRow" id="addRow" data-type="addRow">添加一行</a>
+    <div class="layui-form-item layui-row">
+        <div class="layui-col-md5 layui-input-inline" id="codeTypeDiv">
+            <label class="layui-form-label">参数类型</label>
+            <div class="layui-input-block">
+                <select name="codeType" id="codeType" lay-filter="codeType">
+                </select>
             </div>
-            <table id="codeList" lay-filter="codeList"></table>
         </div>
+        <div class="layui-col-md5 layui-input-inline">
+            <div class="layui-input-block">
+                <div class="layui-btn-container">
+                    <a class="layui-btn layui-btn-md" lay-filter="addRow" id="addRow" data-type="addRow">添加一行</a>
+                </div>
+            </div>
+        </div>
+
     </div>
+    <table id="codeList" lay-filter="codeList"></table>
 </form>
 <hr class="layui-bg-gray" style="height: 1px;margin-top: 20px;">
 <div id="action" class="layui-center">

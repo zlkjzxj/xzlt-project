@@ -54,7 +54,7 @@ public class UserController extends BaseController {
 
     @RequestMapping("/*")
     public void toHtml() {
-        System.out.println("userController /*");
+
     }
 
     @RequestMapping("/unlock")
@@ -74,6 +74,7 @@ public class UserController extends BaseController {
     ResultInfo<List<User>> listData(User user, Integer page, Integer limit) {
         QueryWrapper<User> wrapper = new QueryWrapper<>(user);
         wrapper.select("id", "role_id", "name", "user_name", "phone", "state", "company", "sign", "create_time", "update_time");
+        wrapper.eq("enterprise_id", this.getUserInfo().getEnterpriseId());
         if (user != null && user.getUserName() != null) {
             wrapper.like("user_name", user.getUserName());
             user.setUserName(null);
@@ -96,6 +97,7 @@ public class UserController extends BaseController {
     ResultInfo<List<User>> listDataSelect(User user) {
         QueryWrapper<User> wrapper = new QueryWrapper<>(user);
         wrapper.select("id", "name", "user_name");
+        wrapper.eq("enterprise_id", this.getUserInfo().getEnterpriseId());
         if (user != null && user.getCompany() != null) {
             wrapper.eq("company", user.getCompany());
             user.setCompany(null);
@@ -137,6 +139,7 @@ public class UserController extends BaseController {
             user.setAvatar(ImageConstant.URL + ImageConstant.USER_DEFAULT_AVATAR);
         }
         Map<String, String> map = PasswordEncoder.enCodePassWord(user.getUserName(), user.getPassword());
+        user.setEnterpriseId(this.getUserInfo().getEnterpriseId());
         user.setIsShow(1);
         user.setSalt(map.get(PasswordEncoder.SALT));
         user.setPassword(map.get(PasswordEncoder.PASSWORD));

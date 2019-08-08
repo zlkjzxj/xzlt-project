@@ -31,6 +31,7 @@ public class EnterpriseDto {
     private String qtjfx;
     private Integer pjzf;
     private Integer lrr;
+    private String enterpriseId;
 
     private String searchVal;
 

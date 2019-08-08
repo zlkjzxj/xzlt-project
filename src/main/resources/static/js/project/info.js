@@ -30,20 +30,13 @@ layui.config({
     });
 
 
-    // //这是初始化所属公司的
-    // $.post("/enterprise/listDataSelect", {
-    //     available: 1
-    // }, function (data) {
-    //     var enterpriseList = data.data;
-    //     enterpriseList.forEach(function (e) {
-    //         $("#company").append("<option value='" + e.id + "'>" + e.name + "</option>");
-    //     });
-    //     if ($("#companyId") !== '') {
-    //         $("#company").val($("#companyId").val())
-    //     }
-    //     form.render('select');
-    //
-    // });
+    var initParam = sessionStorage.getItem("initParam");
+    var codes = JSON.parse(initParam)['codeMap'];
+    //人员职位
+    var userLevel = codes['userlevel'];
+    //项目进度
+    var projectprogress = [];
+    var projectprogressChoice = [];
 
     //这是初始化项目编号的
     function initNumber(number) {
@@ -56,13 +49,24 @@ layui.config({
         }
     }
 
-    var initParam = sessionStorage.getItem("initParam");
-    var codes = JSON.parse(initParam)['codeMap'];
-    //人员职位
-    var userLevel = codes['userlevel'];
-    //项目进度
-    var projectprogress = codes['projectprogress'];
-    var projectprogressChoice = [];
+//初始化下拉进度条类型
+    $.ajax('/businesscode/listCodeType?code=projectprogress', {
+        success: function (res) {
+            var data = res.data;
+            console.log(data);
+            data.forEach(function (e) {
+                $("#codeType").append("<option value='" + e.codeMark + "'>" + e.codeDesc + "</option>");
+            });
+            $("#codeType").val(data[0].codeMark);
+            form.render('select');//刷新select选择框渲染
+            // initCodetable(code, $("#codeType").val());
+            var projectprogress1 = codes['projectprogress'];
+            var progressType = $("#codeType").val();
+            projectprogress = projectprogress1.filter(function (e) {
+                return e.codeMark == progressType;
+            })
+        }
+    })
 
     var layerOpen = true;
     $("#memberSelect").on('click', function () {
@@ -171,32 +175,21 @@ layui.config({
 
     }
 
-    // var getTpl = progressHtml.innerHTML,
-    //     data = { //数据
-    //         "title": "Layui常用模块"
-    //         , "list": projectprogress
-    //     }
-    // var progressBoxHtml = "";
-    // laytpl(getTpl).render(data, function (html) {
-    //     progressBoxHtml = html;
-    //     form.render('checkbox');
-    // });
     $("#addProgress").on('click', function () {
-        // var tableBox = "<form class=\"layui-form\">";
-        // var tableBox = "<div class=\" layui-form-item\">"
-        // tableBox += "<div class=\"layui-input-block\" >"
-        // projectprogress.forEach(function (elem) {
-        //     tableBox += '<input  name="memberBox" type="checkbox" value="' + elem.codeValue + '" title="' + elem.codeName + '"/>';
-        // })
-        // tableBox += "</div>"
-        // tableBox += "</div>"
-        // tableBox += "</form>"var elem = $("#memberSelect");
+        var projectprogress1 = codes['projectprogress'];
+        var progressType = $("#codeType").val();
+        console.log(progressType)
+        projectprogress = projectprogress1.filter(function (e) {
+            return e.codeMark == progressType;
+        })
+        console.log(projectprogress);
         var elem = $("#addProgress");
         console.log(elem)
         console.log(elem.offset())
         var t = elem.offset().top + elem.outerHeight() + "px";
         var l = elem.offset().left + "px";
         var progressChoicValues = [];
+        console.log(projectprogressChoice);
         projectprogressChoice.forEach(function (ele) {
             progressChoicValues.push(ele.codeValue);
         });
@@ -286,6 +279,11 @@ layui.config({
         })
     }
 
+//监听codeType下拉框
+    form.on('select(codeType)', function (data) {
+        projectprogressChoice = [];
+        $("#sliders").html("");
+    })
     $(document).on('click', '.removeBtn', function () {
         var codeValue = $(this).val();
         console.log(codeValue);
@@ -303,12 +301,24 @@ layui.config({
         //给进度赋值
         console.log(progress_value)
         var keys = Object.keys(progress_value);
-        projectprogress.forEach(function (elem) {
+        var projectprogress1 = codes['projectprogress'];
+        projectprogress1.forEach(function (elem) {
             if (keys.indexOf(elem.codeValue + "") > -1) {
                 projectprogressChoice.push(elem);
             }
         })
         console.log(projectprogressChoice)
+        if (projectprogressChoice.length > 0) {
+            //更新codeType下拉框，还要更新projectProgress
+            $("#codeType").val(projectprogressChoice[0].codeMark);
+            var projectprogress1 = codes['projectprogress'];
+            var progressType = $("#codeType").val();
+            projectprogress = projectprogress1.filter(function (e) {
+                return e.codeMark == progressType;
+            })
+
+        }
+        form.render('select');//刷新select选择框渲染
         projectprogressChoice.forEach(function (e) {
             var id = "silde" + e.codeValue;
             var html = "<div class='layui-form-item'>";
@@ -394,6 +404,7 @@ layui.config({
 
         });
     });
+
     form.verify({
         // name: [/^[a-zA-Z0-9\u4e00-\u9fa5]{1,40}$/, "项目名只能是长度20内的数字|字母|汉字"],
         numberOrEmpty: function (value) {
@@ -413,7 +424,8 @@ layui.config({
         var index = top.layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
         var field = Object.assign(data.field, {
                 'members': JSON.stringify(user_level),
-                'progress': JSON.stringify(progress_value)
+                'progress': JSON.stringify(progress_value),
+                'codeType': $("#codeType").val()
             })
         ;
         var url = '/project/add';

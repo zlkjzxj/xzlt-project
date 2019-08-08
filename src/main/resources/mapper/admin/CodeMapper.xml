@@ -43,12 +43,12 @@
         WHERE table_name = #{tableName} AND table_schema = (SELECT database())
         ORDER BY ordinal_position
     </select>
-    <select id="getCodeType" resultType="map" parameterType="java.lang.Integer">
+    <select id="getCodeType" resultType="com.zlkj.admin.entity.Code" parameterType="com.zlkj.admin.entity.Code">
         SELECT DISTINCT
             (code),
             s.name
         FROM sys_code s
-        WHERE code_type = #{codeType}
+        WHERE code_type = #{codeType} AND enterprise_id = #{enterpriseId}
     </select>
 
 </mapper>

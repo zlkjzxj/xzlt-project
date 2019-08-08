@@ -6,7 +6,9 @@ import com.zlkj.admin.dao.ParamMapper;
 import com.zlkj.admin.dto.CodeDto;
 import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.entity.Param;
+import com.zlkj.admin.entity.User;
 import com.zlkj.admin.service.ICodeService;
+import com.zlkj.admin.service.IUserService;
 import com.zlkj.admin.util.CodeConstant;
 import com.zlkj.admin.util.ImageConstant;
 import com.zlkj.admin.util.TranslateUtils;
@@ -35,6 +37,8 @@ public class ApplicationRunner implements CommandLineRunner {
     private ICodeService iCodeService;
     @Resource
     private ITcService iTcService;
+    @Resource
+    private IUserService iUserService;
 
     @Override
 
@@ -78,8 +82,11 @@ public class ApplicationRunner implements CommandLineRunner {
     }
 
     public void initCode() {
+        //根据用户的企业id获取所有使用系统的企业Id
+        List<User> enterPriseList = iUserService.getEnterprises();
+
 //测评code qyrs,clsj,qyxz,zyyt,jyzt,ltdjed,gzqy,gltxjqcd,nrylsl,jxry,yqbzq,zltsl,ldjf,swjf,xytc,qtjfx,starrating
-        String[] cpcodes = new String[]{"qyrs", "clsj", "qyxz", "zyyt", "jyzt", "ltdjed", "gzqy", "gltxjqcd", "nrylsl", "jxry",
+        String[] cpcodes = new String[]{"qyrs", "clsj", "qyxz", "zyyt", "jyzt", "ltdjed", "gltxjqcd", "nrylsl", "jxry",
                 "yqbzq", "zltsl", "xytc", "ldjf", "swjf"};
 
         for (int i = 0; i < cpcodes.length; i++) {
@@ -104,22 +111,53 @@ public class ApplicationRunner implements CommandLineRunner {
             }
             CodeConstant.cpCodeMap.put(cpcodes[i], dtoList);
         }
-        //进度code
-        QueryWrapper<Code> wrapper11 = new QueryWrapper<>();
-        wrapper11.eq("code", "projectprogress");
-        List<Code> progressCodeList = iCodeService.list(wrapper11);
-        CodeConstant.progressCodeList = progressCodeList;
-        // managerPhone
-        //进度code
-        QueryWrapper<Code> wrapper12 = new QueryWrapper<>();
-        wrapper12.eq("code", "managerphone");
-        Code phone = iCodeService.getOne(wrapper12);
-        CodeConstant.phone = phone;
-        //用户职位code
-        QueryWrapper<Code> userLevelwrapper = new QueryWrapper<>();
-        userLevelwrapper.eq("code", "userlevel");
-        List<Code> userLevelCodeList = iCodeService.list(userLevelwrapper);
-        CodeConstant.userLevelCodeList = userLevelCodeList;
+        //工作区域单独分开
+        enterPriseList.forEach(enterprise -> {
+            QueryWrapper<Code> wrapper = new QueryWrapper<>();
+            wrapper.eq("code", "gzqy");
+            wrapper.eq("enterprise_id", enterprise.getEnterpriseId());
+            List<Code> codeList = iCodeService.list(wrapper);
+            List<CodeDto> dtoList = new ArrayList<>();
+            codeList.forEach(code -> {
+                CodeDto dto = new CodeDto();
+                dto.setName(code.getName());
+                dto.setCodeName(code.getCodeName());
+                dto.setCode(code.getCode());
+                dto.setCodeValue(code.getCodeValue());
+                dto.setCodeDesc(code.getCodeDesc());
+                dto.setCodeMark(code.getCodeMark());
+                dto.setCodeIcon(code.getCodeIcon());
+                dtoList.add(dto);
+            });
+            CodeConstant.GZQY_MAP.put(enterprise.getEnterpriseId(), dtoList);
+
+            //进度code
+            QueryWrapper<Code> wrapper11 = new QueryWrapper<>();
+            wrapper11.eq("code", "projectprogress");
+            wrapper11.eq("enterprise_id", enterprise.getEnterpriseId());
+            List<Code> progressCodeList = iCodeService.list(wrapper11);
+            CodeConstant.PROGRESSCODE_MAP.put(enterprise.getEnterpriseId(), progressCodeList);
+
+            // managerPhone
+            QueryWrapper<Code> wrapper12 = new QueryWrapper<>();
+            wrapper12.eq("code", "managerphone");
+            wrapper12.eq("enterprise_id", enterprise.getEnterpriseId());
+            List<Code> phoneList = iCodeService.list(wrapper12);
+            Code phone = new Code();
+            if (phoneList.size() > 0) {
+                phone = phoneList.get(0);
+            }
+            CodeConstant.PHONE_MAP.put(enterprise.getEnterpriseId(), phone);
+
+            //用户职位code
+            QueryWrapper<Code> userLevelWrapper = new QueryWrapper<>();
+            userLevelWrapper.eq("code", "userlevel");
+            userLevelWrapper.eq("enterprise_id", enterprise.getEnterpriseId());
+            List<Code> userLevelCodeList = iCodeService.list(userLevelWrapper);
+            CodeConstant.USER_LEVEL_MAP.put(enterprise.getEnterpriseId(), userLevelCodeList);
+        });
+
+
         //评分
         QueryWrapper<Code> starratingWrapper = new QueryWrapper<>();
         starratingWrapper.eq("code", "starrating");

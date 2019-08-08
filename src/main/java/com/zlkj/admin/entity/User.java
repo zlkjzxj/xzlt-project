@@ -34,6 +34,11 @@ public class User extends Model<User> {
     @TableField("role_id")
     private Integer roleId;
     /**
+     * 企业代号
+     */
+    @TableField("enterprise_id")
+    private String enterpriseId;
+    /**
      * 名称
      */
     @TableField("name")

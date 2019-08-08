@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.User;
 
+import java.util.List;
+
 /**
  * <p>
  * 系统用户表 服务类
@@ -16,4 +18,5 @@ public interface IUserService extends IService<User> {
 
     UserInfo findUserInfo(String userName);
 
+    List<User> getEnterprises();
 }

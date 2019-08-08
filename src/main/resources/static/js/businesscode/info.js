@@ -11,7 +11,29 @@ layui.use(['form', 'layer', 'table'], function () {
     console.log(code);
 
     function getCodeList(code) {
-        $.ajax('/businesscode/listCodeData?code=' + $("#code").val(), {
+        //如果是projectprogress 需单独处理
+        if (code == "projectprogress") {
+            $.ajax('/businesscode/listCodeType?code=' + code, {
+                success: function (res) {
+                    var data = res.data;
+                    console.log(data);
+                    data.forEach(function (e) {
+                        $("#codeType").append("<option value='" + e.codeMark + "'>" + e.codeDesc + "</option>");
+                    });
+                    $("#codeType").val(data[0].codeMark);
+                    form.render('select');//刷新select选择框渲染
+                    initCodetable(code, $("#codeType").val());
+                }
+            })
+
+        } else {
+            $("#codeTypeDiv").hide();
+            initCodetable(code, "");
+        }
+    }
+
+    function initCodetable(code, codeType) {
+        $.ajax('/businesscode/listCodeData?code=' + code + "&codeType=" + Number(codeType), {
             success: function (res) {
                 var data = res.data;
                 tableIns = table.render({
@@ -43,96 +65,107 @@ layui.use(['form', 'layer', 'table'], function () {
         })
     }
 
+    //监听codeType下拉框
+    form.on('select(codeType)', function (data) {
+        initCodetable("projectprogress", data.value);
+
+    })
     //定义事件集合
     var active = {
-        addRow: function () {	//添加一行
-            var oldData = table.cache[layTableId];
-            console.log(oldData);
-            //get the big value
-            var values = [];
-            for (var i = 0; i < oldData.length; i++) {
-                values.push(oldData[i].codeValue);
-            }
-            var max = Math.max.apply(null, values);
-            var newRow = {
-                codeName: '',
-                name: $("#name").val(),
-                code: $("#code").val(),
-                codeValue: max + 1,
-                codeType: 2
-            };
-            oldData.push(newRow);
-            tableIns.reload({
-                data: oldData
-            });
-        },
-        updateRow: function (obj) {
-            var oldData = table.cache[layTableId];
-            console.log(oldData);
-            for (var i = 0, row; i < oldData.length; i++) {
-                row = oldData[i];
-                if (row.id == obj.id) {
-                    $.extend(oldData[i], obj);
-                    return;
+            addRow: function () {	//添加一行
+                var oldData = table.cache[layTableId];
+                console.log(oldData);
+                //get the big value
+                var values = [];
+                for (var i = 0; i < oldData.length; i++) {
+                    values.push(oldData[i].codeValue);
                 }
-            }
-            tableIns.reload({
-                data: oldData
-            });
-        },
-        removeEmptyTableCache: function () {
-            var oldData = table.cache[layTableId];
-            for (var i = 0, row; i < oldData.length; i++) {
-                row = oldData[i];
-                if (!row || !row.id) {
-                    oldData.splice(i, 1);    //删除一项
-                }
-                continue;
-            }
-            tableIns.reload({
-                data: oldData
-            });
-        },
-        save: function () {
-            var oldData = table.cache[layTableId];
-            console.log(oldData);
-            for (var i = 0, row; i < oldData.length; i++) {
-                row = oldData[i];
-                if (!row.codeName) {
-                    layer.msg("请填写参数名称！", {icon: 5}); //提示
-                    return;
-                }
-            }
-
-            var str = JSON.stringify(table.cache[layTableId], null, 2);	//使用JSON.stringify() 格式化输出JSON字符串
-            //弹出loading
-            var index = layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
-            $.ajax({
-                url: '/businesscode/updateCodes',
-                data: str,
-                type: "post",
-                cache: false,
-                dataType: "json",
-                contentType: "application/json",
-                success: function (res) {
-                    if (res.data) {
-                        layer.close(index);
-                        layer.msg("操作成功！");
-                        //刷新父页面
-                        parent.location.reload();
-                    } else {
-                        layer.close(index);
-                        layer.msg(data.msg);
+                var max = Math.max.apply(null, values);
+                max = max == -Infinity ? 0 : max;
+                var newRow = {
+                    codeName: '',
+                    name: $("#name").val(),
+                    code: $("#code").val(),
+                    codeValue: max + 1,
+                    codeType: 2
+                };
+                oldData.push(newRow);
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            updateRow: function (obj) {
+                var oldData = table.cache[layTableId];
+                console.log(oldData);
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (row.id == obj.id) {
+                        $.extend(oldData[i], obj);
+                        return;
                     }
-                },
-                error: function (e) {
-                    layer.close(index);
-                    layer.msg(e.msg);
                 }
-            });
-        }
-    }
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            removeEmptyTableCache: function () {
+                var oldData = table.cache[layTableId];
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (!row || !row.id) {
+                        oldData.splice(i, 1);    //删除一项
+                    }
+                    continue;
+                }
+                tableIns.reload({
+                    data: oldData
+                });
+            },
+            save: function () {
+                var oldData = table.cache[layTableId];
+                console.log(oldData);
+                for (var i = 0, row; i < oldData.length; i++) {
+                    row = oldData[i];
+                    if (!row.codeName) {
+                        layer.msg("请填写参数名称！", {icon: 5}); //提示
+                        return;
+                    }
+                }
 
+                var str = JSON.stringify(table.cache[layTableId], null, 2);	//使用JSON.stringify() 格式化输出JSON字符串
+                //弹出loading
+                var index = layer.msg('数据保存中，请稍候...', {icon: 16, time: false, shade: 0.8});
+                $.ajax({
+                    url: '/businesscode/updateCodes',
+                    data: str,
+                    type: "post",
+                    cache: false,
+                    dataType: "json",
+                    contentType: "application/json",
+                    success: function (res) {
+                        if (res.data) {
+                            layer.close(index);
+                            layer.msg("操作成功！");
+
+                            //更新翻译code，param
+                            $.get("/param/getInitParam", function (res) {
+                                sessionStorage.setItem("initParam", JSON.stringify(res.data));
+                                //刷新父页面
+                                parent.location.reload();
+                            })
+                        } else {
+                            layer.close(index);
+                            layer.msg(data.msg);
+                        }
+                    },
+                    error: function (e) {
+                        layer.close(index);
+                        layer.msg(e.msg);
+                    }
+                });
+            }
+        }
+    ;
     //激活事件
     var activeByType = function (type, arg) {
         if (arguments.length === 2) {

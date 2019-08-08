@@ -15,7 +15,6 @@ import com.zlkj.business.entity.Project;
 import com.zlkj.business.service.IEnterpriseService;
 import com.zlkj.business.service.IProjectService;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
@@ -51,10 +50,6 @@ public class EnterpriseController extends BaseController {
     public void toHtml() {
     }
 
-    @Override
-    protected UserInfo getUserInfo() {
-        return (UserInfo) SecurityUtils.getSubject().getPrincipal();
-    }
 
     @SysLog("获取企业列表")
     @RequestMapping("/listData")
@@ -63,7 +58,7 @@ public class EnterpriseController extends BaseController {
     ResultInfo<List<Enterprise>> listData(EnterpriseDto enterprise, Integer page, Integer limit) {
         QueryWrapper<Enterprise> enterpriseEntityWrapper = new QueryWrapper<>();
         UserInfo user = this.getUserInfo();
-        enterpriseEntityWrapper.eq("lrr", user.getId());
+        enterpriseEntityWrapper.eq("enterprise_id", user.getEnterpriseId());
         if (!StringUtils.isEmpty(enterprise.getSearchVal())) {
             enterpriseEntityWrapper.like("name", enterprise.getSearchVal())
                     .or().like("manager", enterprise.getSearchVal())
@@ -77,8 +72,17 @@ public class EnterpriseController extends BaseController {
     public @ResponseBody
     ResultInfo<List<Enterprise>> listDataSelect(EnterpriseDto enterprise) {
         UserInfo user = this.getUserInfo();
-        enterprise.setLrr(user.getId());
-        List<Enterprise> list = iEnterpriseService.selectListBySearchVar(enterprise);
+        enterprise.setEnterpriseId(user.getEnterpriseId());
+        QueryWrapper<Enterprise> queryWrapper = new QueryWrapper<>();
+//        queryWrapper.apply("date_format(birth,'%Y-%m-%d')={0}", "2019-07-16");
+
+        queryWrapper.like(StringUtils.isNotEmpty(enterprise.getSearchVal()), "name", enterprise.getSearchVal())
+                .or().like(StringUtils.isNotEmpty(enterprise.getSearchVal()), "manager", enterprise.getSearchVal())
+                .or().like(StringUtils.isNotEmpty(enterprise.getSearchVal()), "phone", enterprise.getSearchVal())
+        ;
+        List<Enterprise> list = iEnterpriseService.list(queryWrapper);
+
+//        List<Enterprise> list = iEnterpriseService.selectListBySearchVar(enterprise);
         return new ResultInfo<>(list);
     }
 
@@ -142,6 +146,7 @@ public class EnterpriseController extends BaseController {
             enterprise.setLogo(ImageConstant.URL + ImageConstant.USER_DEFAULT_AVATAR);
         }
         UserInfo user = this.getUserInfo();
+        enterprise.setEnterpriseId(user.getEnterpriseId());
         enterprise.setLrr(user.getId());
         enterprise.setAppcp(0);
         boolean b = iEnterpriseService.save(enterprise);

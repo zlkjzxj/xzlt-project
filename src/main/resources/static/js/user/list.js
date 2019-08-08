@@ -13,7 +13,6 @@ layui.use(['form', 'layer', 'table', 'tree', 'laypage'], function () {
         });
         form.render('select');//刷新select选择框渲染
     });
-
     //用户列表
     var tableIns = table.render({
         elem: '#userList',

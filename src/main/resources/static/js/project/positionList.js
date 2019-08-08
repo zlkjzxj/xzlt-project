@@ -132,6 +132,7 @@ layui.config({
 
     //添加项目
     function addObject(type, data) {
+        console.log(data);
         // var h = "750px";
         var title = "添加项目";
         if (type === 'add') {
@@ -172,6 +173,7 @@ layui.config({
                             var iframeWin = window[layero.find('iframe')[0]['name']];
                             var progress = iframeWin.atools.progress_value;
                             var user_level = iframeWin.atools.user_level;
+                            console.log(data);
                             console.log(data.progress);
                             for (var i = 0; i < data.progress.length; i++) {
                                 var key = data.progress[i].progressValue;

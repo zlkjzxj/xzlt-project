@@ -33,6 +33,11 @@ public class Code extends Model<Code> {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
     /**
+     * 企业代号
+     */
+    @TableField("enterprise_id")
+    private String enterpriseId;
+    /**
      * 代码统称
      */
     @TableField("name")

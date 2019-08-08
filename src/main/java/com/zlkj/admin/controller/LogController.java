@@ -42,7 +42,7 @@ public class LogController extends BaseController {
     ResultInfo<List<Log>> listData(String userName, String operTime, Integer page, Integer limit) {
         Log log = new Log();
         log.setUserName(userName);
-        QueryWrapper<Log> wrapper = new QueryWrapper<>(log);
+        QueryWrapper<Log> wrapper = new QueryWrapper<>(log).eq("enterprise_id", this.getUserInfo().getEnterpriseId());
         if (!StringUtils.isEmpty(operTime)) {
             wrapper.ge("create_time", FormatUtil.parseDate(operTime.split(" - ")[0] + " 00:00:00", null));
             wrapper.le("create_time", FormatUtil.parseDate(operTime.split(" - ")[1] + " 23:59:59", null));

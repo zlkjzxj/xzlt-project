@@ -45,7 +45,7 @@ public class RoleController extends BaseController {
     @RequestMapping("/selectListData")
     @ResponseBody
     public ResultInfo<List<Role>> selectListData(Role role) {
-        List<Role> list = iRoleService.list(new QueryWrapper<>(role));
+        List<Role> list = iRoleService.list(new QueryWrapper<>(role).eq("enterprise_id", this.getUserInfo().getEnterpriseId()));
         return new ResultInfo<>(list);
     }
 
@@ -53,7 +53,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions("role:view")
     public @ResponseBody
     ResultInfo<List<Role>> listData(Role role, Integer page, Integer limit) {
-        QueryWrapper<Role> wrapper = new QueryWrapper<>(role);
+        QueryWrapper<Role> wrapper = new QueryWrapper<>(role).eq("enterprise_id", this.getUserInfo().getEnterpriseId());
         if (role != null && role.getRoleCode() != null) {
             wrapper.like("role_code", role.getRoleCode());
             role.setRoleCode(null);
@@ -71,6 +71,7 @@ public class RoleController extends BaseController {
     @RequiresPermissions(value = {"role:add", "role:edit"}, logical = Logical.OR)
     public @ResponseBody
     ResultInfo<Boolean> save(Role role) {
+        role.setEnterpriseId(this.getUserInfo().getEnterpriseId());
         return new ResultInfo<>(iRoleService.saveRole(role));
     }
 

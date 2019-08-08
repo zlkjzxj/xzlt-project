@@ -25,6 +25,7 @@ public class UserDto {
     private String avatar;
     private String sign;
     private String phone;
+    private String enterpriseId;
 
     private String zw;
     private String zwms;

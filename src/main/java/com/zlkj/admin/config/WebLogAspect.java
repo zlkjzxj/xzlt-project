@@ -1,6 +1,5 @@
 package com.zlkj.admin.config;
 
-import com.alibaba.fastjson.JSONObject;
 import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.Log;
@@ -69,6 +68,7 @@ public class WebLogAspect {
             UserInfo userInfo = (UserInfo) SecurityUtils.getSubject().getPrincipal();
             Log log = new Log();
             log.setUserId(userInfo.getId());
+            log.setEnterpriseId(userInfo.getEnterpriseId());
             log.setUserName(userInfo.getUserName());
             log.setOperMethod(joinPoint.getSignature().getDeclaringTypeName() + "." + joinPoint.getSignature().getName());
             log.setOperDesc(sysLog.value());

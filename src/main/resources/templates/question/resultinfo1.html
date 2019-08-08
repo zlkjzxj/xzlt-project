@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head>
+    <meta charset="utf-8">
+    <title>&nbsp;</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="format-detection" content="telephone=no">
+    <link rel="stylesheet" href="/static/layui/css/layui.css" media="all"/>
+    <link rel="stylesheet" href="/static/css/public.css" media="all"/>
+    <!--<style>-->
+    <!---->
+
+    <!--.layui-input-block {-->
+    <!--margin-left: 160px;-->
+    <!--}-->
+    <!--</style>-->
+    <style>
+        .layui-form-label {
+            padding: 0 15px 0 0;
+        }
+
+        .dfxSpan {
+            display: inline-block;
+            width: 50px;
+            color: #101010;
+            font-weight: 600;
+            margin-right: 20px;
+            letter-spacing: 5px;
+        }
+    </style>
+    <style media="print">
+        @page {
+                  size:  210mm 290 mm​;
+                  margin:  0mm auto;
+        }
+    </style>
+     
+</head>
+
+<body class="childrenBody">
+<form class="layui-form layui-row">
+    <div style="text-align: center;font-size: 25px;" id="title"></div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>个人信息</legend>
+    </fieldset>
+    <div class="layui-form-item" style="font-size: 16px;">
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">姓名</label>
+            <label class="layui-form-label" style="text-align: left" id="userName"></label>
+        </div>
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">性别</label>
+            <label class="layui-form-label" style="text-align: left" id="gender"></label>
+        </div>
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">电话</label>
+            <label class="layui-form-label" style="text-align: left" id="phone"></label>
+        </div>
+    </div>
+    <div class="layui-form-item" style="font-size: 16px;">
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">学校</label>
+            <label class="layui-form-label" style="text-align: left" id="school"></label>
+        </div>
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">学历</label>
+            <label class="layui-form-label" style="text-align: left" id="qualification"></label>
+        </div>
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">身份证号</label>
+            <label class="layui-form-label" style="text-align: left" id="idNumber"></label>
+        </div>
+    </div>
+    <div class="layui-form-item" style="font-size: 16px;">
+        <div class=" layui-col-md4">
+            <label class="layui-form-label">职务</label>
+            <label class="layui-form-label" style="text-align: left" id="station"></label>
+        </div>
+    </div>
+    <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
+        <legend>测评结果</legend>
+    </fieldset>
+    <div class="layui-form-item" style="font-size: 16px;">
+        <div class="layui-inline layui-col-md12">
+            <label class="layui-form-label">分项得分</label>
+            <div class="layui-input-block" id="dfx">
+            </div>
+        </div>
+        <div class="layui-inline layui-col-md12" style="height: 300px;">
+            <div style="height: 100%;" id="chart"></div>
+        </div>
+        <div class="layui-inline layui-col-md12">
+            <div style="padding:0 0 0 10px;color: red;font-weight: bold; ">测试结果说明：</div>
+            <div style="padding:0 0 0 10px;" id="jgsm"></div>
+        </div>
+        <div class="layui-inline layui-col-md12">
+            <div style="padding:0 0 0 10px;color: red;font-weight: bold;margin-bottom: 10px; ">测试结果分析：</div>
+            <div style="padding:0 0 0 10px;" id="jgfx"></div>
+        </div>
+    </div>
+
+    <div class="layui-center">
+        <a class="layui-btn layui-btn-lg" lay-filter="print" id="print" onclick="printPdf();">
+            <i class="layui-icon">&#xe609;</i>打印</a>
+        <!--<a class="layui-btn layui-btn-primary layui-btn-sm" lay-filter="look" lay-submit>预览</a>-->
+    </div>
+
+
+</form>
+<script type="text/javascript" src="/static/layui/layui.js"></script>
+<script type="text/javascript" src="/static/jointjs/jquery-3.3.1.js"></script>
+<script type="text/javascript" src="/static/chart/echarts.min.js"></script>
+
+<script>
+    var initDetail = function (userId, questionTypeId) {
+        console.log(userId, questionTypeId);
+        $.ajax({
+                url: "/question/getResultDetail2",
+                data: {userId: userId, questionTypeId: questionTypeId},
+                type: 'POST',
+                success: function (res) {
+                    console.log(res.data);
+                    var data = res.data.dto;
+                    var genders = res.data.genders;
+                    var qualifications = res.data.qualifications;
+                    $("#title").text(data.testTypeName + "测评结果");
+                    //用户信息
+                    var user = data.user;
+                    $("#userName").text(user.userName);
+                    for (var i = 0; i < genders.length; i++) {
+                        if (genders[i].codeValue == user.gender) {
+                            $("#gender").text(genders[i].codeName);
+                            break;
+                        }
+                    }
+                    $("#school").text(user.school);
+                    $("#phone").text(user.phone);
+                    $("#station").text(user.station);
+                    $("#idNumber").text(user.idNumber);
+                    for (var j = 0; j < qualifications.length; j++) {
+                        console.log(qualifications[j].codeValue, user.qualification);
+                        if (qualifications[j].codeValue == user.qualification) {
+                            $("#qualification").text(qualifications[j].codeName);
+                            break;
+                        }
+
+                    }
+                    //测评结果code
+                    var hlhl = {A: '红', B: '蓝', C: '黄', D: '绿'}
+                    var result = data.result;
+                    var results = data.testUserMarkDto.results;
+                    //根据测试结果显示得分
+                    var dfxHtml = "";
+                    for (var i = 0; i < results.length; i++) {
+                        var name = hlhl[results[i].code];
+                        dfxHtml += " <span class='dfxSpan'>" + name + ":" + results[i].value + "</span>";
+                    }
+                    $("#dfx").html(dfxHtml);
+
+                    //结果说明
+
+                    var jgsm = data.resultDesc;
+                    var jgsms = jgsm.split("@");
+                    var jgsmHtml = "";
+                    for (var i = 0; i < jgsms.length; i++) {
+                        if (i == 0) {
+                            jgsmHtml += " <div style='text-indent: 26px;margin-top: 15px;font-weight: 200;font-size: 14px;'>" + jgsms[i] + "</div>";
+                        } else if (i == 1 || i == 5) {
+                            jgsmHtml += " <div style='text-indent: 26px;font-weight: 200;font-size: 14px;'>" + jgsms[i] + "</div>";
+                        } else if (i == 2 || i == 4) {
+                            jgsmHtml += " <div style='font-weight: 600;font-size: 16px;margin-top: 10px;margin-bottom: 10px;'>" + jgsms[i] + "</div>";
+                        } else {
+                            jgsmHtml += " <div style='text-indent: 26px'>" + jgsms[i] + "</div>";
+                        }
+
+                    }
+                    $("#jgsm").html(jgsmHtml);
+                    //测试结果分析
+                    var jgfxHtml = '';
+                    var colors = ['#F4E8CE', '#F4E8CE', '#EEECBB', '#EEECBB', '#CDE4DA', '#CDE4DA', '#BBE2DD', '#BBE2DD']
+                    for (var i = 0; i < result.length; i++) {
+                        if (i % 2 == 0) {
+                            jgfxHtml += "<div style='border-radius: 10px;padding: 10px;margin-bottom: 10px;background-color:" + colors[i] + ";'>"
+                            jgfxHtml += "<div style='margin-bottom: 5px;font-weight: 600;font-size: 16px;'>" + hlhl[result[i].codeDesc1] + "色性格：</div>";
+                        }
+                        jgfxHtml += "<div style='margin-bottom: 10px;'>" + result[i].codeDesc + "</div>";
+                        jgfxHtml += "<div style='text-indent: 20px;font-weight: 200;margin-bottom: 10px;'>" + result[i].codeDesc2 + "</div>";
+                        if (i % 2 == 1) {
+                            jgfxHtml += "</div>";
+                        }
+                    }
+                    $("#jgfx").html(jgfxHtml);
+
+
+                    var resultDesc = data.resultDesc;
+                    var descs = resultDesc.split("@");
+                    var descHtml = "";
+                    for (var i = 0; i < descs.length; i++) {
+                        descHtml += "<div style='padding-bottom: 10px;'>" + descs[i] + "</div>";
+                    }
+                    $("#dfsm").html(descHtml);
+                    // 初始化图表标签
+                    var myChart = echarts.init(document.getElementById('chart'));
+                    var indicator = [
+                        {name: '红', max: 10},
+                        {name: '蓝', max: 10},
+                        {name: '黄', max: 10},
+                        {name: '绿', max: 10},];
+                    var seriesData = [];
+                    for (var i = 0; i < results.length; i++) {
+                        seriesData.push(results[i].value);
+                    }
+                    var options = {
+                        top: 10,
+                        tooltip: {
+                            trigger: 'axis'
+                        },
+                        radar: [
+                            {
+                                indicator: indicator,
+                                name: {
+                                    textStyle: {
+                                        color: '#000'
+                                    }
+                                },
+                                center: ['50%', '50%'],
+                                radius: 80
+                            },
+                        ],
+                        series: [
+                            {
+                                type: 'radar',
+                                tooltip: {
+                                    trigger: 'item'
+                                },
+                                itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                                data: [
+                                    {
+                                        value: seriesData
+                                    }
+                                ],
+                                label: {
+                                    normal: {
+                                        show: true,
+                                        formatter: function (params) {
+                                            return params.value;
+                                        }
+                                    }
+                                }
+                            },
+
+                        ]
+                    };
+                    myChart.setOption(options);
+                }
+            }
+        )
+    }
+    var obj = {
+        initDetail: initDetail
+    }
+    window.obj = obj;
+    window.onbeforeprint = beforePrint;
+    window.onafterprint = afterPrint;
+
+    //打印之前隐藏不想打印出来的信息
+    function beforePrint() {
+
+        $('.layui-center').hide();  //隐藏头部
+
+
+    }
+
+    //打印之后将隐藏掉的信息再显示出来
+    function afterPrint() {
+
+        $('.layui-center').show();  //显示头部
+    }
+
+    var printPdf = function () {
+        window.print();
+    }
+
+    //数组排序
+
+    function sort(arr) {
+        var max;
+        for (var i = 0; i < arr.length; i++) {
+            for (var j = i; j < arr.length; j++) {
+                if (arr[i].value < arr[j].value) {
+                    max = arr[j];
+                    arr[j] = arr[i];
+                    arr[i] = max;
+                }
+            }
+        }
+        return arr;
+    }
+</script>
+</body>
+</html>

@@ -5,8 +5,10 @@ import com.zlkj.admin.annotation.SysLog;
 import com.zlkj.admin.controller.BaseController;
 import com.zlkj.admin.dto.ResultInfo;
 import com.zlkj.admin.dto.UserInfo;
+import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.entity.Department;
 import com.zlkj.admin.entity.User;
+import com.zlkj.admin.service.ICodeService;
 import com.zlkj.admin.service.IDepartmentService;
 import com.zlkj.admin.service.IUserService;
 import com.zlkj.admin.util.Constant;
@@ -48,6 +50,8 @@ public class ProjectController extends BaseController {
     private IProjectProgressService iProjectProgressService;
     @Resource
     private IUserService iUserService;
+    @Resource
+    private ICodeService iCodeService;
 
     @RequestMapping("/*")
     public void toHtml() {
@@ -165,6 +169,105 @@ public class ProjectController extends BaseController {
     @RequiresPermissions("project:edit")
     @Transactional
     public @ResponseBody
+    ResultInfo<Boolean> update(Project project, String codeType) {
+
+        Project oldProject = iProjectService.getById(project.getId());
+        //如果codeType和之前的一样那就不变，如果不一样就把之前的全删了，
+        if (oldProject != null) {
+            //获取当前登录用户id
+            LocalDate today = LocalDate.now();
+            String progress = project.getProgress().replace("{", "").replace("}", "").replace("\"", "");
+            boolean b = iProjectService.updateById(project);
+            String[] progress_s = new String[]{};
+            if (!"".equals(progress)) {
+                progress_s = progress.split(",");
+            }
+            QueryWrapper<ProjectProgress> wrapper1 = new QueryWrapper<>();
+            wrapper1.eq("project_id", project.getId());
+            List<ProjectProgress> list = iProjectProgressService.list(wrapper1);
+
+            if (list.size() > 0) {
+                ProjectProgress one = list.get(0);
+                QueryWrapper<Code> codeQueryWrapper = new QueryWrapper<>();
+                codeQueryWrapper.eq("code_value", one.getProgressValue()).eq("code", "projectprogress");
+                Code code = iCodeService.getOne(codeQueryWrapper);
+                if (!code.getCodeMark().toString().equals(codeType)) {
+                    for (ProjectProgress del : list) {
+                        QueryWrapper<ProjectProgress> wrapper = new QueryWrapper<>();
+                        wrapper.eq("project_id", project.getId());
+                        wrapper.eq("progress_value", del.getProgressValue());
+                        iProjectProgressService.remove(wrapper);
+                    }
+                }
+            }
+            List oldList = new ArrayList();
+            List newList = new ArrayList();
+            for (ProjectProgress p : list) {
+                oldList.add(p.getProgressValue());
+            }
+            System.out.println(progress_s.length);
+            for (int i = 0; i < progress_s.length; i++) {
+                newList.add(Integer.parseInt(progress_s[i].split(":")[0]));
+            }
+            Map map = compareSameAndNot(oldList, newList);
+            List<Integer> addList = (List) map.get("add");
+            List<Integer> sameList = (List) map.get("same");
+            List<Integer> delList = (List) map.get("del");
+            //新增的添加
+            for (Integer add : addList) {
+                ProjectProgress projectProgress = new ProjectProgress();
+                projectProgress.setProjectId(project.getId());
+                for (String a : progress_s) {
+                    if ((a.split(":")[0]).equals(add + "")) {
+                        projectProgress.setProgressValue(add);
+                        projectProgress.setProgress(a.split(":")[1]);
+                        //进度不等于0 的给设定时间
+                        if (!"0".equals(a.split(":")[1])) {
+                            projectProgress.setTime(today.toString());
+                        }
+                        iProjectProgressService.save(projectProgress);
+                    }
+
+                }
+            }
+//            //不变的修改
+            for (Integer same : sameList) {
+                QueryWrapper<ProjectProgress> wrapper = new QueryWrapper<>();
+                wrapper.eq("project_id", project.getId());
+                wrapper.eq("progress_value", same);
+                ProjectProgress progress1 = iProjectProgressService.getOne(wrapper);
+                if (progress1 != null) {
+                    for (String a : progress_s) {
+                        if ((a.split(":")[0]).equals(same + "")) {
+                            progress1.setProgress(a.split(":")[1]);
+                            String time = progress1.getTime();
+                            if (time == null && !"0".equals(a.split(":")[1])) {
+                                progress1.setTime(today.toString());
+                            }
+                        }
+                    }
+
+                    iProjectProgressService.updateById(progress1);
+                }
+            }
+            //删除的删除
+            for (Integer del : delList) {
+                QueryWrapper<ProjectProgress> wrapper = new QueryWrapper<>();
+                wrapper.eq("project_id", project.getId());
+                wrapper.eq("progress_value", del);
+                iProjectProgressService.remove(wrapper);
+            }
+
+            return new ResultInfo<>("0", "追加成功", b);
+        }
+
+        return new ResultInfo<>("-1", "修改错误！");
+    }
+ /*   @SysLog("修改项目")
+    @RequestMapping("/edit")
+    @RequiresPermissions("project:edit")
+    @Transactional
+    public @ResponseBody
     ResultInfo<Boolean> update(Project project) {
 
         Project oldProject = iProjectService.getById(project.getId());
@@ -238,7 +341,7 @@ public class ProjectController extends BaseController {
                 wrapper.eq("progress_value", del);
                 iProjectProgressService.remove(wrapper);
             }
-           /* for (int i = 0; i < progress_s.length; i++) {
+           *//* for (int i = 0; i < progress_s.length; i++) {
                 String jd = progress_s[i];
                 //进度不等于0 的给查出来修改进度，并判断修改时间
                 if (!"0".equals(jd.split(":")[1])) {
@@ -259,12 +362,12 @@ public class ProjectController extends BaseController {
 
                 }
 
-            }*/
+            }*//*
             return new ResultInfo<>("0", "追加成功", b);
         }
 
         return new ResultInfo<>("-1", "修改错误！");
-    }
+    }*/
 
     @SysLog("删除项目操作")
     @RequestMapping("/del")

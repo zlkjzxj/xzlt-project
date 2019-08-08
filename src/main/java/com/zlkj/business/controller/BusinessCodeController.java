@@ -1,9 +1,13 @@
 package com.zlkj.business.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.toolkit.StringUtils;
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.zlkj.admin.config.ApplicationRunner;
 import com.zlkj.admin.controller.BaseController;
 import com.zlkj.admin.dto.ResultInfo;
+import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.Code;
 import com.zlkj.admin.service.ICodeService;
 import com.zlkj.admin.util.SpringContextUtil;
@@ -41,12 +45,21 @@ public class BusinessCodeController extends BaseController {
     @RequestMapping("/listData")
     public @ResponseBody
     ResultInfo<Map<String, Object>> listData() {
+        UserInfo user = this.getUserInfo();
         //评分标准
-        List<Code> codeList1 = iCodeService.getCodeType(2);
+        Code code1 = new Code();
+        code1.setCodeType(2);
+        code1.setEnterpriseId(user.getEnterpriseId());
+        List<Code> codeList1 = iCodeService.getCodeType(code1);
         //项目进度流程
-        List<Code> codeList2 = iCodeService.getCodeType(4);
-        //其他参数
-        List<Code> codeList3 = iCodeService.getCodeType(5);
+        Code code2 = new Code();
+        code2.setCodeType(4);
+        code2.setEnterpriseId(user.getEnterpriseId());
+        List<Code> codeList2 = iCodeService.getCodeType(code2);
+        Code code3 = new Code();
+        code3.setCodeType(5);
+        code3.setEnterpriseId(user.getEnterpriseId());
+        List<Code> codeList3 = iCodeService.getCodeType(code3);
         Map<String, List<Code>> codeMap = new HashMap<>(3);
         codeMap.put("grade", codeList1);
         codeMap.put("progress", codeList2);
@@ -57,8 +70,12 @@ public class BusinessCodeController extends BaseController {
     @RequestMapping("/listCodeData")
     public @ResponseBody
     ResultInfo<Map<String, Object>> listCodeData(Code code) {
+        UserInfo user = this.getUserInfo();
         QueryWrapper<Code> codeEntityWrapper = new QueryWrapper<>();
-        codeEntityWrapper.eq("code", code.getCode());
+        if (!code.getCodeType().equals(0)) {
+            codeEntityWrapper.eq("code_mark", code.getCodeType());
+        }
+        codeEntityWrapper.eq("code", code.getCode()).eq("enterprise_id", user.getEnterpriseId());
         List<Code> codeList = iCodeService.list(codeEntityWrapper);
         return new ResultInfo(codeList);
     }
@@ -67,18 +84,37 @@ public class BusinessCodeController extends BaseController {
     public @ResponseBody
     @Transactional
     ResultInfo<Boolean> updateCodes(@RequestBody List<Code> codes) {
+        UserInfo user = this.getUserInfo();
+
         if (!codes.isEmpty()) {
             Map<String, Object> map = new HashMap<>(1);
             map.put("code", codes.get(0).getCode());
+            map.put("enterprise_id", user.getEnterpriseId());
             iCodeService.removeByMap(map);
+            codes.forEach(newCode -> {
+                newCode.setCodeType(codes.get(0).getCodeType());
+                newCode.setEnterpriseId(user.getEnterpriseId());
+            });
             iCodeService.saveBatch(codes);
             //修改完之后更新系统启动加载的参数
             ApplicationRunner applicationRunner = SpringContextUtil.getBean(ApplicationRunner.class);
-            applicationRunner.initCode();
+//            applicationRunner.initCode();
             return new ResultInfo(true);
         }
         return new ResultInfo<>(false);
     }
+
+    @RequestMapping("/listCodeType")
+    public @ResponseBody
+    ResultInfo<Map<String, Object>> listCodeType(Code code) {
+        UserInfo user = this.getUserInfo();
+        QueryWrapper<Code> codeEntityWrapper = new QueryWrapper<>();
+        codeEntityWrapper.select("distinct code_mark", "code_desc");
+        codeEntityWrapper.eq("code", code.getCode()).eq("enterprise_id", user.getEnterpriseId());
+        List<Code> codeList = iCodeService.list(codeEntityWrapper);
+        return new ResultInfo(codeList);
+    }
+
 //
 //    /**
 //     * 生成代码

@@ -95,7 +95,7 @@ public class AddressUtils {
 //		address += region + " ";
 //		address += city + " ";
 //		//address += county;
-        String address = "西安市雁塔区科技三路融城云谷C座1105";
+        String address = "";
         System.out.println(address);
         return address;
     }

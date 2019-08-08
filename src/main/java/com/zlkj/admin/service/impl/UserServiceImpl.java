@@ -5,7 +5,10 @@ import com.zlkj.admin.dto.UserInfo;
 import com.zlkj.admin.entity.User;
 import com.zlkj.admin.dao.UserMapper;
 import com.zlkj.admin.service.IUserService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * <p>
@@ -18,8 +21,16 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements IUserService {
 
+    @Autowired
+    private UserMapper userMapper;
+
     @Override
     public UserInfo findUserInfo(String userName) {
         return this.baseMapper.findUserInfo(userName);
+    }
+
+    @Override
+    public List<User> getEnterprises() {
+        return userMapper.getEnterprises();
     }
 }

@@ -11,5 +11,5 @@ import java.util.List;
  * @since 2018-12-25
  */
 public interface ICodeService extends IService<Code> {
-    List<Code> getCodeType(Integer codeType);
+    List<Code> getCodeType(Code codeType);
 }
